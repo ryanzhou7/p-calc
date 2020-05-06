@@ -1,24 +1,28 @@
-import React from "react";
-import logo from "./logo.svg";
+import React, { useRef, useState } from "react";
+import { handleInputChange } from "./utils/ImageDom";
+import Canvas from "./components/Canvas";
 import "./App.css";
+import logo from "./logo.svg";
+//import trafficLight from "./traffic-light.jpg";
 
 function App() {
+  const imageInputRef = useRef(null);
+  const [imageSource, setImageSource] = useState(null);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>
+        <h1>Welcome to G-calc</h1>
+        <h3>Choose an image to analyze</h3>
+        <input
+          ref={imageInputRef}
+          type="file"
+          accept="image/*"
+          id="fileinput"
+          onChange={(e) => handleInputChange(e, setImageSource)}
+        />
+        <Canvas title="Red detection" imgSrc={imageSource} />
+      </div>
     </div>
   );
 }
