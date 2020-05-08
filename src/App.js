@@ -1,13 +1,13 @@
 import React, { useRef, useState } from "react";
 import { handleInputChange } from "./utils/ImageDom";
-import Canvas from "./components/Canvas";
+import Canvas from "./components/Canvas/Canvas";
+import sample from "./red-flat-line.png";
 import "./App.css";
-import logo from "./logo.svg";
-//import trafficLight from "./traffic-light.jpg";
 
 function App() {
   const imageInputRef = useRef(null);
-  const [imageSource, setImageSource] = useState(null);
+  const [imageSource, setImageSource] = useState(sample);
+  const [redThreshold, setRedThreshold] = useState(0);
 
   return (
     <div className="App">
@@ -18,10 +18,23 @@ function App() {
           ref={imageInputRef}
           type="file"
           accept="image/*"
-          id="fileinput"
           onChange={(e) => handleInputChange(e, setImageSource)}
         />
-        <Canvas title="Red detection" imgSrc={imageSource} />
+
+        <label>More sensitive</label>
+        <input
+          type="range"
+          min="0"
+          max="255"
+          value={redThreshold}
+          onChange={(e) => setRedThreshold(e.target.value)}
+        />
+        <label>Less sensitive</label>
+        <Canvas
+          title="Red detection"
+          imgSrc={imageSource}
+          redThreshold={redThreshold}
+        />
       </div>
     </div>
   );
