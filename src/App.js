@@ -1,18 +1,19 @@
 import React, { useState } from "react";
-import sampleImage from "./blank-goldmann-visual-field.jpeg";
 import ImageInput from "./components/ImageInput/ImageInput";
 import ImageAligner from "./components/ImageAligner/ImageAligner";
+import ImageAnalyzer from "./components/ImageAnalyzer/ImageAnalyzer";
 import "./App.css";
 
 function App() {
-  const [imageSource, setImageSource] = useState(sampleImage);
+  const [image, setImage] = useState(null);
 
   return (
     <div className="App">
       <div>
         <h1>Welcome to G-calc</h1>
-        <ImageInput imageSourceSetter={setImageSource} />
-        <ImageAligner imageSource={imageSource} />
+        <ImageInput setImage={setImage} />
+        <ImageAligner image={image} />
+        <ImageAnalyzer image={image} />
       </div>
     </div>
   );

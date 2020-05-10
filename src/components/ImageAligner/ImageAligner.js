@@ -1,37 +1,40 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./index.css";
-import { drawRotated, drawAxis } from "../../utils/Canvas";
+import { drawRotated, drawAxis, drawImage, clear } from "../../utils/Canvas";
 import { incrementBy, incrementOrginCoordinates } from "./utils";
 
 function ImageAligner(props) {
-  const { imageSource } = props;
+  const { image } = props;
   const canvasRef = useRef(null);
-  const [context, setContext] = useState(null);
+  const [canvasContext, setCanvasContext] = useState(null);
   const [rotationDegrees, setRotationDegrees] = useState(0);
   const [axisCoordinates, setAxisCoordinates] = useState({ x: 0, y: 0 });
   const [imageDOM, setImageDOM] = useState(null);
 
   useEffect(() => {
     const { current: canvas } = canvasRef;
-    const ctx = canvas.getContext("2d");
-    setContext(ctx);
-    const image = new Image();
-    image.src = imageSource;
-    image.onload = () => {
-      const { width, height } = image;
-      canvas.width = width;
-      canvas.height = height;
-      ctx.drawImage(image, 0, 0, width, height);
-      setImageDOM(image);
-    };
+    clear(canvasContext, canvas);
+    drawImage(canvasContext, canvas, image);
+    setImageDOM(image);
+  }, [image]);
+
+  useEffect(() => {
+    const { current: canvas } = canvasRef;
+    const context = canvas.getContext("2d");
+    setCanvasContext(context);
   }, []);
 
   useEffect(() => {
-    drawRotated(context, canvasRef.current, rotationDegrees, imageDOM);
+    const { current: canvas } = canvasRef;
+    clear(canvasContext, canvas);
+    drawRotated(canvasContext, canvas, rotationDegrees, imageDOM);
   }, [rotationDegrees]);
 
   useEffect(() => {
-    drawAxis(context, canvasRef.current, axisCoordinates, imageDOM);
+    const { current: canvas } = canvasRef;
+    clear(canvasContext, canvas);
+    drawRotated(canvasContext, canvas, rotationDegrees, imageDOM);
+    drawAxis(canvasContext, canvasRef.current, axisCoordinates, imageDOM);
   }, [axisCoordinates]);
 
   return (

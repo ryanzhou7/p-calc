@@ -14,22 +14,36 @@ function drawAxis(context, canvas, axisCoordinates, image) {
   if (canvas == null || image == null) {
     return;
   }
-
-  const { x, y } = axisCoordinates;
+  const { x: xOffset, y: yOffset } = axisCoordinates;
   const { width: canvasWidth, height: canvasHeight } = canvas;
-  const originX = y;
-  const originY = canvasHeight / 2;
+  const originX = 0;
+  const originY = canvasHeight / 2 + yOffset;
   context.beginPath();
-  context.moveTo(originX, originY);
-  context.lineTo(canvasWidth + x, originY);
+  context.moveTo(originX, originY + yOffset);
+  context.lineTo(originX + canvasWidth, originY + yOffset);
   context.strokeStyle = "#FF0000";
   context.stroke();
+}
 
-  function clearPrevious() {}
+function drawImage(context, canvas, image) {
+  if (canvas == null || image == null) {
+    return;
+  }
+  const { width, height } = image;
+  canvas.width = width;
+  canvas.height = height;
+  context.drawImage(image, 0, 0, width, height);
 }
 
 function degreesToRadians(degrees) {
   return degrees * 0.01745;
 }
 
-export { drawRotated, drawAxis };
+function clear(context, canvas) {
+  if (canvas == null || context == null) {
+    return;
+  }
+  context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+export { drawRotated, drawAxis, drawImage, clear };

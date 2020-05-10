@@ -1,16 +1,14 @@
-import React, { useRef } from "react";
+import React from "react";
 import { handleImageInputChange } from "../../utils/DOM";
 
 function ImageInput(props) {
-  const { imageSetter } = props;
-  const imageInputRef = useRef(null);
+  const { setImage } = props;
   return (
     <div>
       <input
-        ref={imageInputRef}
         type="file"
         accept="image/*"
-        onChange={(e) => handleImageInputChange(e, imageSetter)}
+        onChange={(e) => handleImageInputChange(e, setImage)}
       />
     </div>
   );
