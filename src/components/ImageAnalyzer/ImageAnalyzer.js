@@ -1,26 +1,13 @@
-import React, { useRef, useState, useEffect } from "react";
-import { drawImage, clear } from "../../utils/Canvas";
+import React, { useState } from "react";
 import { handleColorInputChange } from "../../utils/DOM";
 import { toPixels } from "../../utils/ImageAnalysis";
+import { Button, Form } from "react-bootstrap";
 
 function ImageAnalyzer(props) {
-  const [redThreshold, setRedThreshold] = useState(0);
-  const [canvasContext, setCanvasContext] = useState(null);
-  const [recolorHex, setRecolorHex] = useState("#0000FF");
   const { image } = props;
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const { current: canvas } = canvasRef;
-    clear(canvasContext, canvas);
-    drawImage(canvasContext, canvas, image);
-  }, [image]);
-
-  useEffect(() => {
-    const { current: canvas } = canvasRef;
-    const context = canvas.getContext("2d");
-    setCanvasContext(context);
-  }, []);
+  const [redThreshold, setRedThreshold] = useState(0);
+  const [canvasContext, setCanvasContext] = props.canvasContext;
+  const [recolorHex, setRecolorHex] = useState("#0000FF");
 
   const recolorCanvas = () => {
     const imageData = toPixels(image, canvasContext, redThreshold, recolorHex);
@@ -30,26 +17,32 @@ function ImageAnalyzer(props) {
   return (
     <div>
       <div>
-        <label>More sensitive</label>
-        <input
-          type="range"
-          min="0"
-          max="255"
-          value={redThreshold}
-          onChange={(e) => setRedThreshold(e.target.value)}
-        />
-        <label>Less sensitive</label>
+        <Form>
+          <Form.Group>
+            <Form.Label>Recolor:</Form.Label>
+            <Form.Control
+              type="color"
+              value={recolorHex}
+              onChange={(e) => handleColorInputChange(e, setRecolorHex)}
+            />
+          </Form.Group>
+        </Form>
       </div>
       <div>
-        <label> Recolor: </label>
-        <input
-          type="color"
-          value={recolorHex}
-          onChange={(e) => handleColorInputChange(e, setRecolorHex)}
-        />
-        <button onClick={(e) => recolorCanvas(e)}>Analyze</button>
+        <Form.Group>
+          <Form.Label>Sensitivity</Form.Label>
+          <Form.Control
+            type="range"
+            min="0"
+            max="255"
+            value={redThreshold}
+            onChange={(e) => setRedThreshold(e.target.value)}
+          />
+        </Form.Group>
       </div>
-      <canvas ref={canvasRef} className="preview-canvas" />
+      <div>
+        <Button onClick={(e) => recolorCanvas(e)}>Analyze</Button>
+      </div>
     </div>
   );
 }

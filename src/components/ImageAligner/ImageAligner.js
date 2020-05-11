@@ -1,76 +1,43 @@
-import React, { useRef, useState, useEffect } from "react";
+import React from "react";
 import "./index.css";
-import { drawRotated, drawAxis, drawImage, clear } from "../../utils/Canvas";
 import { incrementBy, incrementOrginCoordinates } from "./utils";
+import { Button } from "react-bootstrap";
 
 function ImageAligner(props) {
-  const { image } = props;
-  const canvasRef = useRef(null);
-  const [canvasContext, setCanvasContext] = useState(null);
-  const [rotationDegrees, setRotationDegrees] = useState(0);
-  const [axisCoordinates, setAxisCoordinates] = useState({ x: 0, y: 0 });
-  const [imageDOM, setImageDOM] = useState(null);
-
-  useEffect(() => {
-    const { current: canvas } = canvasRef;
-    clear(canvasContext, canvas);
-    drawImage(canvasContext, canvas, image);
-    setImageDOM(image);
-  }, [image]);
-
-  useEffect(() => {
-    const { current: canvas } = canvasRef;
-    const context = canvas.getContext("2d");
-    setCanvasContext(context);
-  }, []);
-
-  useEffect(() => {
-    const { current: canvas } = canvasRef;
-    clear(canvasContext, canvas);
-    drawRotated(canvasContext, canvas, rotationDegrees, imageDOM);
-  }, [rotationDegrees]);
-
-  useEffect(() => {
-    const { current: canvas } = canvasRef;
-    clear(canvasContext, canvas);
-    drawRotated(canvasContext, canvas, rotationDegrees, imageDOM);
-    drawAxis(canvasContext, canvasRef.current, axisCoordinates, imageDOM);
-  }, [axisCoordinates]);
-
+  const [rotationDegrees, setRotationDegrees] = props.rotationDegrees;
+  const [axisCoordinates, setAxisCoordinates] = props.axisCoordinates;
   return (
     <div>
       <div>Align this</div>
-      <canvas ref={canvasRef} className="preview-canvas" />
       <div>
         <div>Axis offset Y:{axisCoordinates.y}</div>
         <div>Move Vertical</div>
-        <button
+        <Button
           onClick={(e) =>
             incrementOrginCoordinates(e, 0, -1, setAxisCoordinates)
           }
         >
           Move up
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={(e) =>
             incrementOrginCoordinates(e, 0, 1, setAxisCoordinates)
           }
         >
           Move down
-        </button>
+        </Button>
       </div>
 
       <div>
         <div>Degrees of rotation: {rotationDegrees}</div>
-        <button onClick={(e) => incrementBy(e, setRotationDegrees, -1)}>
+        <Button onClick={(e) => incrementBy(e, setRotationDegrees, -1)}>
           Rotate left
-        </button>
-        <button onClick={(e) => incrementBy(e, setRotationDegrees, 1)}>
+        </Button>
+        <Button onClick={(e) => incrementBy(e, setRotationDegrees, 1)}>
           Rotate right
-        </button>
+        </Button>
       </div>
     </div>
   );
 }
-
 export default ImageAligner;
