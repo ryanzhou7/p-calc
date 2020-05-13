@@ -85,6 +85,7 @@ function App() {
                 <ImageAnalyzer
                   image={image}
                   canvasContext={[canvasContext, setCanvasContext]}
+                  xAxisYPoint={axisCoordinates.y}
                 />
               </Card.Body>
             </Accordion.Collapse>

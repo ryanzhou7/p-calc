@@ -1,3 +1,5 @@
+const WIDTH_PADDING = 10;
+
 function drawRotated(context, canvas, degrees, image) {
   if (canvas == null || image == null || context == null) {
     return;
@@ -6,7 +8,10 @@ function drawRotated(context, canvas, degrees, image) {
   context.save();
   context.translate(canvas.width / 2, canvas.height / 2);
   context.rotate(degreesToRadians(degrees));
-  context.drawImage(image, -image.width / 2, -image.height / 2);
+
+  const width = window.innerWidth - WIDTH_PADDING;
+  const height = (image.height / width) * width;
+  context.drawImage(image, -width / 2, -height / 2);
   context.restore();
 }
 
@@ -29,10 +34,15 @@ function drawImage(context, canvas, image) {
   if (canvas == null || image == null) {
     return;
   }
+
+  const windowWidth = window.innerWidth - WIDTH_PADDING;
   const { width, height } = image;
-  canvas.width = width;
-  canvas.height = height;
-  context.drawImage(image, 0, 0, width, height);
+  const proportionalHeight = (height / width) * windowWidth;
+
+  // TODO for it to work on desktop just use canvas.width = width and height
+  canvas.width = windowWidth;
+  canvas.height = proportionalHeight;
+  context.drawImage(image, 0, 0, windowWidth, proportionalHeight);
 }
 
 function degreesToRadians(degrees) {

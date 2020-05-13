@@ -1,12 +1,21 @@
-function isRed(red, green, blue, redThreshold) {
-  return red - green - blue > redThreshold;
+function isSameColor(r1, g1, b1, colorHex2, threshold) {
+  const [r2, g2, b2] = hexToRgb(colorHex2);
+  return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2) < threshold;
 }
 
-function toPixels(srcImage, ctx, redThreshold, newColorHex) {
-  const R_OFFSET = 0;
-  const G_OFFSET = 1;
-  const B_OFFSET = 2;
-  const [redRecolor, greenRecolor, blueRecolor] = hexToRGB(newColorHex);
+const R_OFFSET = 0;
+const G_OFFSET = 1;
+const B_OFFSET = 2;
+
+function detect(
+  srcImage,
+  ctx,
+  detectionThreshold,
+  newColorHex,
+  targetColorHex
+) {
+  const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(newColorHex);
+  const detectedPixels = [];
 
   const { width, height } = srcImage;
   const imageData = ctx.getImageData(0, 0, width, height);
@@ -23,18 +32,64 @@ function toPixels(srcImage, ctx, redThreshold, newColorHex) {
       const greenValue = originalPixels[greenIndex];
       const blueValue = originalPixels[blueIndex];
 
-      if (isRed(redValue, greenValue, blueValue, redThreshold)) {
+      if (
+        isSameColor(
+          redValue,
+          greenValue,
+          blueValue,
+          targetColorHex,
+          detectionThreshold
+        )
+      ) {
         imageData.data[redIndex] = Number(redRecolor);
         imageData.data[greenIndex] = Number(greenRecolor);
         imageData.data[blueIndex] = Number(blueRecolor);
+        detectedPixels.push({ x: x, y: y });
       }
     }
   }
 
-  return imageData;
+  return [imageData, detectedPixels];
 }
 
-function hexToRGB(h) {
+function colorArea(srcImage, ctx, newColorHex, detectedPixels, xAxisYPoint) {
+  const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(newColorHex);
+  const { width, height } = srcImage;
+  const imageData = ctx.getImageData(0, 0, width, height);
+  let numPixelsColor = 0;
+
+  let maxY = 0;
+  for (let coordinate of detectedPixels) {
+    const { y } = coordinate;
+    maxY = Math.max(y, maxY);
+  }
+
+  for (let coordinate of detectedPixels) {
+    const { x, y } = coordinate;
+    for (let i = y; i < maxY + xAxisYPoint; i++) {
+      const redIndex = getIndex(x, i, width) + R_OFFSET;
+      const greenIndex = getIndex(x, i, width) + G_OFFSET;
+      const blueIndex = getIndex(x, i, width) + B_OFFSET;
+      imageData.data[redIndex] = redRecolor;
+      imageData.data[greenIndex] = greenRecolor;
+      imageData.data[blueIndex] = blueRecolor;
+      numPixelsColor++;
+    }
+  }
+
+  return [imageData, numPixelsColor];
+}
+
+const rgbToHex = (r, g, b) =>
+  "#" +
+  [r, g, b]
+    .map((x) => {
+      const hex = x.toString(16);
+      return hex.length === 1 ? "0" + hex : hex;
+    })
+    .join("");
+
+function hexToRgb(h) {
   let r = 0,
     g = 0,
     b = 0;
@@ -58,4 +113,4 @@ function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
 
-export { toPixels };
+export { detect, colorArea };
