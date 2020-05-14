@@ -21,9 +21,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const { current: canvas } = canvasRef;
-    clear(canvasContext, canvas);
-    drawImage(canvasContext, canvas, image);
+    loadImageToCanvas();
   }, [image]);
 
   useEffect(() => {
@@ -38,6 +36,12 @@ function App() {
     drawRotated(canvasContext, canvas, rotationDegrees, image);
     drawAxis(canvasContext, canvasRef.current, axisCoordinates, image);
   }, [axisCoordinates]);
+
+  function loadImageToCanvas() {
+    const { current: canvas } = canvasRef;
+    clear(canvasContext, canvas);
+    drawImage(canvasContext, canvas, image);
+  }
 
   return (
     <div className="App">
@@ -86,6 +90,7 @@ function App() {
                   image={image}
                   canvasContext={[canvasContext, setCanvasContext]}
                   xAxisYPoint={axisCoordinates.y}
+                  resetImage={loadImageToCanvas}
                 />
               </Card.Body>
             </Accordion.Collapse>

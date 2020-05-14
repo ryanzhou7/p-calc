@@ -35,14 +35,15 @@ function drawImage(context, canvas, image) {
     return;
   }
 
+  // TODO attempt to get proper mobile size
   const windowWidth = window.innerWidth - WIDTH_PADDING;
   const { width, height } = image;
   const proportionalHeight = (height / width) * windowWidth;
 
   // TODO for it to work on desktop just use canvas.width = width and height
-  canvas.width = windowWidth;
-  canvas.height = proportionalHeight;
-  context.drawImage(image, 0, 0, windowWidth, proportionalHeight);
+  canvas.width = width;
+  canvas.height = height;
+  context.drawImage(image, 0, 0, width, height);
 }
 
 function degreesToRadians(degrees) {

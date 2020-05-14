@@ -4,6 +4,7 @@ import { detect, colorArea } from "../../utils/ImageAnalysis";
 import { Button, Form } from "react-bootstrap";
 
 function ImageAnalyzer(props) {
+  const { resetImage } = props;
   const { image } = props;
   const { xAxisYPoint } = props;
   const [detectionThreshold, setDetectionThreshold] = useState(0);
@@ -82,6 +83,15 @@ function ImageAnalyzer(props) {
         </Button>
         <Button className="mx-1" onClick={(e) => recolorCanvasArea(e)}>
           Color area
+        </Button>
+        <Button
+          className="mx-1"
+          onClick={(e) => {
+            e.preventDefault();
+            resetImage();
+          }}
+        >
+          Reset analysis
         </Button>
       </div>
       <div>
