@@ -1,6 +1,6 @@
-const WIDTH_PADDING = 10;
+const WIDTH_PADDING = 50;
 
-function drawRotated(context, canvas, degrees, image) {
+async function drawRotated(context, canvas, degrees, image) {
   if (canvas == null || image == null || context == null) {
     return;
   }
@@ -35,15 +35,21 @@ function drawImage(context, canvas, image) {
     return;
   }
 
-  // TODO attempt to get proper mobile size
-  const windowWidth = window.innerWidth - WIDTH_PADDING;
+  let windowWidth = window.innerWidth - WIDTH_PADDING;
   const { width, height } = image;
+
+  // Don't let width exceed this size on desktop
+  windowWidth = Math.min(windowWidth, 1000);
   const proportionalHeight = (height / width) * windowWidth;
 
   // TODO for it to work on desktop just use canvas.width = width and height
-  canvas.width = width;
-  canvas.height = height;
-  context.drawImage(image, 0, 0, width, height);
+  //canvas.width = width;
+  //canvas.height = height;
+  canvas.width = windowWidth;
+  canvas.height = proportionalHeight;
+  context.drawImage(image, 0, 0, windowWidth, proportionalHeight);
+
+  return { width: windowWidth, height: proportionalHeight };
 }
 
 function degreesToRadians(degrees) {

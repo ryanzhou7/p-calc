@@ -4,9 +4,9 @@ import { detect, colorArea } from "../../utils/ImageAnalysis";
 import { Button, Form } from "react-bootstrap";
 
 function ImageAnalyzer(props) {
+  const { canvasDimensions } = props;
   const { resetImage } = props;
   const { image } = props;
-  const { xAxisYPoint } = props;
   const [detectionThreshold, setDetectionThreshold] = useState(0);
   const [numPixelsColored, setNumPixelsColored] = useState(0);
   const [canvasContext, setCanvasContext] = props.canvasContext;
@@ -28,7 +28,15 @@ function ImageAnalyzer(props) {
       recolorHex,
       targetColorHex
     );
-    canvasContext.putImageData(imageData, 0, 0);
+    canvasContext.putImageData(
+      imageData,
+      0,
+      0,
+      0,
+      0,
+      canvasDimensions.width,
+      canvasDimensions.height
+    );
     setDetectedPixels(detectedPixels);
   };
 
@@ -37,11 +45,18 @@ function ImageAnalyzer(props) {
       image,
       canvasContext,
       recolorHex,
-      detectedPixels,
-      xAxisYPoint
+      detectedPixels
     );
     setNumPixelsColored(numPixels);
-    canvasContext.putImageData(imageData, 0, 0);
+    canvasContext.putImageData(
+      imageData,
+      0,
+      0,
+      0,
+      0,
+      canvasDimensions.width,
+      canvasDimensions.height
+    );
   };
 
   return (

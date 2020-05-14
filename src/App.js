@@ -12,6 +12,10 @@ function App() {
   const [canvasContext, setCanvasContext] = useState(null);
   const [rotationDegrees, setRotationDegrees] = useState(0);
   const [axisCoordinates, setAxisCoordinates] = useState({ x: 0, y: 0 });
+  const [canvasDimensions, setCanvasDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -37,15 +41,16 @@ function App() {
     drawAxis(canvasContext, canvasRef.current, axisCoordinates, image);
   }, [axisCoordinates]);
 
-  function loadImageToCanvas() {
+  async function loadImageToCanvas() {
     const { current: canvas } = canvasRef;
     clear(canvasContext, canvas);
-    drawImage(canvasContext, canvas, image);
+    const dimensions = drawImage(canvasContext, canvas, image);
+    setCanvasDimensions(dimensions);
   }
 
   return (
     <div className="App">
-      <h1>Welcome to G-calc</h1>
+      <h4>Welcome to G-calc</h4>
       <div>
         <canvas ref={canvasRef} className="preview-canvas" />
       </div>
@@ -66,31 +71,16 @@ function App() {
           <Card>
             <Card.Header>
               <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                2. Image alignment
+                2. Image analysis
               </Accordion.Toggle>
             </Card.Header>
             <Accordion.Collapse eventKey="1">
               <Card.Body>
-                <ImageAligner
-                  rotationDegrees={[rotationDegrees, setRotationDegrees]}
-                  axisCoordinates={[axisCoordinates, setAxisCoordinates]}
-                />
-              </Card.Body>
-            </Accordion.Collapse>
-          </Card>
-          <Card>
-            <Card.Header>
-              <Accordion.Toggle as={Button} variant="link" eventKey="2">
-                3. Image analysis
-              </Accordion.Toggle>
-            </Card.Header>
-            <Accordion.Collapse eventKey="2">
-              <Card.Body>
                 <ImageAnalyzer
                   image={image}
                   canvasContext={[canvasContext, setCanvasContext]}
-                  xAxisYPoint={axisCoordinates.y}
                   resetImage={loadImageToCanvas}
+                  canvasDimensions={canvasDimensions}
                 />
               </Card.Body>
             </Accordion.Collapse>

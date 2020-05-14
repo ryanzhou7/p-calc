@@ -1,6 +1,8 @@
 function isSameColor(r1, g1, b1, colorHex2, threshold) {
-  const [r2, g2, b2] = hexToRgb(colorHex2);
-  return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2) < threshold;
+  // TODO this calculation not working well
+  //const [r2, g2, b2] = hexToRgb(colorHex2);
+  //return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2) < threshold;
+  return r1 * 2 - (g1 + b1) > threshold;
 }
 
 const R_OFFSET = 0;
@@ -52,7 +54,7 @@ function detect(
   return [imageData, detectedPixels];
 }
 
-function colorArea(srcImage, ctx, newColorHex, detectedPixels, xAxisYPoint) {
+function colorArea(srcImage, ctx, newColorHex, detectedPixels) {
   const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(newColorHex);
   const { width, height } = srcImage;
   const imageData = ctx.getImageData(0, 0, width, height);
@@ -66,7 +68,7 @@ function colorArea(srcImage, ctx, newColorHex, detectedPixels, xAxisYPoint) {
 
   for (let coordinate of detectedPixels) {
     const { x, y } = coordinate;
-    for (let i = y; i < maxY + xAxisYPoint; i++) {
+    for (let i = y; i < maxY; i++) {
       const redIndex = getIndex(x, i, width) + R_OFFSET;
       const greenIndex = getIndex(x, i, width) + G_OFFSET;
       const blueIndex = getIndex(x, i, width) + B_OFFSET;
@@ -79,15 +81,6 @@ function colorArea(srcImage, ctx, newColorHex, detectedPixels, xAxisYPoint) {
 
   return [imageData, numPixelsColor];
 }
-
-const rgbToHex = (r, g, b) =>
-  "#" +
-  [r, g, b]
-    .map((x) => {
-      const hex = x.toString(16);
-      return hex.length === 1 ? "0" + hex : hex;
-    })
-    .join("");
 
 function hexToRgb(h) {
   let r = 0,
