@@ -62,14 +62,14 @@ function ImageAnalyzer(props) {
   return (
     <div>
       <div>
-        <Form.Label>Target detection Color:</Form.Label>
+        {/* <Form.Label>Target detection Color:</Form.Label>
         <Form.Control
           className="mx-auto"
           style={inputStyle}
           type="color"
           value={targetColorHex}
           onChange={(e) => handleTargetColorChange(e)}
-        />
+        /> */}
 
         <Form.Label>Recolor:</Form.Label>
         <Form.Control
