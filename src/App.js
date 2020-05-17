@@ -1,58 +1,47 @@
-import React, { useState, useRef, useEffect } from "react";
-import ImageInput from "./components/ImageInput/ImageInput";
-import ImageAligner from "./components/ImageAligner/ImageAligner";
+import React, { useState, useEffect } from "react";
+import FileInput from "./components/FileInput/FileInput";
 import ImageAnalyzer from "./components/ImageAnalyzer/ImageAnalyzer";
 import { Button, Card, Accordion } from "react-bootstrap";
-import { drawRotated, drawAxis, drawImage, clear } from "./utils/Canvas";
+import Canvas from "./components/Canvas/Canvas";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 function App() {
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState({});
   const [canvasContext, setCanvasContext] = useState(null);
-  const [rotationDegrees, setRotationDegrees] = useState(0);
-  const [axisCoordinates, setAxisCoordinates] = useState({ x: 0, y: 0 });
   const [canvasDimensions, setCanvasDimensions] = useState({
     width: 0,
     height: 0,
   });
-  const canvasRef = useRef(null);
 
   useEffect(() => {
-    const { current: canvas } = canvasRef;
-    const context = canvas.getContext("2d");
-    setCanvasContext(context);
-  }, []);
-
-  useEffect(() => {
-    loadImageToCanvas();
+    //loadImageToCanvas();
   }, [image]);
 
-  useEffect(() => {
-    const { current: canvas } = canvasRef;
-    clear(canvasContext, canvas);
-    drawRotated(canvasContext, canvas, rotationDegrees, image);
-  }, [rotationDegrees]);
-
-  useEffect(() => {
-    const { current: canvas } = canvasRef;
-    clear(canvasContext, canvas);
-    drawRotated(canvasContext, canvas, rotationDegrees, image);
-    drawAxis(canvasContext, canvasRef.current, axisCoordinates, image);
-  }, [axisCoordinates]);
-
   async function loadImageToCanvas() {
-    const { current: canvas } = canvasRef;
-    clear(canvasContext, canvas);
-    const dimensions = drawImage(canvasContext, canvas, image);
-    setCanvasDimensions(dimensions);
+    //const { current: canvas } = canvasRef;
+    //clear(canvasContext, canvas);
+    //const dimensions = drawImage(canvasContext, canvas, image);
+    //setCanvasDimensions(dimensions);
   }
 
   return (
     <div className="App">
       <h4>Welcome to G-calc</h4>
       <div>
-        <canvas ref={canvasRef} className="preview-canvas" />
+        <Canvas
+          image={{
+            imageSource: image,
+          }}
+          canvasDimensions={{
+            canvasWidth: image.width,
+            canvasHeight: image.height,
+          }}
+          drawDimensions={{
+            drawWidth: image.width,
+            drawHeight: image.height,
+          }}
+        />
       </div>
       <div>
         <Accordion defaultActiveKey="0">
@@ -64,7 +53,7 @@ function App() {
             </Card.Header>
             <Accordion.Collapse eventKey="0">
               <Card.Body>
-                <ImageInput setImage={setImage} />
+                <FileInput accept="image/*" setFile={setImage} />
               </Card.Body>
             </Accordion.Collapse>
           </Card>
