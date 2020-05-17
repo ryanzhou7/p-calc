@@ -5,6 +5,7 @@ import { Button, Card, Accordion } from "react-bootstrap";
 import Canvas from "./components/Canvas/Canvas";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+import sampleChart from "./sampleChart.png";
 
 function App() {
   const [image, setImage] = useState({});
@@ -32,6 +33,7 @@ function App() {
         <Canvas
           image={{
             imageSource: image,
+            // imageData: image.imageData,
           }}
           canvasDimensions={{
             canvasWidth: image.width,
@@ -69,7 +71,7 @@ function App() {
                   image={image}
                   canvasContext={[canvasContext, setCanvasContext]}
                   resetImage={loadImageToCanvas}
-                  canvasDimensions={canvasDimensions}
+                  canvasDimensions={{ canvasDimensions }}
                 />
               </Card.Body>
             </Accordion.Collapse>

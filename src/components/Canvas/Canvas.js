@@ -20,7 +20,13 @@ function Canvas(props) {
       return;
     }
     canvasContext.drawImage(imageSource, 0, 0, drawWidth, drawHeight);
-  }, [imageSource]);
+  }, [imageSource, drawWidth, drawHeight]);
+
+  useEffect(() => {
+    const { current: canvas } = canvasRef;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+  }, [canvasWidth, canvasHeight]);
 
   useEffect(() => {
     const { current: canvas } = canvasRef;
