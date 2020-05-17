@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { clear } from "../../utils/Canvas";
 import "./index.css";
 
 function Canvas(props) {
@@ -19,6 +18,9 @@ function Canvas(props) {
     if (imageSource == null || canvasContext == null) {
       return;
     }
+    const { current: canvas } = canvasRef;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     canvasContext.drawImage(imageSource, 0, 0, drawWidth, drawHeight);
   }, [imageSource, drawWidth, drawHeight]);
 
@@ -28,24 +30,24 @@ function Canvas(props) {
     canvas.height = canvasHeight;
   }, [canvasWidth, canvasHeight]);
 
-  useEffect(() => {
-    const { current: canvas } = canvasRef;
+  // useEffect(() => {
+  //   const { current: canvas } = canvasRef;
 
-    if (canvasContext == null || imageData == null) {
-      return;
-    }
+  //   if (canvasContext == null || imageData == null) {
+  //     return;
+  //   }
 
-    clear(canvasContext, canvas);
-    canvasContext.putImageData(
-      imageData,
-      0,
-      0,
-      0,
-      0,
-      canvasWidth,
-      canvasHeight
-    );
-  }, [imageData, canvasWidth, canvasHeight]);
+  //   clear(canvasContext, canvas);
+  //   canvasContext.putImageData(
+  //     imageData,
+  //     0,
+  //     0,
+  //     0,
+  //     0,
+  //     canvasWidth,
+  //     canvasHeight
+  //   );
+  // }, [imageData, canvasWidth, canvasHeight]);
 
   return (
     <div>
