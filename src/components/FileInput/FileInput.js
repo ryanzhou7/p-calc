@@ -1,19 +1,19 @@
 import React from "react";
-import { handleImageInputChange } from "../../utils/DOM";
 import { Form } from "react-bootstrap";
 
 function FileInput(props) {
-  const { setFile } = props;
+  const { label } = props;
   const { accept } = props;
+  const { onChangeHandler } = props;
   return (
     <div>
       <Form.File
         type="file"
         accept={accept}
-        label="Custom file input"
+        label={label}
         style={inputStyle}
         custom
-        onChange={(e) => handleImageInputChange(e, setFile)}
+        onChange={(e) => onChangeHandler(e)}
       />
     </div>
   );

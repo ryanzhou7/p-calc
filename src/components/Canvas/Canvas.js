@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import "./index.css";
 
 function Canvas(props) {
-  const { imageSource, imageData } = props.image;
+  const { image, imageData } = props.image;
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
   const { drawWidth, drawHeight } = props.drawDimensions;
+  const [canvasContext, setCanvasContext] = props.canvasContext;
   const canvasRef = useRef(null);
-  const [canvasContext, setCanvasContext] = useState(null);
 
   useEffect(() => {
     const { current: canvas } = canvasRef;
@@ -15,14 +15,14 @@ function Canvas(props) {
   }, []);
 
   useEffect(() => {
-    if (imageSource == null || canvasContext == null) {
+    if (image == null || canvasContext == null) {
       return;
     }
     const { current: canvas } = canvasRef;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-    canvasContext.drawImage(imageSource, 0, 0, drawWidth, drawHeight);
-  }, [imageSource]);
+    canvasContext.drawImage(image, 0, 0, drawWidth, drawHeight);
+  }, [image]);
 
   // useEffect(() => {
   //   const { current: canvas } = canvasRef;
@@ -45,7 +45,6 @@ function Canvas(props) {
 
   return (
     <div>
-      <div>Canvas</div>
       <canvas ref={canvasRef} className="border" />
     </div>
   );

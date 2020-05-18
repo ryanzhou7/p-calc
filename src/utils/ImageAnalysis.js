@@ -1,7 +1,4 @@
-function isSameColor(r1, g1, b1, colorHex2, threshold) {
-  // TODO this calculation not working well
-  //const [r2, g2, b2] = hexToRgb(colorHex2);
-  //return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2) < threshold;
+function isRed(r1, g1, b1, threshold) {
   return r1 * 2 - (g1 + b1) > threshold;
 }
 
@@ -10,39 +7,30 @@ const G_OFFSET = 1;
 const B_OFFSET = 2;
 
 function detect(
-  srcImage,
-  ctx,
+  detectionDimensions,
+  imageData,
   detectionThreshold,
-  newColorHex,
+  recolorHex,
   targetColorHex
 ) {
-  const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(newColorHex);
+  const { detectionWidth, detectionHeight } = detectionDimensions;
+  const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(recolorHex);
   const detectedPixels = [];
 
-  const { width, height } = srcImage;
-  const imageData = ctx.getImageData(0, 0, width, height);
   const originalPixels = imageData.data.slice();
 
   // For every pixel of the src image
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const redIndex = getIndex(x, y, width) + R_OFFSET;
-      const greenIndex = getIndex(x, y, width) + G_OFFSET;
-      const blueIndex = getIndex(x, y, width) + B_OFFSET;
+  for (let y = 0; y < detectionHeight; y++) {
+    for (let x = 0; x < detectionWidth; x++) {
+      const redIndex = getIndex(x, y, detectionWidth) + R_OFFSET;
+      const greenIndex = getIndex(x, y, detectionWidth) + G_OFFSET;
+      const blueIndex = getIndex(x, y, detectionWidth) + B_OFFSET;
 
       const redValue = originalPixels[redIndex];
       const greenValue = originalPixels[greenIndex];
       const blueValue = originalPixels[blueIndex];
 
-      if (
-        isSameColor(
-          redValue,
-          greenValue,
-          blueValue,
-          targetColorHex,
-          detectionThreshold
-        )
-      ) {
+      if (isRed(redValue, greenValue, blueValue, detectionThreshold)) {
         imageData.data[redIndex] = Number(redRecolor);
         imageData.data[greenIndex] = Number(greenRecolor);
         imageData.data[blueIndex] = Number(blueRecolor);

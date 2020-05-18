@@ -56,11 +56,11 @@ function degreesToRadians(degrees) {
   return degrees * 0.01745;
 }
 
-function clear(context, canvas) {
-  if (canvas == null || context == null) {
+function clearCanvasDrawing(context, width, height) {
+  if (context == null) {
     return;
   }
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, width, height);
 }
 
-export { drawRotated, drawAxis, drawImage, clear };
+export { drawRotated, drawAxis, drawImage, clearCanvasDrawing };

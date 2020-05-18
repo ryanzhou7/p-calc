@@ -6,6 +6,7 @@ import Canvas from "./components/Canvas/Canvas";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import sampleChart from "./sampleChart.png";
+import { handleImageInputChange } from "./utils/DOM";
 
 function App() {
   const [image, setImage] = useState({});
@@ -16,15 +17,15 @@ function App() {
   });
 
   useEffect(() => {
-    //loadImageToCanvas();
-  }, [image]);
+    setCanvasDimensions({
+      width: image.width,
+      height: image.height,
+    });
+  }, image);
 
-  async function loadImageToCanvas() {
-    //const { current: canvas } = canvasRef;
-    //clear(canvasContext, canvas);
-    //const dimensions = drawImage(canvasContext, canvas, image);
-    //setCanvasDimensions(dimensions);
-  }
+  const handleNewImageSelected = (e) => {
+    handleImageInputChange(e, setImage);
+  };
 
   return (
     <div className="App">
@@ -32,8 +33,8 @@ function App() {
       <div>
         <Canvas
           image={{
-            imageSource: image,
-            // imageData: image.imageData,
+            image: image,
+            imageData: image.imageData,
           }}
           canvasDimensions={{
             canvasWidth: image.width,
@@ -43,6 +44,7 @@ function App() {
             drawWidth: image.width,
             drawHeight: image.height,
           }}
+          canvasContext={[canvasContext, setCanvasContext]}
         />
       </div>
       <div>
@@ -55,7 +57,11 @@ function App() {
             </Card.Header>
             <Accordion.Collapse eventKey="0">
               <Card.Body>
-                <FileInput accept="image/*" setFile={setImage} />
+                <FileInput
+                  accept="image/*"
+                  label="Choose image"
+                  onChangeHandler={handleNewImageSelected}
+                />
               </Card.Body>
             </Accordion.Collapse>
           </Card>
@@ -68,10 +74,12 @@ function App() {
             <Accordion.Collapse eventKey="1">
               <Card.Body>
                 <ImageAnalyzer
-                  image={image}
+                  image={[image, setImage]}
                   canvasContext={[canvasContext, setCanvasContext]}
-                  resetImage={loadImageToCanvas}
-                  canvasDimensions={{ canvasDimensions }}
+                  canvasDimensions={{
+                    canvasWidth: image.width,
+                    canvasHeight: image.height,
+                  }}
                 />
               </Card.Body>
             </Accordion.Collapse>

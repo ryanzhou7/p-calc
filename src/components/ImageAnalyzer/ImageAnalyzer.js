@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { handleColorInputChange } from "../../utils/DOM";
 import { detect, colorArea } from "../../utils/ImageAnalysis";
 import { Button, Form } from "react-bootstrap";
+import { clearCanvasDrawing } from "../../utils/Canvas";
 
 function ImageAnalyzer(props) {
-  const { canvasDimensions } = props;
-  const { resetImage } = props;
-  const { image } = props;
+  const { canvasWidth, canvasHeight } = props.canvasDimensions;
+  const [image, setImage] = props.image;
   const [detectionThreshold, setDetectionThreshold] = useState(0);
   const [numPixelsColored, setNumPixelsColored] = useState(0);
   const [canvasContext, setCanvasContext] = props.canvasContext;
@@ -14,28 +14,31 @@ function ImageAnalyzer(props) {
   const [recolorHex, setRecolorHex] = useState("#0000FF");
   const [targetColorHex, setTargetColorHex] = useState("#FF0000");
 
-  const handleTargetColorChange = (e) => {
-    e.preventDefault();
-    const { value: newColor } = e.target;
-    setTargetColorHex(newColor);
-  };
-
-  const recolorCanvas = () => {
-    const [imageData, detectedPixels] = detect(
-      image,
-      canvasContext,
+  const recolorDetection = () => {
+    const { width: detectionWidth, height: detectionHeight } = image;
+    const detectionDimensions = { detectionWidth, detectionHeight };
+    const imageData = canvasContext.getImageData(
+      0,
+      0,
+      detectionWidth,
+      detectionHeight
+    );
+    const [recoloredImageData, detectedPixels] = detect(
+      detectionDimensions,
+      imageData,
       detectionThreshold,
       recolorHex,
       targetColorHex
     );
+
     canvasContext.putImageData(
-      imageData,
+      recoloredImageData,
       0,
       0,
       0,
       0,
-      canvasDimensions.width,
-      canvasDimensions.height
+      detectionWidth,
+      detectionHeight
     );
     setDetectedPixels(detectedPixels);
   };
@@ -54,8 +57,8 @@ function ImageAnalyzer(props) {
       0,
       0,
       0,
-      canvasDimensions.width,
-      canvasDimensions.height
+      canvasWidth,
+      canvasHeight
     );
   };
 
@@ -93,20 +96,22 @@ function ImageAnalyzer(props) {
         />
       </div>
       <div className="m-2">
-        <Button className="mx-1" onClick={(e) => recolorCanvas(e)}>
-          Analyze
+        <Button className="mx-1" onClick={(e) => recolorDetection(e)}>
+          Recolor detected
         </Button>
         <Button className="mx-1" onClick={(e) => recolorCanvasArea(e)}>
-          Color area
+          Color area below detected
         </Button>
         <Button
           className="mx-1"
           onClick={(e) => {
             e.preventDefault();
-            resetImage();
+            setImage(null);
+            setImage(image);
+            //clearCanvasDrawing(canvasContext, canvasWidth, canvasHeight);
           }}
         >
-          Reset analysis
+          Reset
         </Button>
       </div>
       <div>
