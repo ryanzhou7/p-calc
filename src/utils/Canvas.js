@@ -63,4 +63,11 @@ function clearCanvasDrawing(context, width, height) {
   context.clearRect(0, 0, width, height);
 }
 
-export { drawRotated, drawAxis, drawImage, clearCanvasDrawing };
+function setWithImage(context, width, height, image) {
+  if (context == null) {
+    return;
+  }
+  context.drawImage(image, 0, 0, width, height);
+}
+
+export { drawRotated, drawAxis, drawImage, clearCanvasDrawing, setWithImage };

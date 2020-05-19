@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { handleColorInputChange } from "../../utils/DOM";
 import { detect, colorArea } from "../../utils/ImageAnalysis";
 import { Button, Form } from "react-bootstrap";
-import { clearCanvasDrawing } from "../../utils/Canvas";
+import * as Canvas from "../../utils/Canvas";
 
 function ImageAnalyzer(props) {
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
@@ -106,9 +106,12 @@ function ImageAnalyzer(props) {
           className="mx-1"
           onClick={(e) => {
             e.preventDefault();
-            setImage(null);
-            setImage(image);
-            //clearCanvasDrawing(canvasContext, canvasWidth, canvasHeight);
+            Canvas.setWithImage(
+              canvasContext,
+              canvasWidth,
+              canvasHeight,
+              image
+            );
           }}
         >
           Reset

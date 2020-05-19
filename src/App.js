@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import FileInput from "./components/FileInput/FileInput";
 import ImageAnalyzer from "./components/ImageAnalyzer/ImageAnalyzer";
 import { Button, Card, Accordion } from "react-bootstrap";
@@ -16,7 +16,7 @@ function App() {
     height: 0,
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setCanvasDimensions({
       width: image.width,
       height: image.height,
