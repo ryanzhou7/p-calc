@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import FileInput from "./components/FileInput/FileInput";
 import ImageAnalyzer from "./components/ImageAnalyzer/ImageAnalyzer";
 import { Button, Card, Accordion } from "react-bootstrap";
 import Canvas from "./components/Canvas/Canvas";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import sampleChart from "./sampleChart.png";
 import { handleImageInputChange } from "./utils/DOM";
 
 function App() {
@@ -23,8 +22,9 @@ function App() {
     });
   }, image);
 
-  const handleNewImageSelected = (e) => {
-    handleImageInputChange(e, setImage);
+  const saveSelectedImage = async (e) => {
+    const image = await handleImageInputChange(e, setImage);
+    setImage(image);
   };
 
   return (
@@ -60,7 +60,7 @@ function App() {
                 <FileInput
                   accept="image/*"
                   label="Choose image"
-                  onChangeHandler={handleNewImageSelected}
+                  onChangeHandler={saveSelectedImage}
                 />
               </Card.Body>
             </Accordion.Collapse>

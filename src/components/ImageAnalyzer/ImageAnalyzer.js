@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { handleColorInputChange } from "../../utils/DOM";
-import { detect, colorArea } from "../../utils/ImageAnalysis";
+import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import { Button, Form } from "react-bootstrap";
 import * as Canvas from "../../utils/Canvas";
 
@@ -14,7 +14,7 @@ function ImageAnalyzer(props) {
   const [recolorHex, setRecolorHex] = useState("#0000FF");
   const [targetColorHex, setTargetColorHex] = useState("#FF0000");
 
-  const recolorDetection = () => {
+  const recolorDetection = async () => {
     const { width: detectionWidth, height: detectionHeight } = image;
     const detectionDimensions = { detectionWidth, detectionHeight };
     const imageData = canvasContext.getImageData(
@@ -23,12 +23,14 @@ function ImageAnalyzer(props) {
       detectionWidth,
       detectionHeight
     );
-    const [recoloredImageData, detectedPixels] = detect(
+
+    const isColorDetector = ImageAnalysis.isRed(detectionThreshold);
+
+    const [recoloredImageData, detectedPixels] = await ImageAnalysis.detect(
       detectionDimensions,
       imageData,
-      detectionThreshold,
-      recolorHex,
-      targetColorHex
+      isColorDetector,
+      recolorHex
     );
 
     canvasContext.putImageData(
@@ -43,8 +45,8 @@ function ImageAnalyzer(props) {
     setDetectedPixels(detectedPixels);
   };
 
-  const recolorCanvasArea = () => {
-    const [imageData, numPixels] = colorArea(
+  const recolorCanvasArea = async () => {
+    const [imageData, numPixels] = await ImageAnalysis.colorArea(
       image,
       canvasContext,
       recolorHex,
@@ -100,7 +102,7 @@ function ImageAnalyzer(props) {
           Recolor detected
         </Button>
         <Button className="mx-1" onClick={(e) => recolorCanvasArea(e)}>
-          Color area below detected
+          Color area
         </Button>
         <Button
           className="mx-1"

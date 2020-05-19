@@ -1,18 +1,12 @@
-function isRed(r1, g1, b1, threshold) {
-  return r1 * 2 - (g1 + b1) > threshold;
+function isRed(threshold) {
+  return (r, g, b) => r * 2 - (g + b) > threshold;
 }
 
 const R_OFFSET = 0;
 const G_OFFSET = 1;
 const B_OFFSET = 2;
 
-function detect(
-  detectionDimensions,
-  imageData,
-  detectionThreshold,
-  recolorHex,
-  targetColorHex
-) {
+async function detect(detectionDimensions, imageData, isColor, recolorHex) {
   const { detectionWidth, detectionHeight } = detectionDimensions;
   const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(recolorHex);
   const detectedPixels = [];
@@ -30,7 +24,7 @@ function detect(
       const greenValue = originalPixels[greenIndex];
       const blueValue = originalPixels[blueIndex];
 
-      if (isRed(redValue, greenValue, blueValue, detectionThreshold)) {
+      if (isColor(redValue, greenValue, blueValue)) {
         imageData.data[redIndex] = Number(redRecolor);
         imageData.data[greenIndex] = Number(greenRecolor);
         imageData.data[blueIndex] = Number(blueRecolor);
@@ -39,10 +33,10 @@ function detect(
     }
   }
 
-  return [imageData, detectedPixels];
+  return Promise.resolve([imageData, detectedPixels]);
 }
 
-function colorArea(srcImage, ctx, newColorHex, detectedPixels) {
+async function colorArea(srcImage, ctx, newColorHex, detectedPixels) {
   const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(newColorHex);
   const { width, height } = srcImage;
   const imageData = ctx.getImageData(0, 0, width, height);
@@ -67,7 +61,7 @@ function colorArea(srcImage, ctx, newColorHex, detectedPixels) {
     }
   }
 
-  return [imageData, numPixelsColor];
+  return Promise.resolve([imageData, numPixelsColor]);
 }
 
 function hexToRgb(h) {
@@ -94,4 +88,4 @@ function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
 
-export { detect, colorArea };
+export { detect, colorArea, isRed };
