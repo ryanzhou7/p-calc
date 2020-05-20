@@ -1,11 +1,25 @@
+/**
+ * Basic algorithm for red detection
+ * @param {*} threshold
+ */
 function isRed(threshold) {
   return (r, g, b) => r * 2 - (g + b) > threshold;
 }
 
+/**
+ * Offsets access each value in a canvasContext.getImageData()
+ */
 const R_OFFSET = 0;
 const G_OFFSET = 1;
 const B_OFFSET = 2;
 
+/**
+ * Detects the color, recolors it, and return the newly recolored image / number of pixels colored
+ * @param {*} detectionDimensions
+ * @param {*} imageData
+ * @param {*} isColor
+ * @param {*} recolorHex
+ */
 async function detect(detectionDimensions, imageData, isColor, recolorHex) {
   const { detectionWidth, detectionHeight } = detectionDimensions;
   const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(recolorHex);
@@ -13,7 +27,6 @@ async function detect(detectionDimensions, imageData, isColor, recolorHex) {
 
   const originalPixels = imageData.data.slice();
 
-  // For every pixel of the src image
   for (let y = 0; y < detectionHeight; y++) {
     for (let x = 0; x < detectionWidth; x++) {
       const redIndex = getIndex(x, y, detectionWidth) + R_OFFSET;
@@ -36,46 +49,87 @@ async function detect(detectionDimensions, imageData, isColor, recolorHex) {
   return Promise.resolve([imageData, detectedPixels]);
 }
 
-async function colorArea(srcImage, ctx, newColorHex, detectedPixels) {
+/**
+ * Color the canvas area and return how many detected pixels there are
+ * @param {*} param0
+ * @param {*} canvasContext
+ * @param {*} newColorHex
+ * @param {*} detectedPixels
+ */
+async function colorArea(
+  { width, height },
+  canvasContext,
+  newColorHex,
+  detectedPixels
+) {
   const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(newColorHex);
-  const { width, height } = srcImage;
-  const imageData = ctx.getImageData(0, 0, width, height);
-  let numPixelsColor = 0;
-
+  const imageData = canvasContext.getImageData(0, 0, width, height);
+  let numPixelsColored = 0;
   let maxY = 0;
+
+  const existingPixels = new Map();
+  const isExistingPixel = containsXYKeyIn(getXYKey, existingPixels);
+
   for (let coordinate of detectedPixels) {
-    const { y } = coordinate;
+    const { x, y } = coordinate;
     maxY = Math.max(y, maxY);
+    const key = getXYKey(x, y);
+    existingPixels.set(key, null);
+    numPixelsColored++;
   }
 
   for (let coordinate of detectedPixels) {
     const { x, y } = coordinate;
     for (let i = y; i < maxY; i++) {
-      const redIndex = getIndex(x, i, width) + R_OFFSET;
-      const greenIndex = getIndex(x, i, width) + G_OFFSET;
-      const blueIndex = getIndex(x, i, width) + B_OFFSET;
-      imageData.data[redIndex] = redRecolor;
-      imageData.data[greenIndex] = greenRecolor;
-      imageData.data[blueIndex] = blueRecolor;
-      numPixelsColor++;
+      if (!isExistingPixel(x, i)) {
+        const redIndex = getIndex(x, i, width) + R_OFFSET;
+        const greenIndex = getIndex(x, i, width) + G_OFFSET;
+        const blueIndex = getIndex(x, i, width) + B_OFFSET;
+        imageData.data[redIndex] = redRecolor;
+        imageData.data[greenIndex] = greenRecolor;
+        imageData.data[blueIndex] = blueRecolor;
+        numPixelsColored++;
+      }
     }
   }
 
-  return Promise.resolve([imageData, numPixelsColor]);
+  return Promise.resolve([imageData, numPixelsColored]);
 }
 
+/**
+ * Get the unique key given the arguments
+ * @param {*} x
+ * @param {*} y
+ */
+function getXYKey(x, y) {
+  return String(x) + String(y);
+}
+
+/**
+ * Given x,y is the generated key in this map?
+ * @param {*} x
+ * @param {*} y
+ * @param {*} map
+ */
+function containsXYKeyIn(getKey, map) {
+  return (x, y) => {
+    const key = getKey(x, y);
+    return map.has(key);
+  };
+}
+
+/**
+ * #FFF 4 length hex or #FFFFFF 6 length to rgb
+ * @param {*} h
+ */
 function hexToRgb(h) {
   let r = 0,
     g = 0,
     b = 0;
-
-  // 3 digits
   if (h.length == 4) {
     r = "0x" + h[1] + h[1];
     g = "0x" + h[2] + h[2];
     b = "0x" + h[3] + h[3];
-
-    // 6 digits
   } else if (h.length == 7) {
     r = "0x" + h[1] + h[2];
     g = "0x" + h[3] + h[4];
@@ -84,6 +138,12 @@ function hexToRgb(h) {
   return [r, g, b];
 }
 
+/**
+ * Get the index in a canvasContext.getImageData() array given the x, y, and width
+ * @param {*} x
+ * @param {*} y
+ * @param {*} width
+ */
 function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }

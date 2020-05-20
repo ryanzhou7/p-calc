@@ -1,11 +1,11 @@
 import React, { useState, useLayoutEffect } from "react";
+import { Button, Card, Accordion } from "react-bootstrap";
 import FileInput from "./components/FileInput/FileInput";
 import ImageAnalyzer from "./components/ImageAnalyzer/ImageAnalyzer";
-import { Button, Card, Accordion } from "react-bootstrap";
 import Canvas from "./components/Canvas/Canvas";
+import * as DomHelper from "./utils/DomHelper";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import { handleImageInputChange } from "./utils/DOM";
 
 function App() {
   const [image, setImage] = useState({});
@@ -23,7 +23,7 @@ function App() {
   }, image);
 
   const saveSelectedImage = async (e) => {
-    const image = await handleImageInputChange(e, setImage);
+    const image = await DomHelper.getImageFromInput(e, setImage);
     setImage(image);
   };
 
@@ -34,7 +34,6 @@ function App() {
         <Canvas
           image={{
             image: image,
-            imageData: image.imageData,
           }}
           canvasDimensions={{
             canvasWidth: image.width,

@@ -1,3 +1,5 @@
+// TODO to be implemented / fixed!
+
 const WIDTH_PADDING = 50;
 
 async function drawRotated(context, canvas, degrees, image) {
@@ -30,28 +32,6 @@ function drawAxis(context, canvas, axisCoordinates, image) {
   context.stroke();
 }
 
-function drawImage(context, canvas, image) {
-  if (canvas == null || image == null) {
-    return;
-  }
-
-  let windowWidth = window.innerWidth - WIDTH_PADDING;
-  const { width, height } = image;
-
-  // Don't let width exceed this size on desktop
-  windowWidth = Math.min(windowWidth, 1000);
-  const proportionalHeight = (height / width) * windowWidth;
-
-  // TODO for it to work on desktop just use canvas.width = width and height
-  //canvas.width = width;
-  //canvas.height = height;
-  canvas.width = windowWidth;
-  canvas.height = proportionalHeight;
-  context.drawImage(image, 0, 0, windowWidth, proportionalHeight);
-
-  return { width: windowWidth, height: proportionalHeight };
-}
-
 function degreesToRadians(degrees) {
   return degrees * 0.01745;
 }
@@ -70,4 +50,4 @@ function setWithImage(context, width, height, image) {
   context.drawImage(image, 0, 0, width, height);
 }
 
-export { drawRotated, drawAxis, drawImage, clearCanvasDrawing, setWithImage };
+export { drawRotated, drawAxis, clearCanvasDrawing, setWithImage };

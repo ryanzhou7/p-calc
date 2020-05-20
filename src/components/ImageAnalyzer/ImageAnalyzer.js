@@ -1,20 +1,20 @@
 import React, { useState } from "react";
-import { handleColorInputChange } from "../../utils/DOM";
-import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import { Button, Form } from "react-bootstrap";
+import * as DomHelper from "../../utils/DomHelper";
+import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import * as Canvas from "../../utils/Canvas";
+import "./index.css";
 
 function ImageAnalyzer(props) {
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
-  const [image, setImage] = props.image;
-  const [detectionThreshold, setDetectionThreshold] = useState(0);
+  const [image] = props.image;
+  const [detectionThreshold, setDetectionThreshold] = useState(150);
   const [numPixelsColored, setNumPixelsColored] = useState(0);
-  const [canvasContext, setCanvasContext] = props.canvasContext;
+  const [canvasContext] = props.canvasContext;
   const [detectedPixels, setDetectedPixels] = useState([]);
   const [recolorHex, setRecolorHex] = useState("#0000FF");
-  const [targetColorHex, setTargetColorHex] = useState("#FF0000");
 
-  const recolorDetection = async () => {
+  async function recolorDetection() {
     const { width: detectionWidth, height: detectionHeight } = image;
     const detectionDimensions = { detectionWidth, detectionHeight };
     const imageData = canvasContext.getImageData(
@@ -43,9 +43,9 @@ function ImageAnalyzer(props) {
       detectionHeight
     );
     setDetectedPixels(detectedPixels);
-  };
+  }
 
-  const recolorCanvasArea = async () => {
+  async function recolorCanvasArea() {
     const [imageData, numPixels] = await ImageAnalysis.colorArea(
       image,
       canvasContext,
@@ -62,34 +62,29 @@ function ImageAnalyzer(props) {
       canvasWidth,
       canvasHeight
     );
-  };
+  }
+
+  async function reset(event) {
+    event.preventDefault();
+    Canvas.setWithImage(canvasContext, canvasWidth, canvasHeight, image);
+    setNumPixelsColored(0);
+  }
 
   return (
     <div>
       <div>
-        {/* <Form.Label>Target detection Color:</Form.Label>
-        <Form.Control
-          className="mx-auto"
-          style={inputStyle}
-          type="color"
-          value={targetColorHex}
-          onChange={(e) => handleTargetColorChange(e)}
-        /> */}
-
         <Form.Label>Recolor:</Form.Label>
         <Form.Control
-          className="mx-auto"
-          style={inputStyle}
+          className="mx-auto input"
           type="color"
           value={recolorHex}
-          onChange={(e) => handleColorInputChange(e, setRecolorHex)}
+          onChange={(e) => DomHelper.setFromInput(e, setRecolorHex)}
         />
       </div>
       <div>
-        <Form.Label>Sensitivity</Form.Label>
+        <Form.Label>Sensitivity: {detectionThreshold}</Form.Label>
         <Form.Control
-          className="mx-auto"
-          style={inputStyle}
+          className="mx-auto input"
           type="range"
           min="0"
           max="255"
@@ -104,18 +99,7 @@ function ImageAnalyzer(props) {
         <Button className="mx-1" onClick={(e) => recolorCanvasArea(e)}>
           Color area
         </Button>
-        <Button
-          className="mx-1"
-          onClick={(e) => {
-            e.preventDefault();
-            Canvas.setWithImage(
-              canvasContext,
-              canvasWidth,
-              canvasHeight,
-              image
-            );
-          }}
-        >
+        <Button className="mx-1" onClick={(event) => reset(event)}>
           Reset
         </Button>
       </div>
@@ -125,9 +109,5 @@ function ImageAnalyzer(props) {
     </div>
   );
 }
-
-const inputStyle = {
-  width: "200px",
-};
 
 export default ImageAnalyzer;
