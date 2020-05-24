@@ -8,7 +8,7 @@ import "./index.css";
 function ImageAnalyzer(props) {
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
   const [image] = props.image;
-  const [detectionThreshold, setDetectionThreshold] = useState(150);
+  const [detectionThreshold, setDetectionThreshold] = useState(0);
   const [numPixelsColored, setNumPixelsColored] = useState(0);
   const [canvasContext] = props.canvasContext;
   const [detectedPixels, setDetectedPixels] = useState([]);

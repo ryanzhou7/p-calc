@@ -4,7 +4,6 @@ import FileInput from "./components/FileInput/FileInput";
 import ImageAnalyzer from "./components/ImageAnalyzer/ImageAnalyzer";
 import Canvas from "./components/Canvas/Canvas";
 import * as DomHelper from "./utils/DomHelper";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 function App() {
