@@ -11,7 +11,7 @@ function FileInput(props) {
         label={label}
         style={inputStyle}
         custom
-        onChange={(e) => onChangeHandler(e)}
+        onChange={(event) => onChangeHandler(event)}
       />
     </div>
   );

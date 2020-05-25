@@ -21,8 +21,8 @@ function App() {
     });
   }, image);
 
-  const saveSelectedImage = async (e) => {
-    const image = await DomHelper.getImageFromInput(e, setImage);
+  const saveSelectedImage = async (event) => {
+    const image = await DomHelper.getImageFromInput(event, setImage);
     setImage(image);
   };
 

@@ -14,16 +14,16 @@ function ImageAligner(props) {
         <div>Move Vertical</div>
         <Button
           className="mx-1"
-          onClick={(e) =>
-            incrementOrginCoordinates(e, 0, -1, setAxisCoordinates)
+          onClick={(event) =>
+            incrementOrginCoordinates(event, 0, -1, setAxisCoordinates)
           }
         >
           Move up
         </Button>
         <Button
           className="mx-1"
-          onClick={(e) =>
-            incrementOrginCoordinates(e, 0, 1, setAxisCoordinates)
+          onClick={(event) =>
+            incrementOrginCoordinates(event, 0, 1, setAxisCoordinates)
           }
         >
           Move down
@@ -34,13 +34,13 @@ function ImageAligner(props) {
         <div>Degrees of rotation: {rotationDegrees}</div>
         <Button
           className="mx-1"
-          onClick={(e) => incrementBy(e, setRotationDegrees, -1)}
+          onClick={(event) => incrementBy(event, setRotationDegrees, -1)}
         >
           Rotate left
         </Button>
         <Button
           className="mx-1"
-          onClick={(e) => incrementBy(e, setRotationDegrees, 1)}
+          onClick={(event) => incrementBy(event, setRotationDegrees, 1)}
         >
           Rotate right
         </Button>
