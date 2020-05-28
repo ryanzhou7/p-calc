@@ -8,7 +8,7 @@ import "./index.css";
 function ImageAnalyzer(props) {
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
   const [image] = props.image;
-  const [detectionThreshold, setDetectionThreshold] = useState(150);
+  const [detectionThreshold, setDetectionThreshold] = useState(0);
   const [numPixelsColored, setNumPixelsColored] = useState(0);
   const [canvasContext] = props.canvasContext;
   const [detectedPixels, setDetectedPixels] = useState([]);
@@ -72,7 +72,7 @@ function ImageAnalyzer(props) {
           className="mx-auto input"
           type="color"
           value={recolorHex}
-          onChange={(e) => DomHelper.setFromInput(e, setRecolorHex)}
+          onChange={(event) => DomHelper.setFromInput(event, setRecolorHex)}
         />
       </div>
       <div>
@@ -83,14 +83,14 @@ function ImageAnalyzer(props) {
           min="0"
           max="255"
           value={detectionThreshold}
-          onChange={(e) => setDetectionThreshold(e.target.value)}
+          onChange={(event) => setDetectionThreshold(e.target.value)}
         />
       </div>
       <div className="m-2">
-        <Button className="mx-1" onClick={(e) => recolorDetection(e)}>
+        <Button className="mx-1" onClick={(event) => recolorDetection(event)}>
           Recolor detected
         </Button>
-        <Button className="mx-1" onClick={(e) => recolorCanvasArea(e)}>
+        <Button className="mx-1" onClick={(event) => recolorCanvasArea(event)}>
           Color area
         </Button>
         <Button

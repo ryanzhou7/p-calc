@@ -88,6 +88,9 @@ async function colorArea(
         imageData.data[redIndex] = redRecolor;
         imageData.data[greenIndex] = greenRecolor;
         imageData.data[blueIndex] = blueRecolor;
+
+        const key = getXYKey(x, i);
+        existingPixels.set(key, null);
         numPixelsColored++;
       }
     }
@@ -120,22 +123,22 @@ function containsXYKeyIn(getKey, map) {
 
 /**
  * #FFF 4 length hex or #FFFFFF 6 length to rgb
- * @param {*} h
+ * @param {*} hex
  */
-function hexToRgb(h) {
-  let r = 0,
-    g = 0,
-    b = 0;
-  if (h.length == 4) {
-    r = "0x" + h[1] + h[1];
-    g = "0x" + h[2] + h[2];
-    b = "0x" + h[3] + h[3];
-  } else if (h.length == 7) {
-    r = "0x" + h[1] + h[2];
-    g = "0x" + h[3] + h[4];
-    b = "0x" + h[5] + h[6];
+function hexToRgb(hex) {
+  let red = 0,
+    green = 0,
+    blue = 0;
+  if (hex.length == 4) {
+    red = "0x" + hex[1] + hex[1];
+    green = "0x" + hex[2] + hex[2];
+    blue = "0x" + hex[3] + hex[3];
+  } else if (hex.length == 7) {
+    red = "0x" + hex[1] + hex[2];
+    green = "0x" + hex[3] + hex[4];
+    blue = "0x" + hex[5] + hex[6];
   }
-  return [r, g, b];
+  return [red, green, blue];
 }
 
 /**

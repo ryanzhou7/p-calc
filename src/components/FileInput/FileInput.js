@@ -2,9 +2,7 @@ import React from "react";
 import { Form } from "react-bootstrap";
 
 function FileInput(props) {
-  const { label } = props;
-  const { accept } = props;
-  const { onChangeHandler } = props;
+  const { label, accept, onChangeHandler } = props;
   return (
     <div>
       <Form.File
@@ -13,7 +11,7 @@ function FileInput(props) {
         label={label}
         style={inputStyle}
         custom
-        onChange={(e) => onChangeHandler(e)}
+        onChange={(event) => onChangeHandler(event)}
       />
     </div>
   );
