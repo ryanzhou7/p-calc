@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import * as DomHelper from "../../utils/DomHelper";
 import * as ImageAnalysis from "../../utils/ImageAnalysis";
-import * as Canvas from "../../utils/Canvas";
+import resetCanvas from "./resetCanvas"; // TODO: Review this kind of refactoring/abstraction with Ryan
 import "./index.css";
 
 function ImageAnalyzer(props) {
@@ -64,12 +64,6 @@ function ImageAnalyzer(props) {
     );
   }
 
-  async function reset(event) {
-    event.preventDefault();
-    Canvas.setWithImage(canvasContext, canvasWidth, canvasHeight, image);
-    setNumPixelsColored(0);
-  }
-
   return (
     <div>
       <div>
@@ -99,7 +93,19 @@ function ImageAnalyzer(props) {
         <Button className="mx-1" onClick={(e) => recolorCanvasArea(e)}>
           Color area
         </Button>
-        <Button className="mx-1" onClick={(event) => reset(event)}>
+        <Button
+          className="mx-1"
+          onClick={(event) =>
+            resetCanvas(
+              event,
+              canvasContext,
+              canvasWidth,
+              canvasHeight,
+              image,
+              setNumPixelsColored
+            )
+          }
+        >
           Reset
         </Button>
       </div>
