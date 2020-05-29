@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import * as DomHelper from "../../utils/DomHelper";
 import * as ImageAnalysis from "../../utils/ImageAnalysis";
+import ColorToggler from "../ColorToggler/ColorToggler";
 import resetCanvas from "./resetCanvas"; // TODO: Review this kind of refactoring/abstraction with Ryan
 import "./index.css";
 
@@ -67,6 +68,9 @@ function ImageAnalyzer(props) {
   return (
     <div>
       <div>
+        <ColorToggler isRedEdit={props.isRedEdit} />
+      </div>
+      <div>
         <Form.Label>Recolor:</Form.Label>
         <Form.Control
           className="mx-auto input"
@@ -83,7 +87,7 @@ function ImageAnalyzer(props) {
           min="0"
           max="255"
           value={detectionThreshold}
-          onChange={(event) => setDetectionThreshold(e.target.value)}
+          onChange={(event) => setDetectionThreshold(event.target.value)}
         />
       </div>
       <div className="m-2">

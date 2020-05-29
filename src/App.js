@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Card, Accordion } from "react-bootstrap";
 import FileInput from "./components/FileInput/FileInput";
 import ImageAnalyzer from "./components/ImageAnalyzer/ImageAnalyzer";
@@ -8,13 +8,15 @@ import "./App.css";
 
 function App() {
   const [image, setImage] = useState({});
-  const [canvasContext, setCanvasContext] = useState(null);
+  const [isRedEdit, setIsRedEdit] = useState(true);
+  const [canvasContext1, setCanvasContext1] = useState(null);
+  const [canvasContext2, setCanvasContext2] = useState(null);
   const [canvasDimensions, setCanvasDimensions] = useState({
     width: 0,
     height: 0,
   });
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setCanvasDimensions({
       width: image.width,
       height: image.height,
@@ -42,7 +44,23 @@ function App() {
             drawWidth: image.width,
             drawHeight: image.height,
           }}
-          canvasContext={[canvasContext, setCanvasContext]}
+          canvasContext={[canvasContext2, setCanvasContext2]}
+        />
+      </div>
+      <div>
+        <Canvas
+          image={{
+            image: image,
+          }}
+          canvasDimensions={{
+            canvasWidth: image.width,
+            canvasHeight: image.height,
+          }}
+          drawDimensions={{
+            drawWidth: image.width,
+            drawHeight: image.height,
+          }}
+          canvasContext={[canvasContext1, setCanvasContext1]}
         />
       </div>
       <div>
@@ -73,7 +91,8 @@ function App() {
               <Card.Body>
                 <ImageAnalyzer
                   image={[image, setImage]}
-                  canvasContext={[canvasContext, setCanvasContext]}
+                  isRedEdit={[isRedEdit, setIsRedEdit]}
+                  canvasContext={[canvasContext1, setCanvasContext1]}
                   canvasDimensions={{
                     canvasWidth: image.width,
                     canvasHeight: image.height,
