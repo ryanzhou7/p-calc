@@ -9,8 +9,8 @@ import "./App.css";
 function App() {
   const [image, setImage] = useState({});
   const [isRedEdit, setIsRedEdit] = useState(true);
-  const [canvasContext1, setCanvasContext1] = useState(null);
-  const [canvasContext2, setCanvasContext2] = useState(null);
+  const [canvasContextRed, setCanvasContextRed] = useState(null);
+  const [canvasContextBlue, setCanvasContextBlue] = useState(null);
   const [canvasDimensions, setCanvasDimensions] = useState({
     width: 0,
     height: 0,
@@ -28,6 +28,10 @@ function App() {
     setImage(image);
   };
 
+  const currentCanvasContext = isRedEdit
+    ? [canvasContextRed, setCanvasContextRed]
+    : [canvasContextBlue, setCanvasContextBlue];
+
   return (
     <div className="App">
       <h4>Welcome to G-calc</h4>
@@ -44,7 +48,7 @@ function App() {
             drawWidth: image.width,
             drawHeight: image.height,
           }}
-          canvasContext={[canvasContext2, setCanvasContext2]}
+          canvasContext={[canvasContextRed, setCanvasContextRed]}
         />
       </div>
       <div>
@@ -60,7 +64,7 @@ function App() {
             drawWidth: image.width,
             drawHeight: image.height,
           }}
-          canvasContext={[canvasContext1, setCanvasContext1]}
+          canvasContext={[canvasContextBlue, setCanvasContextBlue]}
         />
       </div>
       <div>
@@ -92,7 +96,7 @@ function App() {
                 <ImageAnalyzer
                   image={[image, setImage]}
                   isRedEdit={[isRedEdit, setIsRedEdit]}
-                  canvasContext={[canvasContext1, setCanvasContext1]}
+                  canvasContext={currentCanvasContext}
                   canvasDimensions={{
                     canvasWidth: image.width,
                     canvasHeight: image.height,

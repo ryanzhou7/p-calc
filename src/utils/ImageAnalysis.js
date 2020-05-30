@@ -7,6 +7,14 @@ function isRed(threshold) {
 }
 
 /**
+ * Basic algorithm for blue detection
+ * @param {*} threshold
+ */
+function isBlue(threshold) {
+  return (r, g, b) => b * 2 - (g + r) > threshold;
+}
+
+/**
  * Offsets access each value in a canvasContext.getImageData()
  */
 const R_OFFSET = 0;
@@ -151,4 +159,4 @@ function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
 
-export { detect, colorArea, isRed };
+export { detect, colorArea, isRed, isBlue };

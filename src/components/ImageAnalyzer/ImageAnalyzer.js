@@ -7,13 +7,15 @@ import resetCanvas from "./resetCanvas"; // TODO: Review this kind of refactorin
 import "./index.css";
 
 function ImageAnalyzer(props) {
+  const [isRedEdit] = props.isRedEdit;
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
   const [image] = props.image;
   const [detectionThreshold, setDetectionThreshold] = useState(0);
-  const [numPixelsColored, setNumPixelsColored] = useState(0);
+  const [numPixelsColoredRed, setNumPixelsColoredRed] = useState(0);
+  const [numPixelsColoredBlue, setNumPixelsColoredBlue] = useState(0);
   const [canvasContext] = props.canvasContext;
   const [detectedPixels, setDetectedPixels] = useState([]);
-  const [recolorHex, setRecolorHex] = useState("#0000FF");
+  const [recolorHex, setRecolorHex] = useState("#00FF00");
 
   async function recolorDetection() {
     const { width: detectionWidth, height: detectionHeight } = image;
@@ -25,7 +27,9 @@ function ImageAnalyzer(props) {
       detectionHeight
     );
 
-    const isColorDetector = ImageAnalysis.isRed(detectionThreshold);
+    const isColorDetector = isRedEdit
+      ? ImageAnalysis.isRed(detectionThreshold)
+      : ImageAnalysis.isBlue(detectionThreshold);
 
     const [recoloredImageData, detectedPixels] = await ImageAnalysis.detect(
       detectionDimensions,
@@ -53,6 +57,9 @@ function ImageAnalyzer(props) {
       recolorHex,
       detectedPixels
     );
+    const setNumPixelsColored = isRedEdit
+      ? setNumPixelsColoredRed
+      : setNumPixelsColoredBlue;
     setNumPixelsColored(numPixels);
     canvasContext.putImageData(
       imageData,
@@ -91,15 +98,27 @@ function ImageAnalyzer(props) {
         />
       </div>
       <div className="m-2">
-        <Button className="mx-1" onClick={(event) => recolorDetection(event)}>
+        <Button
+          variant="outline-primary"
+          className="mx-1"
+          onClick={(event) => recolorDetection(event)}
+        >
           Recolor detected
         </Button>
-        <Button className="mx-1" onClick={(event) => recolorCanvasArea(event)}>
+        <Button
+          variant="outline-primary"
+          className="mx-1"
+          onClick={(event) => recolorCanvasArea(event)}
+        >
           Color area
         </Button>
         <Button
+          variant="outline-primary"
           className="mx-1"
-          onClick={(event) =>
+          onClick={(event) => {
+            const setNumPixelsColored = isRedEdit
+              ? setNumPixelsColoredRed
+              : setNumPixelsColoredBlue;
             resetCanvas(
               event,
               canvasContext,
@@ -107,14 +126,18 @@ function ImageAnalyzer(props) {
               canvasHeight,
               image,
               setNumPixelsColored
-            )
-          }
+            );
+          }}
         >
           Reset
         </Button>
       </div>
       <div>
-        <div>Pixel count: {numPixelsColored}</div>
+        <div>Red pixel count: {numPixelsColoredRed}</div>
+        <div>Blue pixel count: {numPixelsColoredBlue}</div>
+        <div>
+          Red / Blue ratio: {numPixelsColoredBlue / numPixelsColoredRed}
+        </div>
       </div>
     </div>
   );

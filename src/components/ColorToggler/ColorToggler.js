@@ -7,6 +7,7 @@ function ColorToggler(props) {
   };
   return (
     <div>
+      <div>Currently editing:</div>
       <Button
         active={isRedEdit}
         className="mr-2"
