@@ -13,4 +13,4 @@ async function resetCanvas(
   setNumPixelsColored(0);
 }
 
-export default resetCanvas;
+export { resetCanvas };
