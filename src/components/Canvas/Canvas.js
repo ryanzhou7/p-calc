@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import "./index.css";
 
 function Canvas(props) {
-  const { image } = props.image;
+  const image = props.image;
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
   const { drawWidth, drawHeight } = props.drawDimensions;
   const [canvasContext, setCanvasContext] = props.canvasContext;
@@ -15,14 +15,14 @@ function Canvas(props) {
   }, []);
 
   useEffect(() => {
-    if (image == null || canvasContext == null) {
+    if (image == null || canvasContext == null || canvasRef == null) {
       return;
     }
     const { current: canvas } = canvasRef;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     canvasContext.drawImage(image, 0, 0, drawWidth, drawHeight);
-  }, [image]);
+  }, [image, drawWidth, drawHeight, canvasWidth, canvasHeight]);
 
   return (
     <div>

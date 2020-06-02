@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import * as utils from "./utils";
 
-function CanvasColorOptions(props) {
+function CanvasEffectButtonGroup(props) {
   const [detectedPixels, setDetectedPixels] = useState([]);
   const { recolorHex } = props;
   const [isRedEdit] = props.isRedEdit;
@@ -110,4 +110,4 @@ function CanvasColorOptions(props) {
   );
 }
 
-export default CanvasColorOptions;
+export default CanvasEffectButtonGroup;

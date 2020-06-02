@@ -3,7 +3,7 @@
  * @param {*} threshold
  */
 function isRed(threshold) {
-  return (r, g, b) => r * 2 - (g + b) > threshold;
+  return (r, g, b) => r * 2 - (g + b) > 255 - threshold;
 }
 
 /**
@@ -11,7 +11,7 @@ function isRed(threshold) {
  * @param {*} threshold
  */
 function isBlue(threshold) {
-  return (r, g, b) => b * 2 - (g + r) > threshold;
+  return (r, g, b) => b * 2 - (g + r) > 255 - threshold;
 }
 
 /**

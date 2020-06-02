@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import * as DomHelper from "../../utils/DomHelper";
 import ColorToggler from "../ColorToggler/ColorToggler";
-import CanvasColorOptions from "../../components/CanvasColorOptions/CanvasColorOptions";
+import CanvasEffectButtonGroup from "../../components/CanvasColorOptions/CanvasColorOptions";
 import "./index.css";
 
 function ImageAnalyzer(props) {
+  const sliderMin = 0;
+  const sliderMax = 255;
   const [detectionThreshold, setDetectionThreshold] = useState(0);
   const [numPixelsColoredRed, setNumPixelsColoredRed] = useState(0);
   const [numPixelsColoredBlue, setNumPixelsColoredBlue] = useState(0);
@@ -34,18 +36,18 @@ function ImageAnalyzer(props) {
         />
       </div>
       <div>
-        <Form.Label>Sensitivity: {detectionThreshold}</Form.Label>
+        <Form.Label>Sensitivity:{detectionThreshold}</Form.Label>
         <Form.Control
           className="mx-auto input"
           type="range"
-          min="0"
-          max="255"
+          min={sliderMin}
+          max={sliderMax}
           value={detectionThreshold}
           onChange={(event) => setDetectionThreshold(event.target.value)}
         />
       </div>
       <div className="m-2">
-        <CanvasColorOptions {...canvasColorOptionsProps} />
+        <CanvasEffectButtonGroup {...canvasColorOptionsProps} />
       </div>
       <div>
         <div>Red pixel count: {numPixelsColoredRed}</div>
