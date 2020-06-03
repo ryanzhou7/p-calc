@@ -12,6 +12,9 @@ function App() {
   const [canvasContextRed, setCanvasContextRed] = useState(null);
   const [canvasContextBlue, setCanvasContextBlue] = useState(null);
 
+  const [rotationDegrees, setRotationDegrees] = useState(0);
+  const [axisCoordinates, setAxisCoordinates] = useState(0);
+
   const width = utils.getCurrentViewportWidth();
   const height = utils.getProportionalX(image.height, image.width, width);
   const canvasDimensions = {
@@ -49,6 +52,8 @@ function App() {
       canvasWidth: canvasDimensions.width,
       canvasHeight: canvasDimensions.height,
     },
+    rotationDegrees: [rotationDegrees, setRotationDegrees],
+    axisCoordinates: [axisCoordinates, setAxisCoordinates],
   };
 
   return (

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import * as DomHelper from "../../utils/DomHelper";
 import ColorToggler from "../ColorToggler/ColorToggler";
+import ImageAligner from "../ImageAligner/ImageAligner";
 import CanvasEffectButtonGroup from "../../components/CanvasColorOptions/CanvasColorOptions";
 import "./index.css";
 
@@ -19,6 +20,11 @@ function ImageAnalyzer(props) {
     numPixelsColoredBlue: [numPixelsColoredBlue, setNumPixelsColoredBlue],
     recolorHex: recolorHex,
     ...props,
+  };
+
+  const imageAlignerProps = {
+    rotationDegrees: props.rotationDegrees,
+    axisCoordinates: props.axisCoordinates,
   };
 
   return (
@@ -49,6 +55,11 @@ function ImageAnalyzer(props) {
       <div className="m-2">
         <CanvasEffectButtonGroup {...canvasColorOptionsProps} />
       </div>
+
+      <div className="m-2">
+        <ImageAligner {...imageAlignerProps} />
+      </div>
+
       <div>
         <div>Red pixel count: {numPixelsColoredRed}</div>
         <div>Blue pixel count: {numPixelsColoredBlue}</div>
