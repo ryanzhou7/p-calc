@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 import * as DomHelper from "../../utils/DomHelper";
 import ColorToggler from "../ColorToggler/ColorToggler";
 import ImageAligner from "../ImageAligner/ImageAligner";
-import CanvasEffectButtonGroup from "../../components/CanvasColorOptions/CanvasColorOptions";
+import CanvasEffectButtonGroup from "../CanvasEffectButtonGroup/CanvasEffectButtonGroup";
 import "./index.css";
 
 function ImageAnalyzer(props) {
@@ -23,8 +23,7 @@ function ImageAnalyzer(props) {
   };
 
   const imageAlignerProps = {
-    rotationDegrees: props.rotationDegrees,
-    axisCoordinates: props.axisCoordinates,
+    ...props,
   };
 
   return (

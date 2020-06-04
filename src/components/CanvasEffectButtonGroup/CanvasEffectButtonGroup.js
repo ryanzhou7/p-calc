@@ -16,6 +16,7 @@ function CanvasEffectButtonGroup(props) {
   const [image] = props.image;
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
 
+  // TODO move this to utils
   async function recolorDetection() {
     const { width: detectionWidth, height: detectionHeight } = image;
     const detectionDimensions = { detectionWidth, detectionHeight };
@@ -49,6 +50,7 @@ function CanvasEffectButtonGroup(props) {
     setDetectedPixels(detectedPixels);
   }
 
+  // TODO move this to utils
   async function recolorCanvasArea() {
     const [imageData, numPixels] = await ImageAnalysis.colorArea(
       image,

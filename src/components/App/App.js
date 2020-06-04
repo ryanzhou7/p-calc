@@ -15,7 +15,7 @@ function App() {
   const [rotationDegrees, setRotationDegrees] = useState(0);
   const [axisCoordinates, setAxisCoordinates] = useState(0);
 
-  const width = utils.getCurrentViewportWidth();
+  const width = Math.min(500, utils.getCurrentViewportWidth());
   const height = utils.getProportionalX(image.height, image.width, width);
   const canvasDimensions = {
     width: width,
