@@ -22,13 +22,6 @@ function Canvas(props) {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     canvasContext.drawImage(image, 0, 0, drawWidth, drawHeight);
-
-    const smallerSide = Math.min(drawWidth, drawHeight);
-    canvasContext.beginPath();
-    canvasContext.lineWidth = "2";
-    canvasContext.strokeStyle = "green";
-    canvasContext.rect(0, 0, smallerSide, smallerSide);
-    canvasContext.stroke();
   }, [image, drawWidth, drawHeight, canvasWidth, canvasHeight]);
 
   return (

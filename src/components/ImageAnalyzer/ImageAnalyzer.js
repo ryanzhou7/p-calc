@@ -2,16 +2,24 @@ import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import * as DomHelper from "../../utils/DomHelper";
 import ColorToggler from "../ColorToggler/ColorToggler";
-import ImageAligner from "../ImageAligner/ImageAligner";
 import CanvasEffectButtonGroup from "../CanvasEffectButtonGroup/CanvasEffectButtonGroup";
 import "./index.css";
 
 function ImageAnalyzer(props) {
   const sliderMin = 0;
   const sliderMax = 255;
+
+  const [
+    numPixelsColoredRed,
+    setNumPixelsColoredRed,
+  ] = props.numPixelsColoredRed;
+  const [
+    numPixelsColoredBlue,
+    setNumPixelsColoredBlue,
+  ] = props.numPixelsColoredBlue;
+  const { isRedEdit } = props;
+
   const [detectionThreshold, setDetectionThreshold] = useState(0);
-  const [numPixelsColoredRed, setNumPixelsColoredRed] = useState(0);
-  const [numPixelsColoredBlue, setNumPixelsColoredBlue] = useState(0);
   const [recolorHex, setRecolorHex] = useState("#00FF00");
 
   const canvasColorOptionsProps = {
@@ -22,14 +30,10 @@ function ImageAnalyzer(props) {
     ...props,
   };
 
-  const imageAlignerProps = {
-    ...props,
-  };
-
   return (
     <div>
       <div>
-        <ColorToggler isRedEdit={props.isRedEdit} />
+        <ColorToggler isRedEdit={isRedEdit} />
       </div>
       <div>
         <Form.Label>Recolor:</Form.Label>
@@ -55,10 +59,7 @@ function ImageAnalyzer(props) {
         <CanvasEffectButtonGroup {...canvasColorOptionsProps} />
       </div>
 
-      <div className="m-2">
-        <ImageAligner {...imageAlignerProps} />
-      </div>
-
+      <h5>Results: </h5>
       <div>
         <div>Red pixel count: {numPixelsColoredRed}</div>
         <div>Blue pixel count: {numPixelsColoredBlue}</div>
