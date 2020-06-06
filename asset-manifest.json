@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/g-calc/static/css/main.6523a98f.chunk.css",
-    "main.js": "/g-calc/static/js/main.7d5931d7.chunk.js",
-    "main.js.map": "/g-calc/static/js/main.7d5931d7.chunk.js.map",
+    "main.js": "/g-calc/static/js/main.7fc99828.chunk.js",
+    "main.js.map": "/g-calc/static/js/main.7fc99828.chunk.js.map",
     "runtime-main.js": "/g-calc/static/js/runtime-main.1ec2c7a2.js",
     "runtime-main.js.map": "/g-calc/static/js/runtime-main.1ec2c7a2.js.map",
     "static/css/2.de424728.chunk.css": "/g-calc/static/css/2.de424728.chunk.css",
     "static/js/2.a7a68bb7.chunk.js": "/g-calc/static/js/2.a7a68bb7.chunk.js",
     "static/js/2.a7a68bb7.chunk.js.map": "/g-calc/static/js/2.a7a68bb7.chunk.js.map",
     "index.html": "/g-calc/index.html",
-    "precache-manifest.3f817109418b0d69351e2fb0b689404e.js": "/g-calc/precache-manifest.3f817109418b0d69351e2fb0b689404e.js",
+    "precache-manifest.b17c8c6b78836a0768a8da47b6f62f11.js": "/g-calc/precache-manifest.b17c8c6b78836a0768a8da47b6f62f11.js",
     "service-worker.js": "/g-calc/service-worker.js",
     "static/css/2.de424728.chunk.css.map": "/g-calc/static/css/2.de424728.chunk.css.map",
     "static/css/main.6523a98f.chunk.css.map": "/g-calc/static/css/main.6523a98f.chunk.css.map",
@@ -20,6 +20,6 @@
     "static/css/2.de424728.chunk.css",
     "static/js/2.a7a68bb7.chunk.js",
     "static/css/main.6523a98f.chunk.css",
-    "static/js/main.7d5931d7.chunk.js"
+    "static/js/main.7fc99828.chunk.js"
   ]
 }
