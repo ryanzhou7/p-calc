@@ -58,7 +58,7 @@ function App() {
 
   return (
     <div className="App">
-      <h4>Welcome to G-calc</h4>
+      <h4>Welcome to P-calc</h4>
       <div>
         <Accordion defaultActiveKey="0">
           <Card>
