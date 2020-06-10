@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { Button, Card, Accordion } from "react-bootstrap";
 import FileInput from "../FileInput/FileInput";
 import ImageAnalyzer from "../ImageAnalyzer/ImageAnalyzer";
 import Canvas from "../Canvas/Canvas";
 import * as utils from "./utils";
+import Webcam from "react-webcam";
 import "./App.css";
+
+const videoConstraints = {
+  width: 1280,
+  height: 720,
+  facingMode: "user", // { exact: "environment" }
+};
 
 function App() {
   const [image, setImage] = useState({});
@@ -56,11 +63,45 @@ function App() {
     numPixelsColoredBlue: [numPixelsColoredBlue, setNumPixelsColoredBlue],
   };
 
+  const webcamRef = useRef(null);
+  const [imgSrc, setImgSrc] = React.useState(null);
+
+  const capture = useCallback(() => {
+    const screenshot = webcamRef.current.getScreenshot();
+    setImgSrc(screenshot);
+  }, [webcamRef, setImgSrc]);
+
   return (
     <div className="App">
       <h4>Welcome to P-calc</h4>
+
+      <div style={{ position: "relative", float: "left" }}>
+        <Webcam
+          audio={false}
+          height={200}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          width={400}
+          videoConstraints={videoConstraints}
+        />
+        <span
+          style={{
+            position: "absolute",
+            top: 75,
+            right: 0,
+            bottom: 0,
+            left: 0,
+          }}
+          onClick={capture}
+        >
+          Capture photo
+        </span>
+      </div>
+
+      <div>{imgSrc && <img src={imgSrc} />}</div>
+
       <div>
-        <Accordion defaultActiveKey="0">
+        {/* <Accordion defaultActiveKey="0">
           <Card>
             <Card.Header>
               <Accordion.Toggle as={Button} variant="link" eventKey="0">
@@ -97,7 +138,7 @@ function App() {
               </Card.Body>
             </Accordion.Collapse>
           </Card>
-        </Accordion>
+        </Accordion> */}
       </div>
     </div>
   );
