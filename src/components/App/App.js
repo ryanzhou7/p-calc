@@ -8,9 +8,10 @@ import Webcam from "react-webcam";
 import "./App.css";
 
 const videoConstraints = {
-  width: 1280,
-  height: 720,
-  facingMode: "user", // { exact: "environment" }
+  width: 400,
+  height: 400,
+  facingMode: { exact: "environment" },
+  //facingMode: "user",
 };
 
 function App() {
@@ -74,34 +75,63 @@ function App() {
   return (
     <div className="App">
       <h4>Welcome to P-calc</h4>
-
-      <div style={{ position: "relative", float: "left" }}>
+      <div
+        style={{
+          position: "relative",
+          backgroundColor: "grey",
+          height: "800",
+          display: "inline-block",
+        }}
+      >
         <Webcam
           audio={false}
-          height={200}
+          height={400}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           width={400}
           videoConstraints={videoConstraints}
         />
         <span
+          className="cross"
           style={{
             position: "absolute",
-            top: 75,
+            top: 200,
+            right: 0,
+            bottom: 200,
+            left: 0,
+            backgroundColor: "green",
+          }}
+        ></span>
+
+        <span
+          className="circle"
+          style={{
+            position: "absolute",
+            top: 0,
             right: 0,
             bottom: 0,
             left: 0,
           }}
-          onClick={capture}
-        >
-          Capture photo
-        </span>
+        ></span>
+
+        <span
+          style={{
+            position: "absolute",
+            top: 200,
+            right: 0,
+            bottom: 200,
+            left: 0,
+            backgroundColor: "green",
+          }}
+        ></span>
       </div>
+
+      <button onClick={capture}>Take picture</button>
 
       <div>{imgSrc && <img src={imgSrc} />}</div>
 
       <div>
-        {/* <Accordion defaultActiveKey="0">
+        <Accordion defaultActiveKey="0">
           <Card>
             <Card.Header>
               <Accordion.Toggle as={Button} variant="link" eventKey="0">
@@ -129,16 +159,16 @@ function App() {
             <Accordion.Collapse eventKey="1">
               <Card.Body>
                 <div>
-                  <Canvas isHidden={!isRedEdit} {...redCanvasProps} />
+                  <Canvas {...redCanvasProps} />
                 </div>
                 <div>
-                  <Canvas isHidden={isRedEdit} {...blueCanvasProps} />
+                  <Canvas {...blueCanvasProps} />
                 </div>
                 <ImageAnalyzer {...imageAnalyzerProps} />
               </Card.Body>
             </Accordion.Collapse>
           </Card>
-        </Accordion> */}
+        </Accordion>
       </div>
     </div>
   );
