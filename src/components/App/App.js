@@ -22,12 +22,9 @@ function App() {
 
   const [numPixelsColoredRed, setNumPixelsColoredRed] = useState(0);
   const [numPixelsColoredBlue, setNumPixelsColoredBlue] = useState(0);
-
-  const width = Math.min(500, utils.getCurrentViewportWidth()) - 50;
-  const height = utils.getProportionalX(image.height, image.width, width);
   const canvasDimensions = {
-    width: width,
-    height: height,
+    width: 400,
+    height: 400,
   };
 
   const redCanvasProps = {
@@ -65,70 +62,21 @@ function App() {
   };
 
   const webcamRef = useRef(null);
-  const [imgSrc, setImgSrc] = React.useState(null);
-
   const capture = useCallback(() => {
     const screenshot = webcamRef.current.getScreenshot();
-    setImgSrc(screenshot);
-  }, [webcamRef, setImgSrc]);
+
+    const image = new Image();
+    image.onload = () => {
+      setImage(image);
+    };
+    image.src = screenshot;
+
+    //setImage(screenshot);
+  }, [webcamRef, setImage]);
 
   return (
     <div className="App">
       <h4>Welcome to P-calc</h4>
-      <div
-        style={{
-          position: "relative",
-          backgroundColor: "grey",
-          height: "800",
-          display: "inline-block",
-        }}
-      >
-        <Webcam
-          audio={false}
-          height={400}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          width={400}
-          videoConstraints={videoConstraints}
-        />
-        <span
-          className="cross"
-          style={{
-            position: "absolute",
-            top: 200,
-            right: 0,
-            bottom: 200,
-            left: 0,
-            backgroundColor: "green",
-          }}
-        ></span>
-
-        <span
-          className="circle"
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-          }}
-        ></span>
-
-        <span
-          style={{
-            position: "absolute",
-            top: 200,
-            right: 0,
-            bottom: 200,
-            left: 0,
-            backgroundColor: "green",
-          }}
-        ></span>
-      </div>
-
-      <button onClick={capture}>Take picture</button>
-
-      <div>{imgSrc && <img src={imgSrc} />}</div>
 
       <div>
         <Accordion defaultActiveKey="0">
@@ -140,6 +88,63 @@ function App() {
             </Card.Header>
             <Accordion.Collapse eventKey="0">
               <Card.Body>
+                <div
+                  style={{
+                    position: "relative",
+                    backgroundColor: "grey",
+                    height: "800",
+                    display: "inline-block",
+                  }}
+                >
+                  <Webcam
+                    audio={false}
+                    height={400}
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    width={400}
+                    videoConstraints={videoConstraints}
+                  />
+                  <span
+                    className="cross"
+                    style={{
+                      position: "absolute",
+                      top: 202,
+                      right: 0,
+                      bottom: 202,
+                      left: 0,
+                      backgroundColor: "red",
+                    }}
+                  ></span>
+
+                  <span
+                    className="circle"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      bottom: 0,
+                      left: 0,
+                    }}
+                  ></span>
+
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 202,
+                      right: 0,
+                      bottom: 202,
+                      left: 0,
+                      backgroundColor: "red",
+                    }}
+                  ></span>
+                </div>
+
+                <div className="my-3">
+                  <Button onClick={capture} variant="outline-primary">
+                    Take picture
+                  </Button>
+                </div>
+
                 <FileInput
                   accept="image/*"
                   label="Choose image"

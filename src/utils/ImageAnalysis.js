@@ -73,18 +73,13 @@ async function colorArea(
   const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(newColorHex);
   const imageData = canvasContext.getImageData(0, 0, width, height);
   let numPixelsColored = 0;
-  let maxY = 0;
 
-  const existingPixels = new Map();
+  const { numDetectedPixels, maxY, existingPixels } = getPixelInfo(
+    detectedPixels
+  );
+  numPixelsColored += numDetectedPixels;
+
   const isExistingPixel = containsXYKeyIn(getXYKey, existingPixels);
-
-  for (let coordinate of detectedPixels) {
-    const { x, y } = coordinate;
-    maxY = Math.max(y, maxY);
-    const key = getXYKey(x, y);
-    existingPixels.set(key, null);
-    numPixelsColored++;
-  }
 
   for (let coordinate of detectedPixels) {
     const { x, y } = coordinate;
@@ -107,6 +102,25 @@ async function colorArea(
   return Promise.resolve([imageData, numPixelsColored]);
 }
 
+function getPixelInfo(detectedPixels) {
+  const existingPixels = new Map();
+
+  let numDetectedPixels = 0;
+  let maxY = 0;
+
+  for (let coordinate of detectedPixels) {
+    const { x, y } = coordinate;
+    maxY = Math.max(y, maxY);
+    const key = getXYKey(x, y);
+    existingPixels.set(key, null);
+    numDetectedPixels++;
+  }
+  return {
+    numDetectedPixels,
+    existingPixels,
+    maxY,
+  };
+}
 /**
  * Get the unique key given the arguments
  * @param {*} x

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import * as DomHelper from "../../utils/DomHelper";
+import * as utils from "./utils";
 import ColorToggler from "../ColorToggler/ColorToggler";
 import CanvasEffectButtonGroup from "../CanvasEffectButtonGroup/CanvasEffectButtonGroup";
 import "./index.css";
@@ -64,7 +65,11 @@ function ImageAnalyzer(props) {
         <div>Red pixel count: {numPixelsColoredRed}</div>
         <div>Blue pixel count: {numPixelsColoredBlue}</div>
         <div>
-          Red / Blue ratio: {numPixelsColoredBlue / numPixelsColoredRed}
+          Calculated Loss %:{" "}
+          {utils.calculatedLossPercent(
+            numPixelsColoredRed,
+            numPixelsColoredBlue
+          )}
         </div>
       </div>
     </div>
