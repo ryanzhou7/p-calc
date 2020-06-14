@@ -5,6 +5,8 @@ import ImageAnalyzer from "../ImageAnalyzer/ImageAnalyzer";
 import Canvas from "../Canvas/Canvas";
 import * as utils from "./utils";
 import Webcam from "react-webcam";
+import { increment } from "../../redux/index";
+import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
 
 const videoConstraints = {
@@ -15,6 +17,9 @@ const videoConstraints = {
 };
 
 function App() {
+  const count = useSelector((state) => state);
+  const dispatch = useDispatch();
+
   const [image, setImage] = useState({});
   const [isRedEdit, setIsRedEdit] = useState(true);
   const [canvasContextRed, setCanvasContextRed] = useState(null);
@@ -77,6 +82,8 @@ function App() {
   return (
     <div className="App">
       <h4>Welcome to P-calc</h4>
+      <div>{count}</div>
+      <button onClick={() => dispatch(increment())}>Increment</button>
 
       <div>
         <Accordion defaultActiveKey="0">
