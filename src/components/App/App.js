@@ -5,22 +5,21 @@ import ImageAnalyzer from "../ImageAnalyzer/ImageAnalyzer";
 import Canvas from "../Canvas/Canvas";
 import * as utils from "./utils";
 import Webcam from "react-webcam";
-import { increment } from "../../redux/index";
+import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
 
 const videoConstraints = {
   width: 400,
   height: 400,
-  facingMode: { exact: "environment" },
-  //facingMode: "user",
+  //facingMode: { exact: "environment" },
+  facingMode: "user",
 };
 
 function App() {
-  const count = useSelector((state) => state);
+  const image = useSelector((state) => state.image);
   const dispatch = useDispatch();
 
-  const [image, setImage] = useState({});
   const [isRedEdit, setIsRedEdit] = useState(true);
   const [canvasContextRed, setCanvasContextRed] = useState(null);
   const [canvasContextBlue, setCanvasContextBlue] = useState(null);
@@ -55,7 +54,7 @@ function App() {
     : [canvasContextBlue, setCanvasContextBlue];
 
   const imageAnalyzerProps = {
-    image: [image, setImage],
+    image: [image, imageReducer.setImage],
     isRedEdit: [isRedEdit, setIsRedEdit],
     canvasContext: currentCanvasContext,
     canvasDimensions: {
@@ -69,21 +68,12 @@ function App() {
   const webcamRef = useRef(null);
   const capture = useCallback(() => {
     const screenshot = webcamRef.current.getScreenshot();
-
-    const image = new Image();
-    image.onload = () => {
-      setImage(image);
-    };
-    image.src = screenshot;
-
-    //setImage(screenshot);
-  }, [webcamRef, setImage]);
+    dispatch(imageReducer.setImage(screenshot));
+  }, [webcamRef]);
 
   return (
     <div className="App">
       <h4>Welcome to P-calc</h4>
-      <div>{count}</div>
-      <button onClick={() => dispatch(increment())}>Increment</button>
 
       <div>
         <Accordion defaultActiveKey="0">
@@ -156,7 +146,7 @@ function App() {
                   accept="image/*"
                   label="Choose image"
                   onChangeHandler={(event) =>
-                    utils.saveSelectedImage(event, setImage)
+                    utils.saveSelectedImage(event, imageReducer.setImage)
                   }
                 />
               </Card.Body>

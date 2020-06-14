@@ -1,21 +1,8 @@
-import redux, { createStore, applyMiddleware } from "redux";
+import { combineReducers, createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
+import imageReducer from "./imageReducer";
 
-export function increment() {
-  return (dispatch, getState) => {
-    dispatch({ type: "INCREMENT" });
-  };
-}
+const rootReducer = combineReducers({ image: imageReducer });
 
-function reducer(count = 0, action) {
-  switch (action.type) {
-    case "INCREMENT":
-      return count + 1;
-    default:
-      return count;
-  }
-}
-
-const store = createStore(reducer, applyMiddleware(thunk));
-store.subscribe(() => console.log(store.getState));
+const store = createStore(rootReducer, applyMiddleware(thunk));
 export default store;
