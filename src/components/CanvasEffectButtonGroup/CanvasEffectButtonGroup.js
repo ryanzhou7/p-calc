@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useSelector } from "react";
 import { Button } from "react-bootstrap";
 import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import * as utils from "./utils";
 
 function CanvasEffectButtonGroup(props) {
+  const image = null;
+  //const image = useSelector((state) => state.image.source);
+
   const [detectedPixels, setDetectedPixels] = useState([]);
   const { recolorHex } = props;
   const [isRedEdit] = props.isRedEdit;
@@ -13,7 +16,6 @@ function CanvasEffectButtonGroup(props) {
   const [, setNumPixelsColoredRed] = props.numPixelsColoredRed;
   const [, setNumPixelsColoredBlue] = props.numPixelsColoredBlue;
 
-  const [image] = props.image;
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
 
   // TODO move this to utils

@@ -1,9 +1,13 @@
 import { Button } from "react-bootstrap";
+import { useSelector, useDispatch } from "react-redux";
+import * as canvasEditReducer from "../../redux/canvasEditReducer";
 import React from "react";
-function ColorToggler(props) {
-  const [isRedEdit, setIsRedEdit] = props.isRedEdit;
+function ColorToggler() {
+  const isRedEdit = true;
+  //const isRedEdit = useSelector((state) => state.isRedEdit);
+  const dispatch = useDispatch();
   const redToggler = () => {
-    setIsRedEdit((prev) => !prev);
+    dispatch(canvasEditReducer.toggleIsRedEdit());
   };
   return (
     <div>
