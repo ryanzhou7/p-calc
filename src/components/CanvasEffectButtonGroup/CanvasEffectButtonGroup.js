@@ -1,15 +1,16 @@
-import React, { useState, useSelector } from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
 import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import * as utils from "./utils";
 
 function CanvasEffectButtonGroup(props) {
-  const image = null;
-  //const image = useSelector((state) => state.image.source);
+  const image = useSelector((state) => state.image.source);
 
   const [detectedPixels, setDetectedPixels] = useState([]);
   const { recolorHex } = props;
-  const [isRedEdit] = props.isRedEdit;
+
+  const isRedEdit = useSelector((state) => state.canvasEdit.isRedEdit);
 
   const [canvasContext] = props.canvasContext;
   const [detectionThreshold] = props.detectionThreshold;

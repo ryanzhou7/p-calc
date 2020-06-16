@@ -17,10 +17,12 @@ const videoConstraints = {
 };
 
 function App() {
-  const image = useSelector((state) => state.image.source);
   const dispatch = useDispatch();
 
-  const [isRedEdit, setIsRedEdit] = useState(true);
+  const image = useSelector((state) => state.image.source);
+  const isRedEdit = true;
+  useSelector((state) => state.canvasEdit.isRedEdit);
+
   const [canvasContextRed, setCanvasContextRed] = useState(null);
   const [canvasContextBlue, setCanvasContextBlue] = useState(null);
 
@@ -54,7 +56,6 @@ function App() {
     : [canvasContextBlue, setCanvasContextBlue];
 
   const imageAnalyzerProps = {
-    isRedEdit: [isRedEdit, setIsRedEdit],
     canvasContext: currentCanvasContext,
     canvasDimensions: {
       canvasWidth: canvasDimensions.width,

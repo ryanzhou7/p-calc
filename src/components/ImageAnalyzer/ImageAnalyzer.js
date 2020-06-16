@@ -5,10 +5,13 @@ import * as utils from "./utils";
 import ColorToggler from "../ColorToggler/ColorToggler";
 import CanvasEffectButtonGroup from "../CanvasEffectButtonGroup/CanvasEffectButtonGroup";
 import "./index.css";
+import { useSelector } from "react-redux";
 
 function ImageAnalyzer(props) {
   const sliderMin = 0;
   const sliderMax = 255;
+
+  const isRedEdit = useSelector((state) => state.canvasEdit.isRedEdit);
 
   const [
     numPixelsColoredRed,
@@ -18,7 +21,6 @@ function ImageAnalyzer(props) {
     numPixelsColoredBlue,
     setNumPixelsColoredBlue,
   ] = props.numPixelsColoredBlue;
-  const { isRedEdit } = props;
 
   const [detectionThreshold, setDetectionThreshold] = useState(0);
   const [recolorHex, setRecolorHex] = useState("#00FF00");

@@ -3,8 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import * as canvasEditReducer from "../../redux/canvasEditReducer";
 import React from "react";
 function ColorToggler() {
-  const isRedEdit = true;
-  //const isRedEdit = useSelector((state) => state.isRedEdit);
+  const isRedEdit = useSelector((state) => state.canvasEdit.isRedEdit);
   const dispatch = useDispatch();
   const redToggler = () => {
     dispatch(canvasEditReducer.toggleIsRedEdit());
