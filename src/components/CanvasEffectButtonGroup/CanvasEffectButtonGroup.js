@@ -1,26 +1,27 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Button } from "react-bootstrap";
+import store from "../../redux";
+import * as innerCanvasInfoReducer from "../../redux/innerCanvasInfoReducer";
+import * as outerCanvasInfoReducer from "../../redux/outerCanvasInfoReducer";
 import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import * as utils from "./utils";
 
 function CanvasEffectButtonGroup(props) {
+  const dispatch = useDispatch();
   const image = useSelector((state) => state.image.source);
+  const isOuterEdit = useSelector((state) => state.canvasEdit.isOuterEdit);
+  const outerCanvasInfo = useSelector((state) => state.outerCanvasInfo);
+  const innerCanvasInfo = useSelector((state) => state.innerCanvasInfo);
+  const currentCanvasInfo = isOuterEdit ? outerCanvasInfo : innerCanvasInfo;
 
-  const [detectedPixels, setDetectedPixels] = useState([]);
   const { recolorHex } = props;
-
-  const isRedEdit = useSelector((state) => state.canvasEdit.isRedEdit);
-
-  const [canvasContext] = props.canvasContext;
   const [detectionThreshold] = props.detectionThreshold;
-  const [, setNumPixelsColoredRed] = props.numPixelsColoredRed;
-  const [, setNumPixelsColoredBlue] = props.numPixelsColoredBlue;
-
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
 
   // TODO move this to utils
-  async function recolorDetection() {
+  async function recolorDetection(event, canvasContext) {
+    event.preventDefault();
     const { width: detectionWidth, height: detectionHeight } = image;
     const detectionDimensions = { detectionWidth, detectionHeight };
     const imageData = canvasContext.getImageData(
@@ -30,7 +31,7 @@ function CanvasEffectButtonGroup(props) {
       detectionHeight
     );
 
-    const isColorDetector = isRedEdit
+    const isColorDetector = isOuterEdit
       ? ImageAnalysis.isRed(detectionThreshold)
       : ImageAnalysis.isBlue(detectionThreshold);
 
@@ -50,21 +51,28 @@ function CanvasEffectButtonGroup(props) {
       detectionWidth,
       detectionHeight
     );
-    setDetectedPixels(detectedPixels);
+
+    const setDetectedPixels = isOuterEdit
+      ? outerCanvasInfoReducer.setDetectedPixels
+      : innerCanvasInfoReducer.setDetectedPixels;
+    dispatch(setDetectedPixels(detectedPixels));
   }
 
   // TODO move this to utils
-  async function recolorCanvasArea() {
+  async function recolorCanvasArea(event, canvasContext) {
+    event.preventDefault();
+    const detectedPixels = currentCanvasInfo.detectedPixels;
     const [imageData, numPixels] = await ImageAnalysis.colorArea(
       image,
       canvasContext,
       recolorHex,
       detectedPixels
     );
-    const setNumPixelsColored = isRedEdit
-      ? setNumPixelsColoredRed
-      : setNumPixelsColoredBlue;
-    setNumPixelsColored(numPixels);
+    const setNumPixelsColored = isOuterEdit
+      ? outerCanvasInfoReducer.setNumColoredPixels
+      : innerCanvasInfoReducer.setNumColoredPixels;
+    dispatch(setNumPixelsColored(numPixels));
+
     canvasContext.putImageData(
       imageData,
       0,
@@ -81,14 +89,14 @@ function CanvasEffectButtonGroup(props) {
       <Button
         variant="outline-primary"
         className="mx-1"
-        onClick={(event) => recolorDetection(event)}
+        onClick={(event) => recolorDetection(event, currentCanvasInfo.context)}
       >
         Recolor detected
       </Button>
       <Button
         variant="outline-primary"
         className="mx-1"
-        onClick={(event) => recolorCanvasArea(event)}
+        onClick={(event) => recolorCanvasArea(event, currentCanvasInfo.context)}
       >
         Color area
       </Button>
@@ -96,12 +104,12 @@ function CanvasEffectButtonGroup(props) {
         variant="outline-primary"
         className="mx-1"
         onClick={(event) => {
-          const setNumPixelsColored = isRedEdit
-            ? setNumPixelsColoredRed
-            : setNumPixelsColoredBlue;
+          const setNumPixelsColored = isOuterEdit
+            ? outerCanvasInfoReducer.setNumColoredPixelsCallback(dispatch)
+            : innerCanvasInfoReducer.setNumColoredPixelsCallback(dispatch);
           utils.resetCanvas(
             event,
-            canvasContext,
+            currentCanvasInfo.context,
             canvasWidth,
             canvasHeight,
             image,

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useRef, useCallback } from "react";
 import { Button, Card, Accordion } from "react-bootstrap";
 import FileInput from "../FileInput/FileInput";
 import ImageAnalyzer from "../ImageAnalyzer/ImageAnalyzer";
@@ -7,6 +7,9 @@ import * as utils from "./utils";
 import Webcam from "react-webcam";
 import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
+import { setContext as setInnerContext } from "../../redux/innerCanvasInfoReducer";
+import { setContext as setOuterContext } from "../../redux/outerCanvasInfoReducer";
+
 import "./App.css";
 
 const videoConstraints = {
@@ -18,22 +21,22 @@ const videoConstraints = {
 
 function App() {
   const dispatch = useDispatch();
-
   const image = useSelector((state) => state.image.source);
-  const isRedEdit = true;
-  useSelector((state) => state.canvasEdit.isRedEdit);
+  const isOuterEdit = useSelector((state) => state.canvasEdit.isOuterEdit);
 
-  const [canvasContextRed, setCanvasContextRed] = useState(null);
-  const [canvasContextBlue, setCanvasContextBlue] = useState(null);
+  const innerCanvasContext = useSelector(
+    (state) => state.innerCanvasInfo.context
+  );
+  const outerCanvasContext = useSelector(
+    (state) => state.outerCanvasInfo.context
+  );
 
-  const [numPixelsColoredRed, setNumPixelsColoredRed] = useState(0);
-  const [numPixelsColoredBlue, setNumPixelsColoredBlue] = useState(0);
   const canvasDimensions = {
     width: 400,
     height: 400,
   };
 
-  const redCanvasProps = {
+  const outerCanvasProps = {
     image: image,
     canvasDimensions: {
       canvasWidth: canvasDimensions.width,
@@ -43,26 +46,27 @@ function App() {
       drawWidth: canvasDimensions.width,
       drawHeight: canvasDimensions.height,
     },
-    canvasContext: [canvasContextRed, setCanvasContextRed],
+    canvasContext: [outerCanvasContext, setOuterContext],
   };
 
-  const blueCanvasProps = {
-    ...redCanvasProps,
-    canvasContext: [canvasContextBlue, setCanvasContextBlue],
-  };
-
-  const currentCanvasContext = isRedEdit
-    ? [canvasContextRed, setCanvasContextRed]
-    : [canvasContextBlue, setCanvasContextBlue];
-
-  const imageAnalyzerProps = {
-    canvasContext: currentCanvasContext,
+  const innerCanvasProps = {
+    image: image,
     canvasDimensions: {
       canvasWidth: canvasDimensions.width,
       canvasHeight: canvasDimensions.height,
     },
-    numPixelsColoredRed: [numPixelsColoredRed, setNumPixelsColoredRed],
-    numPixelsColoredBlue: [numPixelsColoredBlue, setNumPixelsColoredBlue],
+    drawDimensions: {
+      drawWidth: canvasDimensions.width,
+      drawHeight: canvasDimensions.height,
+    },
+    canvasContext: [innerCanvasContext, setInnerContext],
+  };
+
+  const imageAnalyzerProps = {
+    canvasDimensions: {
+      canvasWidth: canvasDimensions.width,
+      canvasHeight: canvasDimensions.height,
+    },
   };
 
   const webcamRef = useRef(null);
@@ -160,12 +164,8 @@ function App() {
             </Card.Header>
             <Accordion.Collapse eventKey="1">
               <Card.Body>
-                <div>
-                  <Canvas {...redCanvasProps} />
-                </div>
-                <div>
-                  <Canvas {...blueCanvasProps} />
-                </div>
+                <div>{isOuterEdit && <Canvas {...outerCanvasProps} />}</div>
+                <div>{!isOuterEdit && <Canvas {...innerCanvasProps} />}</div>
                 <ImageAnalyzer {...imageAnalyzerProps} />
               </Card.Body>
             </Accordion.Collapse>

@@ -1,17 +1,16 @@
-export function toggleIsOuterEdit() {
-  return { type: "TOGGLE_IS_OUTER_EDIT" };
+export function setContext(context) {
+  return { type: "SET_CONTEXT", payload: context };
 }
-
 const initialState = {
-  isOuterEdit: true,
+  context: {},
 };
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-    case "TOGGLE_IS_OUTER_EDIT":
+    case "SET_CONTEXT":
       return {
         ...state,
-        isOuterEdit: !state.isOuterEdit,
+        context: action.payload,
       };
     default:
       return state;

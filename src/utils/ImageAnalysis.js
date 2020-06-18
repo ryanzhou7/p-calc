@@ -115,6 +115,7 @@ function getPixelInfo(detectedPixels) {
     existingPixels.set(key, null);
     numDetectedPixels++;
   }
+
   return {
     numDetectedPixels,
     existingPixels,
