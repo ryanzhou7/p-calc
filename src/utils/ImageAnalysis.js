@@ -28,14 +28,21 @@ const B_OFFSET = 2;
  * @param {*} isColor
  * @param {*} recolorHex
  */
-async function detect(detectionDimensions, imageData, isColor, recolorHex) {
+async function detect(canvasContext, detectionDimensions, isColor, recolorHex) {
   const { detectionWidth, detectionHeight } = detectionDimensions;
+  const imageData = canvasContext.getImageData(
+    0,
+    0,
+    detectionWidth,
+    detectionHeight
+  );
+
   const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(recolorHex);
   const detectedPixels = [];
 
   const originalPixels = imageData.data.slice();
 
-  for (let y = 0; y < detectionHeight; y++) {
+  for (let y = 0; y < detectionHeight / 2; y++) {
     for (let x = 0; x < detectionWidth; x++) {
       const redIndex = getIndex(x, y, detectionWidth) + R_OFFSET;
       const greenIndex = getIndex(x, y, detectionWidth) + G_OFFSET;

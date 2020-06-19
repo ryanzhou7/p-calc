@@ -15,4 +15,11 @@ function getProportionalX(originalX, originalY, proportionalY) {
   return (originalX * proportionalY) / originalY;
 }
 
-export { saveSelectedImage, getCurrentViewportWidth, getProportionalX };
+function getImageDataForCombinedContext() {}
+
+export {
+  saveSelectedImage,
+  getCurrentViewportWidth,
+  getProportionalX,
+  getImageDataForCombinedContext,
+};

@@ -9,9 +9,12 @@ import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { setContext as setInnerContext } from "../../redux/innerCanvasInfoReducer";
 import { setContext as setOuterContext } from "../../redux/outerCanvasInfoReducer";
+import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
+import AnalysisResults from "../AnalysisResults/AnalysisResults";
 
 import "./App.css";
 
+// TODO this same as canvas dimensions in canvas settings
 const videoConstraints = {
   width: 400,
   height: 400,
@@ -22,7 +25,6 @@ const videoConstraints = {
 function App() {
   const dispatch = useDispatch();
   const image = useSelector((state) => state.image.source);
-  const isOuterEdit = useSelector((state) => state.canvasEdit.isOuterEdit);
 
   const innerCanvasContext = useSelector(
     (state) => state.innerCanvasInfo.context
@@ -30,11 +32,13 @@ function App() {
   const outerCanvasContext = useSelector(
     (state) => state.outerCanvasInfo.context
   );
+  const combinedCanvasInfoContext = useSelector(
+    (state) => state.combinedCanvasInfo.context
+  );
 
-  const canvasDimensions = {
-    width: 400,
-    height: 400,
-  };
+  const canvasDimensions = useSelector(
+    (state) => state.canvasSettings.canvasDimensions
+  );
 
   const outerCanvasProps = {
     image: image,
@@ -50,22 +54,17 @@ function App() {
   };
 
   const innerCanvasProps = {
-    image: image,
-    canvasDimensions: {
-      canvasWidth: canvasDimensions.width,
-      canvasHeight: canvasDimensions.height,
-    },
-    drawDimensions: {
-      drawWidth: canvasDimensions.width,
-      drawHeight: canvasDimensions.height,
-    },
+    ...outerCanvasProps,
     canvasContext: [innerCanvasContext, setInnerContext],
   };
 
-  const imageAnalyzerProps = {
-    canvasDimensions: {
-      canvasWidth: canvasDimensions.width,
-      canvasHeight: canvasDimensions.height,
+  const analysisResultsProps = {
+    canvas: {
+      ...innerCanvasProps,
+      canvasContext: [
+        combinedCanvasInfoContext,
+        combinedCanvasInfoReducer.setContext,
+      ],
     },
   };
 
@@ -164,9 +163,24 @@ function App() {
             </Card.Header>
             <Accordion.Collapse eventKey="1">
               <Card.Body>
-                <div>{isOuterEdit && <Canvas {...outerCanvasProps} />}</div>
-                <div>{!isOuterEdit && <Canvas {...innerCanvasProps} />}</div>
-                <ImageAnalyzer {...imageAnalyzerProps} />
+                <Canvas {...outerCanvasProps} />
+                <Canvas {...innerCanvasProps} />
+                <ImageAnalyzer />
+              </Card.Body>
+            </Accordion.Collapse>
+          </Card>
+
+          <Card>
+            <Card.Header>
+              <Accordion.Toggle as={Button} variant="link" eventKey="2">
+                Results
+              </Accordion.Toggle>
+            </Card.Header>
+            <Accordion.Collapse eventKey="2">
+              <Card.Body>
+                <div>
+                  <AnalysisResults {...analysisResultsProps} />
+                </div>
               </Card.Body>
             </Accordion.Collapse>
           </Card>

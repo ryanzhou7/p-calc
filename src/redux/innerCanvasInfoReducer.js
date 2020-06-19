@@ -20,11 +20,16 @@ export function setNumColoredPixels(numColoredPixels) {
   return { type: "SET_INNER_NUM_COLORED_PIXELS", payload: numColoredPixels };
 }
 
+export function setRecolorHex(hex) {
+  return { type: "SET_INNER_RECOLOR_HEX", payload: hex };
+}
+
 const initialState = {
   context: null,
   recoloredImageData: null,
   numColoredPixels: 0,
   detectedPixels: [],
+  recolorHex: "#00FF00",
 };
 
 export default function reducer(state = initialState, action) {
@@ -48,6 +53,12 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         numColoredPixels: action.payload,
+      };
+
+    case "SET_INNER_RECOLOR_HEX":
+      return {
+        ...state,
+        recolorHex: action.payload,
       };
     default:
       return state;
