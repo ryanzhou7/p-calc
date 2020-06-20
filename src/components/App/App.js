@@ -9,7 +9,6 @@ import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { setContext as setInnerContext } from "../../redux/innerCanvasInfoReducer";
 import { setContext as setOuterContext } from "../../redux/outerCanvasInfoReducer";
-import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
 import AnalysisResults from "../AnalysisResults/AnalysisResults";
 
 import "./App.css";
@@ -18,8 +17,8 @@ import "./App.css";
 const videoConstraints = {
   width: 400,
   height: 400,
-  //facingMode: { exact: "environment" },
-  facingMode: "user",
+  facingMode: { exact: "environment" },
+  //facingMode: "user",
 };
 
 function App() {
@@ -32,10 +31,6 @@ function App() {
   const outerCanvasContext = useSelector(
     (state) => state.outerCanvasInfo.context
   );
-  const combinedCanvasInfoContext = useSelector(
-    (state) => state.combinedCanvasInfo.context
-  );
-
   const canvasDimensions = useSelector(
     (state) => state.canvasSettings.canvasDimensions
   );
@@ -59,13 +54,7 @@ function App() {
   };
 
   const analysisResultsProps = {
-    canvas: {
-      ...innerCanvasProps,
-      canvasContext: [
-        combinedCanvasInfoContext,
-        combinedCanvasInfoReducer.setContext,
-      ],
-    },
+    ...innerCanvasProps,
   };
 
   const webcamRef = useRef(null);
@@ -148,9 +137,12 @@ function App() {
                 <FileInput
                   accept="image/*"
                   label="Choose image"
-                  onChangeHandler={(event) =>
-                    utils.saveSelectedImage(event, imageReducer.setImage)
-                  }
+                  onChangeHandler={(event) => {
+                    const setImageCallback = (image) => {
+                      dispatch(imageReducer.setImage(image));
+                    };
+                    utils.saveSelectedImage(event, setImageCallback);
+                  }}
                 />
               </Card.Body>
             </Accordion.Collapse>

@@ -14,18 +14,18 @@ async function combinedAnalysis(
   dispatch
 ) {
   const outerDetectedPixels = outerCanvasInfo.detectedPixels;
-  const innerDetectedPixels = combinedCanvasInfo.detectedPixels;
+  const innerDetectedPixels = innerCanvasInfo.detectedPixels;
   const leftX = await findLeftCutOff(outerDetectedPixels, innerDetectedPixels);
   const rightX = await findRightCutOff(
     outerDetectedPixels,
     innerDetectedPixels
   );
 
-  const [
+  const {
     imageData,
     outerNumPixelsColored,
     innerNumPixelsColored,
-  ] = await ImageAnalysis.colorAreaWithBounds(
+  } = await ImageAnalysis.colorAreaWithBounds(
     canvasDimensions,
     outerCanvasInfo,
     innerCanvasInfo,
@@ -42,8 +42,14 @@ async function combinedAnalysis(
     canvasDimensions.width,
     canvasDimensions.height
   );
-
   dispatch(combinedCanvasInfoReducer.setContext(combinedCanvasInfo.context));
+
+  dispatch(
+    combinedCanvasInfoReducer.setNumColoredInnerPixels(innerNumPixelsColored)
+  );
+  dispatch(
+    combinedCanvasInfoReducer.setNumColoredOuterPixels(outerNumPixelsColored)
+  );
 }
 
 async function findLeftCutOff(outerDetectedPixels, innerDetectedPixels) {

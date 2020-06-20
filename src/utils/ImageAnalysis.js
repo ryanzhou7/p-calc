@@ -39,7 +39,6 @@ async function detect(canvasContext, detectionDimensions, isColor, recolorHex) {
 
   const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(recolorHex);
   const detectedPixels = [];
-
   const originalPixels = imageData.data.slice();
 
   for (let y = 0; y < detectionHeight / 2; y++) {
@@ -116,72 +115,75 @@ async function colorAreaWithBounds(
   combinedCanvasInfo,
   { leftX, rightX }
 ) {
-  // Outer
-  let [redRecolor, greenRecolor, blueRecolor] = hexToRgb(
-    outerCanvasInfo.recolorHex
-  );
-  const imageData = outerCanvasInfo.context.getImageData(0, 0, width, height);
-
-  let {
-    numDetectedPixels: outerNumDetectedPixels,
-    existingPixels: outerExistingPixels,
-  } = getBoundedPixelInfo(outerCanvasInfo.detectedPixels, { leftX, rightX });
-
-  let isExistingPixel = containsXYKeyIn(getXYKey, outerExistingPixels);
-
-  for (let coordinate of outerNumDetectedPixels) {
-    const { x, y } = coordinate;
-    for (let i = y; i < height / 2; i++) {
-      if (!isExistingPixel(x, i)) {
-        const redIndex = getIndex(x, i, width) + R_OFFSET;
-        const greenIndex = getIndex(x, i, width) + G_OFFSET;
-        const blueIndex = getIndex(x, i, width) + B_OFFSET;
-        imageData.data[redIndex] = redRecolor;
-        imageData.data[greenIndex] = greenRecolor;
-        imageData.data[blueIndex] = blueRecolor;
-
-        const key = getXYKey(x, i);
-        outerExistingPixels.set(key, null);
-        outerNumDetectedPixels++;
-      }
-    }
-  }
-
-  // Inner
-  [redRecolor, greenRecolor, blueRecolor] = hexToRgb(
-    innerCanvasInfo.recolorHex
+  const imageData = combinedCanvasInfo.context.getImageData(
+    0,
+    0,
+    width,
+    height
   );
 
-  let {
-    numDetectedPixels: innerNumDetectedPixels,
-    existingPixels: innerExistingPixels,
-  } = getBoundedPixelInfo(innerCanvasInfo.detectedPixels, { leftX, rightX });
-
-  isExistingPixel = containsXYKeyIn(getXYKey, innerExistingPixels);
-
-  for (let coordinate of innerNumDetectedPixels) {
-    const { x, y } = coordinate;
-    for (let i = y; i < height / 2; i++) {
-      if (!isExistingPixel(x, i)) {
-        const redIndex = getIndex(x, i, width) + R_OFFSET;
-        const greenIndex = getIndex(x, i, width) + G_OFFSET;
-        const blueIndex = getIndex(x, i, width) + B_OFFSET;
-        imageData.data[redIndex] = redRecolor;
-        imageData.data[greenIndex] = greenRecolor;
-        imageData.data[blueIndex] = blueRecolor;
-
-        const key = getXYKey(x, i);
-        innerExistingPixels.set(key, null);
-        innerNumDetectedPixels++;
-      }
-    }
-  }
-
-  return Promise.resolve([
+  const outerNumPixelsColored = await updateImageData(
+    { width, height },
     imageData,
-    outerNumDetectedPixels,
-    innerNumDetectedPixels,
-  ]);
+    { leftX, rightX },
+    outerCanvasInfo
+  );
+
+  const innerNumPixelsColored = await updateImageData(
+    { width, height },
+    imageData,
+    { leftX, rightX },
+    innerCanvasInfo
+  );
+
+  return Promise.resolve({
+    imageData,
+    outerNumPixelsColored,
+    innerNumPixelsColored,
+  });
+}
+
+async function updateImageData(
+  { width, height },
+  imageData,
+  { leftX, rightX },
+  canvasInfo
+) {
+  const [redRecolor, greenRecolor, blueRecolor] = hexToRgb(
+    canvasInfo.recolorHex
+  );
+
+  let {
+    numDetectedPixels,
+    existingPixels,
+  } = getBoundedPixelInfo(canvasInfo.detectedPixels, { leftX, rightX });
+
+  const isExistingPixel = containsXYKeyIn(getXYKey, existingPixels);
+
+  window.existingPixels = existingPixels;
+
+  for (let [, coordinate] of existingPixels) {
+    if (coordinate != null) {
+      const { x, y } = coordinate;
+
+      for (let i = y; i < height / 2; i++) {
+        if (!isExistingPixel(x, i)) {
+          const redIndex = getIndex(x, i, width) + R_OFFSET;
+          const greenIndex = getIndex(x, i, width) + G_OFFSET;
+          const blueIndex = getIndex(x, i, width) + B_OFFSET;
+          imageData.data[redIndex] = redRecolor;
+          imageData.data[greenIndex] = greenRecolor;
+          imageData.data[blueIndex] = blueRecolor;
+
+          const currentKey = getXYKey(x, i);
+          existingPixels.set(currentKey, null);
+          numDetectedPixels++;
+        }
+      }
+    }
+  }
+
+  return numDetectedPixels;
 }
 
 function getBoundedPixelInfo(detectedPixels, { leftX, rightX }) {
@@ -193,7 +195,7 @@ function getBoundedPixelInfo(detectedPixels, { leftX, rightX }) {
     const { x, y } = coordinate;
     if (x >= leftX && x <= rightX) {
       const key = getXYKey(x, y);
-      existingPixels.set(key, null);
+      existingPixels.set(key, coordinate);
       numDetectedPixels++;
     }
   }
