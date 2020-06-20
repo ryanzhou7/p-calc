@@ -109,6 +109,101 @@ async function colorArea(
   return Promise.resolve([imageData, numPixelsColored]);
 }
 
+async function colorAreaWithBounds(
+  { width, height },
+  outerCanvasInfo,
+  innerCanvasInfo,
+  combinedCanvasInfo,
+  { leftX, rightX }
+) {
+  // Outer
+  let [redRecolor, greenRecolor, blueRecolor] = hexToRgb(
+    outerCanvasInfo.recolorHex
+  );
+  const imageData = outerCanvasInfo.context.getImageData(0, 0, width, height);
+
+  let {
+    numDetectedPixels: outerNumDetectedPixels,
+    existingPixels: outerExistingPixels,
+  } = getBoundedPixelInfo(outerCanvasInfo.detectedPixels, { leftX, rightX });
+
+  let isExistingPixel = containsXYKeyIn(getXYKey, outerExistingPixels);
+
+  for (let coordinate of outerNumDetectedPixels) {
+    const { x, y } = coordinate;
+    for (let i = y; i < height / 2; i++) {
+      if (!isExistingPixel(x, i)) {
+        const redIndex = getIndex(x, i, width) + R_OFFSET;
+        const greenIndex = getIndex(x, i, width) + G_OFFSET;
+        const blueIndex = getIndex(x, i, width) + B_OFFSET;
+        imageData.data[redIndex] = redRecolor;
+        imageData.data[greenIndex] = greenRecolor;
+        imageData.data[blueIndex] = blueRecolor;
+
+        const key = getXYKey(x, i);
+        outerExistingPixels.set(key, null);
+        outerNumDetectedPixels++;
+      }
+    }
+  }
+
+  // Inner
+  [redRecolor, greenRecolor, blueRecolor] = hexToRgb(
+    innerCanvasInfo.recolorHex
+  );
+
+  let {
+    numDetectedPixels: innerNumDetectedPixels,
+    existingPixels: innerExistingPixels,
+  } = getBoundedPixelInfo(innerCanvasInfo.detectedPixels, { leftX, rightX });
+
+  isExistingPixel = containsXYKeyIn(getXYKey, innerExistingPixels);
+
+  for (let coordinate of innerNumDetectedPixels) {
+    const { x, y } = coordinate;
+    for (let i = y; i < height / 2; i++) {
+      if (!isExistingPixel(x, i)) {
+        const redIndex = getIndex(x, i, width) + R_OFFSET;
+        const greenIndex = getIndex(x, i, width) + G_OFFSET;
+        const blueIndex = getIndex(x, i, width) + B_OFFSET;
+        imageData.data[redIndex] = redRecolor;
+        imageData.data[greenIndex] = greenRecolor;
+        imageData.data[blueIndex] = blueRecolor;
+
+        const key = getXYKey(x, i);
+        innerExistingPixels.set(key, null);
+        innerNumDetectedPixels++;
+      }
+    }
+  }
+
+  return Promise.resolve([
+    imageData,
+    outerNumDetectedPixels,
+    innerNumDetectedPixels,
+  ]);
+}
+
+function getBoundedPixelInfo(detectedPixels, { leftX, rightX }) {
+  const existingPixels = new Map();
+
+  let numDetectedPixels = 0;
+
+  for (let coordinate of detectedPixels) {
+    const { x, y } = coordinate;
+    if (x >= leftX && x <= rightX) {
+      const key = getXYKey(x, y);
+      existingPixels.set(key, null);
+      numDetectedPixels++;
+    }
+  }
+
+  return {
+    numDetectedPixels,
+    existingPixels,
+  };
+}
+
 function getPixelInfo(detectedPixels) {
   const existingPixels = new Map();
 
@@ -181,4 +276,4 @@ function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
 
-export { detect, colorArea, isRed, isBlue };
+export { detect, colorArea, isRed, isBlue, colorAreaWithBounds };

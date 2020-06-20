@@ -21,14 +21,15 @@ function AnalysisResults(props) {
       <Button
         className="my-2"
         variant="outline-primary"
-        onClick={() =>
-          utils.combinedAnalysis(
-            outerCanvasInfo,
-            innerCanvasInfo,
-            combinedCanvasInfo,
-            canvasDimensions,
-            dispatch
-          )
+        onClick={
+          () => {}
+          // utils.combinedAnalysis(
+          //   outerCanvasInfo,
+          //   innerCanvasInfo,
+          //   combinedCanvasInfo,
+          //   canvasDimensions,
+          //   dispatch
+          //)
         }
       >
         Recolor

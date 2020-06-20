@@ -1,4 +1,5 @@
 import * as ImageAnalysis from "../../utils/ImageAnalysis";
+import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
 
 function calculatedLossPercent(outerPixels, innerPixels) {
   let percentage = (100 * (outerPixels - innerPixels)) / outerPixels;
@@ -20,7 +21,29 @@ async function combinedAnalysis(
     innerDetectedPixels
   );
 
-  // color top
+  const [
+    imageData,
+    outerNumPixelsColored,
+    innerNumPixelsColored,
+  ] = await ImageAnalysis.colorAreaWithBounds(
+    canvasDimensions,
+    outerCanvasInfo,
+    innerCanvasInfo,
+    combinedCanvasInfo,
+    { leftX, rightX }
+  );
+
+  combinedCanvasInfo.context.putImageData(
+    imageData,
+    0,
+    0,
+    0,
+    0,
+    canvasDimensions.width,
+    canvasDimensions.height
+  );
+
+  dispatch(combinedCanvasInfoReducer.setContext(combinedCanvasInfo.context));
 }
 
 async function findLeftCutOff(outerDetectedPixels, innerDetectedPixels) {
