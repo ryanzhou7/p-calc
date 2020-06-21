@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/g-calc/static/css/main.2241c1a1.chunk.css",
-    "main.js": "/g-calc/static/js/main.39a2ee21.chunk.js",
-    "main.js.map": "/g-calc/static/js/main.39a2ee21.chunk.js.map",
-    "runtime-main.js": "/g-calc/static/js/runtime-main.1ec2c7a2.js",
-    "runtime-main.js.map": "/g-calc/static/js/runtime-main.1ec2c7a2.js.map",
-    "static/css/2.de424728.chunk.css": "/g-calc/static/css/2.de424728.chunk.css",
-    "static/js/2.8b797c63.chunk.js": "/g-calc/static/js/2.8b797c63.chunk.js",
-    "static/js/2.8b797c63.chunk.js.map": "/g-calc/static/js/2.8b797c63.chunk.js.map",
-    "index.html": "/g-calc/index.html",
-    "precache-manifest.63dc204b13d2808bba8012565b090431.js": "/g-calc/precache-manifest.63dc204b13d2808bba8012565b090431.js",
-    "service-worker.js": "/g-calc/service-worker.js",
-    "static/css/2.de424728.chunk.css.map": "/g-calc/static/css/2.de424728.chunk.css.map",
-    "static/css/main.2241c1a1.chunk.css.map": "/g-calc/static/css/main.2241c1a1.chunk.css.map",
-    "static/js/2.8b797c63.chunk.js.LICENSE.txt": "/g-calc/static/js/2.8b797c63.chunk.js.LICENSE.txt"
+    "main.css": "/p-calc/static/css/main.2241c1a1.chunk.css",
+    "main.js": "/p-calc/static/js/main.fd9f57aa.chunk.js",
+    "main.js.map": "/p-calc/static/js/main.fd9f57aa.chunk.js.map",
+    "runtime-main.js": "/p-calc/static/js/runtime-main.f90e82a6.js",
+    "runtime-main.js.map": "/p-calc/static/js/runtime-main.f90e82a6.js.map",
+    "static/css/2.de424728.chunk.css": "/p-calc/static/css/2.de424728.chunk.css",
+    "static/js/2.662a1eda.chunk.js": "/p-calc/static/js/2.662a1eda.chunk.js",
+    "static/js/2.662a1eda.chunk.js.map": "/p-calc/static/js/2.662a1eda.chunk.js.map",
+    "index.html": "/p-calc/index.html",
+    "precache-manifest.944103705dde7856a17f4728d782e566.js": "/p-calc/precache-manifest.944103705dde7856a17f4728d782e566.js",
+    "service-worker.js": "/p-calc/service-worker.js",
+    "static/css/2.de424728.chunk.css.map": "/p-calc/static/css/2.de424728.chunk.css.map",
+    "static/css/main.2241c1a1.chunk.css.map": "/p-calc/static/css/main.2241c1a1.chunk.css.map",
+    "static/js/2.662a1eda.chunk.js.LICENSE.txt": "/p-calc/static/js/2.662a1eda.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.1ec2c7a2.js",
+    "static/js/runtime-main.f90e82a6.js",
     "static/css/2.de424728.chunk.css",
-    "static/js/2.8b797c63.chunk.js",
+    "static/js/2.662a1eda.chunk.js",
     "static/css/main.2241c1a1.chunk.css",
-    "static/js/main.39a2ee21.chunk.js"
+    "static/js/main.fd9f57aa.chunk.js"
   ]
 }
