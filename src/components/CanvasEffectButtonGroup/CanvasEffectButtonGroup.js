@@ -74,6 +74,12 @@ function CanvasEffectButtonGroup(props) {
           const setNumPixelsColored = isOuterEdit
             ? outerCanvasInfoReducer.setNumColoredPixelsCallback(dispatch)
             : innerCanvasInfoReducer.setNumColoredPixelsCallback(dispatch);
+
+          const setDetectedPixels = isOuterEdit
+            ? outerCanvasInfoReducer.setDetectedPixels
+            : innerCanvasInfoReducer.setDetectedPixels;
+          dispatch(setDetectedPixels([]));
+
           utils.resetCanvas(
             event,
             currentCanvasInfo.context,

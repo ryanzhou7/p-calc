@@ -1,6 +1,6 @@
 import * as DomHelper from "../../utils/DomHelper";
 async function saveSelectedImage(event, setImage) {
-  const image = await DomHelper.getImageFromInput(event, setImage);
+  const image = await DomHelper.getImageFromInput(event);
   setImage(image);
 }
 

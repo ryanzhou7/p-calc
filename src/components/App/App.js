@@ -2,8 +2,8 @@ import React, { useRef, useCallback } from "react";
 import { Button, Card, Accordion } from "react-bootstrap";
 import FileInput from "../FileInput/FileInput";
 import ImageAnalyzer from "../ImageAnalyzer/ImageAnalyzer";
-import Canvas from "../Canvas/Canvas";
 import * as utils from "./utils";
+import Canvas from "../Canvas/Canvas";
 import Webcam from "react-webcam";
 import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
@@ -13,12 +13,18 @@ import AnalysisResults from "../AnalysisResults/AnalysisResults";
 
 import "./App.css";
 
+const WIDTH = 380;
+const HEIGHT = WIDTH;
+
 // TODO this same as canvas dimensions in canvas settings
 const videoConstraints = {
-  width: 400,
-  height: 400,
+  width: WIDTH,
+  height: HEIGHT,
   facingMode: { exact: "environment" },
   //facingMode: "user",
+  audio: false,
+  imageSmoothing: true,
+  screenshotQuality: 1,
 };
 
 function App() {
@@ -87,19 +93,19 @@ function App() {
                 >
                   <Webcam
                     audio={false}
-                    height={400}
+                    height={HEIGHT}
                     ref={webcamRef}
                     screenshotFormat="image/jpeg"
-                    width={400}
+                    width={WIDTH}
                     videoConstraints={videoConstraints}
                   />
                   <span
                     className="cross"
                     style={{
                       position: "absolute",
-                      top: 202,
+                      top: HEIGHT / 2 + 2,
                       right: 0,
-                      bottom: 202,
+                      bottom: HEIGHT / 2 + 2,
                       left: 0,
                       backgroundColor: "red",
                     }}
@@ -119,9 +125,9 @@ function App() {
                   <span
                     style={{
                       position: "absolute",
-                      top: 202,
+                      top: HEIGHT / 2 + 2,
                       right: 0,
-                      bottom: 202,
+                      bottom: HEIGHT / 2 + 2,
                       left: 0,
                       backgroundColor: "red",
                     }}
@@ -133,15 +139,14 @@ function App() {
                     Take picture
                   </Button>
                 </div>
-
                 <FileInput
                   accept="image/*"
                   label="Choose image"
                   onChangeHandler={(event) => {
-                    const setImageCallback = (image) => {
-                      dispatch(imageReducer.setImage(image));
-                    };
-                    utils.saveSelectedImage(event, setImageCallback);
+                    utils.saveSelectedImage(
+                      event,
+                      imageReducer.setImageCallback(dispatch)
+                    );
                   }}
                 />
               </Card.Body>

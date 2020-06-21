@@ -8,6 +8,15 @@ export function setImage(source) {
   };
 }
 
+export function setImageCallback(dispatch) {
+  return (image) => {
+    dispatch({
+      type: "IMAGE_SET",
+      payload: image,
+    });
+  };
+}
+
 const initialState = {
   source: null,
 };

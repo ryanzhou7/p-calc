@@ -1,3 +1,5 @@
+import Color from "color";
+
 /**
  * Basic algorithm for red detection
  * @param {*} threshold
@@ -277,5 +279,4 @@ function hexToRgb(hex) {
 function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
-
 export { detect, colorArea, isRed, isBlue, colorAreaWithBounds };

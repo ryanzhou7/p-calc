@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Form } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import * as innerCanvasInfoReducer from "../../redux/innerCanvasInfoReducer";
 import * as outerCanvasInfoReducer from "../../redux/outerCanvasInfoReducer";
 import ColorToggler from "../ColorToggler/ColorToggler";
@@ -9,9 +9,19 @@ import "./index.css";
 
 function ImageAnalyzer(props) {
   const dispatch = useDispatch();
-  const sliderMin = 0;
-  const sliderMax = 255;
+  const SLIDER_MIN = 0;
+  const SLIDER_MAX = 255;
   const [detectionThreshold, setDetectionThreshold] = useState(0);
+
+  const changeDetectionThresholdBy = (value) => {
+    setDetectionThreshold((previous) => {
+      previous = parseInt(previous);
+      let newValue = previous + value;
+      newValue = newValue < 0 ? SLIDER_MIN : newValue;
+      newValue = newValue > SLIDER_MAX ? SLIDER_MAX : newValue;
+      return newValue;
+    });
+  };
 
   const isOuterEdit = useSelector((state) => state.canvasEdit.isOuterEdit);
 
@@ -52,15 +62,55 @@ function ImageAnalyzer(props) {
         />
       </div>
       <div>
-        <Form.Label>Sensitivity:{detectionThreshold}</Form.Label>
-        <Form.Control
-          className="mx-auto input"
-          type="range"
-          min={sliderMin}
-          max={sliderMax}
-          value={detectionThreshold}
-          onChange={(event) => setDetectionThreshold(event.target.value)}
-        />
+        <Form.Label>Sensitivity: {detectionThreshold}</Form.Label>
+        <div className="d-flex mx-auto justify-content-center">
+          <Button
+            onClick={(event) => {
+              event.preventDefault();
+              changeDetectionThresholdBy(-15);
+            }}
+            variant="outline-primary"
+          >
+            -15
+          </Button>
+          <Button
+            className="mx-2"
+            onClick={(event) => {
+              event.preventDefault();
+              changeDetectionThresholdBy(-5);
+            }}
+            variant="outline-primary"
+          >
+            -5
+          </Button>
+          <Form.Control
+            className="input mx-2"
+            type="range"
+            min={SLIDER_MIN}
+            max={SLIDER_MAX}
+            value={detectionThreshold}
+            onChange={(event) => setDetectionThreshold(event.target.value)}
+          />
+          <Button
+            className="mx-2"
+            onClick={(event) => {
+              event.preventDefault();
+              changeDetectionThresholdBy(5);
+            }}
+            variant="outline-primary"
+          >
+            +5
+          </Button>
+          <Button
+            onClick={(event) => {
+              event.preventDefault();
+              changeDetectionThresholdBy(15);
+            }}
+            variant="outline-primary"
+          >
+            +15
+          </Button>
+        </div>
       </div>
       <div className="m-2">
         <CanvasEffectButtonGroup {...canvasColorOptionsProps} />
