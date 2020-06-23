@@ -2,7 +2,7 @@
   "name": "create-react-plus",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://ryanzhou7.github.io/p-calc/",
+  "homepage": "https://pcalcapp.com/",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -15,6 +15,7 @@
     "react-bootstrap": "^1.0.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "react-webcam": "^5.1.0",
     "redux": "^4.0.5",
