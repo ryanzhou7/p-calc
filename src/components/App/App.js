@@ -85,14 +85,14 @@ function App() {
             display: "inline-block",
           }}
         >
-          {/* <Webcam
-                    audio={false}
-                    height={HEIGHT}
-                    ref={webcamRef}
-                    screenshotFormat="image/jpeg"
-                    width={WIDTH}
-                    videoConstraints={videoConstraints}
-                  /> */}
+          <Webcam
+            audio={false}
+            height={HEIGHT}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width={WIDTH}
+            videoConstraints={videoConstraints}
+          />
           <span
             className="cross"
             style={{
@@ -133,16 +133,6 @@ function App() {
             Take picture
           </Button>
         </div>
-        <FileInput
-          accept="image/*"
-          label="Choose image"
-          onChangeHandler={(event) => {
-            utils.saveSelectedImage(
-              event,
-              imageReducer.setImageCallback(dispatch)
-            );
-          }}
-        />
 
         <Canvas {...outerCanvasProps} />
         <Canvas {...innerCanvasProps} />
