@@ -11,6 +11,8 @@ import { setContext as setInnerContext } from "../../redux/innerCanvasInfoReduce
 import { setContext as setOuterContext } from "../../redux/outerCanvasInfoReducer";
 import AnalysisResults from "../AnalysisResults/AnalysisResults";
 
+import sample from "../../assets/target.png";
+
 import "./App.css";
 
 const WIDTH = 380;
@@ -20,8 +22,8 @@ const HEIGHT = WIDTH;
 const videoConstraints = {
   width: WIDTH,
   height: HEIGHT,
-  facingMode: { exact: "environment" },
-  //facingMode: "user",
+  //facingMode: { exact: "environment" },
+  facingMode: "user",
   audio: false,
   imageSmoothing: true,
   screenshotQuality: 1,
@@ -74,114 +76,81 @@ function App() {
       <h4>Welcome to P-calc</h4>
 
       <div>
-        <Accordion defaultActiveKey="0">
-          <Card>
-            <Card.Header>
-              <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                Image input
-              </Accordion.Toggle>
-            </Card.Header>
-            <Accordion.Collapse eventKey="0">
-              <Card.Body>
-                <div
-                  style={{
-                    position: "relative",
-                    backgroundColor: "grey",
-                    height: "800",
-                    display: "inline-block",
-                  }}
-                >
-                  <Webcam
+        <img src={sample} />
+        <div
+          style={{
+            position: "relative",
+            backgroundColor: "grey",
+            height: "350",
+            display: "inline-block",
+          }}
+        >
+          {/* <Webcam
                     audio={false}
                     height={HEIGHT}
                     ref={webcamRef}
                     screenshotFormat="image/jpeg"
                     width={WIDTH}
                     videoConstraints={videoConstraints}
-                  />
-                  <span
-                    className="cross"
-                    style={{
-                      position: "absolute",
-                      top: HEIGHT / 2 + 2,
-                      right: 0,
-                      bottom: HEIGHT / 2 + 2,
-                      left: 0,
-                      backgroundColor: "red",
-                    }}
-                  ></span>
+                  /> */}
+          <span
+            className="cross"
+            style={{
+              position: "absolute",
+              top: HEIGHT / 2 + 2,
+              right: 0,
+              bottom: HEIGHT / 2 + 2,
+              left: 0,
+              backgroundColor: "red",
+            }}
+          ></span>
 
-                  <span
-                    className="circle"
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      bottom: 0,
-                      left: 0,
-                    }}
-                  ></span>
+          <span
+            className="circle"
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+            }}
+          ></span>
 
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: HEIGHT / 2 + 2,
-                      right: 0,
-                      bottom: HEIGHT / 2 + 2,
-                      left: 0,
-                      backgroundColor: "red",
-                    }}
-                  ></span>
-                </div>
+          <span
+            style={{
+              position: "absolute",
+              top: HEIGHT / 2 + 2,
+              right: 0,
+              bottom: HEIGHT / 2 + 2,
+              left: 0,
+              backgroundColor: "red",
+            }}
+          ></span>
+        </div>
 
-                <div className="my-3">
-                  <Button onClick={capture} variant="outline-primary">
-                    Take picture
-                  </Button>
-                </div>
-                <FileInput
-                  accept="image/*"
-                  label="Choose image"
-                  onChangeHandler={(event) => {
-                    utils.saveSelectedImage(
-                      event,
-                      imageReducer.setImageCallback(dispatch)
-                    );
-                  }}
-                />
-              </Card.Body>
-            </Accordion.Collapse>
-          </Card>
-          <Card>
-            <Card.Header>
-              <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                Image analysis
-              </Accordion.Toggle>
-            </Card.Header>
-            <Accordion.Collapse eventKey="1">
-              <Card.Body>
-                <Canvas {...outerCanvasProps} />
-                <Canvas {...innerCanvasProps} />
-                <ImageAnalyzer />
-              </Card.Body>
-            </Accordion.Collapse>
-          </Card>
+        <div className="my-3">
+          <Button onClick={capture} variant="outline-primary">
+            Take picture
+          </Button>
+        </div>
+        <FileInput
+          accept="image/*"
+          label="Choose image"
+          onChangeHandler={(event) => {
+            utils.saveSelectedImage(
+              event,
+              imageReducer.setImageCallback(dispatch)
+            );
+          }}
+        />
 
-          <Card>
-            <Card.Header>
-              <Accordion.Toggle as={Button} variant="link" eventKey="2">
-                Results
-              </Accordion.Toggle>
-            </Card.Header>
-            <Accordion.Collapse eventKey="2">
-              <Card.Body>
-                <div>
-                  <AnalysisResults {...analysisResultsProps} />
-                </div>
-              </Card.Body>
-            </Accordion.Collapse>
-          </Card>
-        </Accordion>
+        <Canvas {...outerCanvasProps} />
+        <Canvas {...innerCanvasProps} />
+        <ImageAnalyzer />
+
+        <div>
+          <AnalysisResults {...analysisResultsProps} />
+        </div>
       </div>
     </div>
   );
