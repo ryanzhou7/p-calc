@@ -14,14 +14,15 @@ import AnalysisResults from "../AnalysisResults/AnalysisResults";
 import "./App.css";
 import sample from "../../assets/thicc-png.png";
 
-const WIDTH = 600;
-const HEIGHT = 370;
+const WIDTH = 370;
+const HEIGHT = 320;
 
 // TODO this same as canvas dimensions in canvas settings
 const videoConstraints = {
   width: WIDTH,
   height: HEIGHT,
-  facingMode: { exact: "environment" },
+  //facingMode: { exact: "environment" },
+  facingMode: "user",
   audio: false,
   imageSmoothing: true,
   screenshotQuality: 1,
