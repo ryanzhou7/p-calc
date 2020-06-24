@@ -1,6 +1,6 @@
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback } from "react";
 import { Button, Card, Accordion } from "react-bootstrap";
-import FileInput from "../FileInput/FileInput";
+import { withOrientationChange } from "react-device-detect";
 import ImageAnalyzer from "../ImageAnalyzer/ImageAnalyzer";
 import * as utils from "./utils";
 import Canvas from "../Canvas/Canvas";
@@ -14,8 +14,8 @@ import AnalysisResults from "../AnalysisResults/AnalysisResults";
 import "./App.css";
 import sample from "../../assets/thicc-png.png";
 
-const WIDTH = 370;
-const HEIGHT = 320;
+let WIDTH = 370;
+let HEIGHT = 320;
 
 // TODO this same as canvas dimensions in canvas settings
 const videoConstraints = {
@@ -28,7 +28,11 @@ const videoConstraints = {
   screenshotQuality: 1,
 };
 
-function App() {
+function App(props) {
+  const { isLandscape, isPortrait } = props;
+  if (isPortrait) {
+    [WIDTH, HEIGHT] = [HEIGHT, WIDTH];
+  }
   const dispatch = useDispatch();
   const image = useSelector((state) => state.image.source);
 
@@ -139,4 +143,4 @@ function App() {
   );
 }
 
-export default App;
+export default withOrientationChange(App);
