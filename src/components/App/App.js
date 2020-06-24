@@ -21,8 +21,7 @@ const HEIGHT = 370;
 const videoConstraints = {
   width: WIDTH,
   height: HEIGHT,
-  // facingMode: { exact: "environment" },
-  facingMode: "user",
+  facingMode: { exact: "environment" },
   audio: false,
   imageSmoothing: true,
   screenshotQuality: 1,
@@ -72,7 +71,7 @@ function App() {
 
   return (
     <div className="App">
-      <h4>Welcome to P-calc!</h4>
+      <h4>P-calc app</h4>
 
       <div style={{ position: "relative", float: "top" }}>
         <Webcam
