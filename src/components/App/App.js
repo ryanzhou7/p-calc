@@ -14,7 +14,7 @@ import AnalysisResults from "../AnalysisResults/AnalysisResults";
 import "./App.css";
 import sample from "../../assets/thicc-png.png";
 
-const WIDTH = 450;
+const WIDTH = 600;
 const HEIGHT = 370;
 
 // TODO this same as canvas dimensions in canvas settings
