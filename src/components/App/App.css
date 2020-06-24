@@ -10,3 +10,18 @@
   border: 2px solid red;
   border-radius: 50%;
 }
+
+.overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  color: #fff;
+  text-align: center;
+}
+
+img {
+  height: 360px;
+  padding-top: 10px;
+}

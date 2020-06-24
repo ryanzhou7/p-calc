@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import { Button, Card, Accordion } from "react-bootstrap";
 import FileInput from "../FileInput/FileInput";
 import ImageAnalyzer from "../ImageAnalyzer/ImageAnalyzer";
@@ -11,19 +11,18 @@ import { setContext as setInnerContext } from "../../redux/innerCanvasInfoReduce
 import { setContext as setOuterContext } from "../../redux/outerCanvasInfoReducer";
 import AnalysisResults from "../AnalysisResults/AnalysisResults";
 
-import sample from "../../assets/target.png";
-
 import "./App.css";
+import sample from "../../assets/thicc-png.png";
 
-const WIDTH = 380;
-const HEIGHT = WIDTH;
+const WIDTH = 450;
+const HEIGHT = 370;
 
 // TODO this same as canvas dimensions in canvas settings
 const videoConstraints = {
   width: WIDTH,
   height: HEIGHT,
-  //facingMode: { exact: "environment" },
-  facingMode: "user",
+  facingMode: { exact: "environment" },
+  // facingMode: "user",
   audio: false,
   imageSmoothing: true,
   screenshotQuality: 1,
@@ -75,25 +74,21 @@ function App() {
     <div className="App">
       <h4>Welcome to P-calc</h4>
 
-      <div>
-        <img src={sample} />
-        <div
-          style={{
-            position: "relative",
-            backgroundColor: "grey",
-            height: "350",
-            display: "inline-block",
-          }}
-        >
-          <Webcam
-            audio={false}
-            height={HEIGHT}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            width={WIDTH}
-            videoConstraints={videoConstraints}
-          />
-          <span
+      <div style={{ position: "relative", float: "top" }}>
+        <Webcam
+          audio={false}
+          height={HEIGHT}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          width={WIDTH}
+          videoConstraints={videoConstraints}
+        />
+        <div className="overlay">
+          <img src={sample} />
+        </div>
+      </div>
+
+      {/* <span
             className="cross"
             style={{
               position: "absolute",
@@ -125,22 +120,20 @@ function App() {
               left: 0,
               backgroundColor: "red",
             }}
-          ></span>
-        </div>
+          ></span> */}
 
-        <div className="my-3">
-          <Button onClick={capture} variant="outline-primary">
-            Take picture
-          </Button>
-        </div>
+      <div className="my-3">
+        <Button onClick={capture} variant="outline-primary">
+          Take picture
+        </Button>
+      </div>
 
-        <Canvas {...outerCanvasProps} />
-        <Canvas {...innerCanvasProps} />
-        <ImageAnalyzer />
+      <Canvas {...outerCanvasProps} />
+      <Canvas {...innerCanvasProps} />
+      <ImageAnalyzer />
 
-        <div>
-          <AnalysisResults {...analysisResultsProps} />
-        </div>
+      <div>
+        <AnalysisResults {...analysisResultsProps} />
       </div>
     </div>
   );
