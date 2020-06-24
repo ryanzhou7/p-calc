@@ -21,8 +21,8 @@ const HEIGHT = 370;
 const videoConstraints = {
   width: WIDTH,
   height: HEIGHT,
-  facingMode: { exact: "environment" },
-  // facingMode: "user",
+  // facingMode: { exact: "environment" },
+  facingMode: "user",
   audio: false,
   imageSmoothing: true,
   screenshotQuality: 1,
