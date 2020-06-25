@@ -1,16 +1,6 @@
 .App {
   text-align: center;
 }
-
-.cross {
-  transform: rotate(90deg);
-}
-
-.circle {
-  border: 2px solid red;
-  border-radius: 50%;
-}
-
 .overlay {
   position: absolute;
   top: 0;
@@ -19,9 +9,4 @@
   left: 0;
   color: #fff;
   text-align: center;
-}
-
-img {
-  width: 350px;
-  padding-top: 10px;
 }

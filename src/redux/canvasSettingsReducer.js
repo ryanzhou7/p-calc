@@ -4,8 +4,8 @@ export function setCanvasDimensions(dimensions) {
 
 const initialState = {
   canvasDimensions: {
-    width: 400,
-    height: 400,
+    width: 450,
+    height: 320,
   },
 };
 
