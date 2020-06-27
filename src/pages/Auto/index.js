@@ -7,29 +7,33 @@ import { useSelector, useDispatch } from "react-redux";
 import AnalysisResults from "../../components/AnalysisResults/AnalysisResults";
 import sample from "../../assets/target-thick.png";
 
-let WIDTH = 450;
-let HEIGHT = 320;
-
-// TODO this same as canvas dimensions in canvas settings
-const videoConstraints = {
-  width: WIDTH,
-  height: HEIGHT,
-  //facingMode: { exact: "environment" },
-  facingMode: "user",
-  audio: false,
-  imageSmoothing: true,
-  screenshotQuality: 1,
-};
-
-function Manual(props) {
-  const { isLandscape, isPortrait } = props;
+function Auto(props) {
+  // Setup
   const dispatch = useDispatch();
-  const image = useSelector((state) => state.image.source);
 
+  // Redux
+  const videoConstraints = useSelector(
+    (state) => state.videoReducer.videoConstraints
+  );
+  const image = useSelector((state) => state.image.source);
   const canvasDimensions = useSelector(
     (state) => state.canvasSettings.canvasDimensions
   );
 
+  // Props
+  const { isLandscape, isPortrait } = props;
+
+  // Ref
+  const webcamRef = useRef(null);
+  const captureContainerRef = useRef(null);
+
+  // Other hooks
+  const capture = useCallback(() => {
+    const screenshot = webcamRef.current.getScreenshot();
+    dispatch(imageReducer.setImage(screenshot));
+  }, [webcamRef]);
+
+  // Children props setup
   const analysisResultsProps = {
     image: image,
     canvasDimensions: {
@@ -41,14 +45,6 @@ function Manual(props) {
       drawHeight: canvasDimensions.height,
     },
   };
-
-  const webcamRef = useRef(null);
-  const captureContainerRef = useRef(null);
-
-  const capture = useCallback(() => {
-    const screenshot = webcamRef.current.getScreenshot();
-    dispatch(imageReducer.setImage(screenshot));
-  }, [webcamRef]);
 
   return (
     <div className="App">
@@ -62,19 +58,19 @@ function Manual(props) {
           <div style={{ position: "relative", float: "top" }}>
             <Webcam
               audio={false}
-              height={HEIGHT}
+              height={videoConstraints.height}
               ref={webcamRef}
               screenshotFormat="image/jpeg"
-              width={WIDTH}
+              width={videoConstraints.height}
               videoConstraints={videoConstraints}
             />
             <div className="overlay">
-              <img style={{ height: HEIGHT }} src={sample} />
+              <img style={{ height: videoConstraints.height }} src={sample} />
             </div>
           </div>
           <div className="my-3">
             <Button onClick={() => capture()} variant="outline-primary">
-              Take picture
+              Take pictures
             </Button>
           </div>
         </div>
@@ -86,4 +82,4 @@ function Manual(props) {
   );
 }
 
-export default withOrientationChange(Manual);
+export default withOrientationChange(Auto);

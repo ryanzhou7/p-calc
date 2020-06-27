@@ -6,6 +6,7 @@ import innerCanvasInfoReducer from "./innerCanvasInfoReducer";
 import outerCanvasInfoReducer from "./outerCanvasInfoReducer";
 import combinedCanvasInfoReducer from "./combinedCanvasInfoReducer";
 import canvasSettingsReducer from "./canvasSettingsReducer";
+import videoReducer from "./videoReducer";
 
 const rootReducer = combineReducers({
   image: imageReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   outerCanvasInfo: outerCanvasInfoReducer,
   combinedCanvasInfo: combinedCanvasInfoReducer,
   canvasSettings: canvasSettingsReducer,
+  videoReducer: videoReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

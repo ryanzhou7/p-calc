@@ -65,8 +65,7 @@ function ImageAnalyzer(props) {
         <Form.Label>Sensitivity: {detectionThreshold}</Form.Label>
         <div className="d-flex mx-auto justify-content-center">
           <Button
-            onClick={(event) => {
-              event.preventDefault();
+            onClick={() => {
               changeDetectionThresholdBy(-15);
             }}
             variant="outline-primary"
@@ -75,8 +74,7 @@ function ImageAnalyzer(props) {
           </Button>
           <Button
             className="mx-2"
-            onClick={(event) => {
-              event.preventDefault();
+            onClick={() => {
               changeDetectionThresholdBy(-5);
             }}
             variant="outline-primary"
@@ -93,8 +91,7 @@ function ImageAnalyzer(props) {
           />
           <Button
             className="mx-2"
-            onClick={(event) => {
-              event.preventDefault();
+            onClick={() => {
               changeDetectionThresholdBy(5);
             }}
             variant="outline-primary"
@@ -102,8 +99,7 @@ function ImageAnalyzer(props) {
             +5
           </Button>
           <Button
-            onClick={(event) => {
-              event.preventDefault();
+            onClick={() => {
               changeDetectionThresholdBy(15);
             }}
             variant="outline-primary"

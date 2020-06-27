@@ -5,7 +5,12 @@ import Color from "color";
  * @param {*} threshold
  */
 function isRed(threshold) {
-  return (r, g, b) => r * 2 - (g + b) > 255 - threshold;
+  return (r, g, b) => {
+    const [h, s, l] = Color.rgb(r, g, b).hsl().color;
+    return (
+      (h < threshold || h > 360 - threshold) && s >= 20 && (l >= 20 || l <= 90)
+    );
+  };
 }
 
 /**
