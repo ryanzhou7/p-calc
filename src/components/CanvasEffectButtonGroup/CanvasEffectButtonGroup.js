@@ -8,21 +8,25 @@ import * as utils from "./utils";
 
 function CanvasEffectButtonGroup(props) {
   const dispatch = useDispatch();
+
+  // Redux
   const image = useSelector((state) => state.image.source);
   const isOuterEdit = useSelector((state) => state.canvasEdit.isOuterEdit);
   const outerCanvasInfo = useSelector((state) => state.outerCanvasInfo);
   const innerCanvasInfo = useSelector((state) => state.innerCanvasInfo);
-  const currentCanvasInfo = isOuterEdit ? outerCanvasInfo : innerCanvasInfo;
-
-  const { recolorHex } = props;
-  const [detectionThreshold] = props.detectionThreshold;
   const { width: canvasWidth, height: canvasHeight } = useSelector(
     (state) => state.canvasSettings.canvasDimensions
   );
 
+  // Props
+  const { recolorHex } = props;
+  const [detectionThreshold] = props.detectionThreshold;
+
+  // local
+  const currentCanvasInfo = isOuterEdit ? outerCanvasInfo : innerCanvasInfo;
+
   // TODO move this to utils
-  async function recolorDetection(event, canvasContext) {
-    event.preventDefault();
+  async function recolorDetection(canvasContext) {
     const { width: detectionWidth, height: detectionHeight } = image;
     const detectionDimensions = { detectionWidth, detectionHeight };
 
@@ -63,7 +67,7 @@ function CanvasEffectButtonGroup(props) {
       <Button
         variant="outline-primary"
         className="mx-1"
-        onClick={(event) => recolorDetection(event, currentCanvasInfo.context)}
+        onClick={() => recolorDetection(currentCanvasInfo.context)}
       >
         Recolor detected
       </Button>

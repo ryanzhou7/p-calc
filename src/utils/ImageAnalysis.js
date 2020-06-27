@@ -1,4 +1,5 @@
 import Color from "color";
+import Coordinate from "../models/coordinate";
 
 /**
  * Basic algorithm for red detection
@@ -48,6 +49,7 @@ async function detect(canvasContext, detectionDimensions, isColor, recolorHex) {
   const detectedPixels = [];
   const originalPixels = imageData.data.slice();
 
+  // We use detection height / 2 so we only detect for the upper half of the image
   for (let y = 0; y < detectionHeight / 2; y++) {
     for (let x = 0; x < detectionWidth; x++) {
       const redIndex = getIndex(x, y, detectionWidth) + R_OFFSET;
@@ -62,7 +64,9 @@ async function detect(canvasContext, detectionDimensions, isColor, recolorHex) {
         imageData.data[redIndex] = Number(redRecolor);
         imageData.data[greenIndex] = Number(greenRecolor);
         imageData.data[blueIndex] = Number(blueRecolor);
-        detectedPixels.push({ x: x, y: y });
+
+        const coordinate = new Coordinate({ x, y });
+        detectedPixels.push(coordinate);
       }
     }
   }
@@ -95,7 +99,8 @@ async function colorArea(
   const isExistingPixel = containsXYKeyIn(getXYKey, existingPixels);
 
   for (let coordinate of detectedPixels) {
-    const { x, y } = coordinate;
+    const x = coordinate.x;
+    const y = coordinate.y;
     for (let i = y; i < maxY; i++) {
       if (!isExistingPixel(x, i)) {
         const redIndex = getIndex(x, i, width) + R_OFFSET;
