@@ -63,6 +63,16 @@ function ImageAnalyzer(props) {
       </div>
       <div>
         <Form.Label>Sensitivity: {detectionThreshold}</Form.Label>
+        <div className="d-flex mx-auto mb-3 justify-content-center">
+          <Form.Control
+            className="input mx-2"
+            type="range"
+            min={SLIDER_MIN}
+            max={SLIDER_MAX}
+            value={detectionThreshold}
+            onChange={(event) => setDetectionThreshold(event.target.value)}
+          />
+        </div>
         <div className="d-flex mx-auto justify-content-center">
           <Button
             onClick={() => {
@@ -81,14 +91,26 @@ function ImageAnalyzer(props) {
           >
             -5
           </Button>
-          <Form.Control
-            className="input mx-2"
-            type="range"
-            min={SLIDER_MIN}
-            max={SLIDER_MAX}
-            value={detectionThreshold}
-            onChange={(event) => setDetectionThreshold(event.target.value)}
-          />
+          <Button
+            className="mx-2"
+            onClick={() => {
+              changeDetectionThresholdBy(-1);
+            }}
+            variant="outline-primary"
+          >
+            -1
+          </Button>
+
+          <Button
+            className="mx-2"
+            onClick={() => {
+              changeDetectionThresholdBy(1);
+            }}
+            variant="outline-primary"
+          >
+            +1
+          </Button>
+
           <Button
             className="mx-2"
             onClick={() => {

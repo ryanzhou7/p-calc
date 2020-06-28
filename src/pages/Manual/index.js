@@ -32,7 +32,7 @@ function Manual(props) {
   );
 
   // Props
-  const { isLandscape, isPortrait } = props;
+  const { isPortrait } = props;
 
   // Ref
   const webcamRef = useRef(null);
