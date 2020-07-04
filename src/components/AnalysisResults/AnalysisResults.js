@@ -14,6 +14,7 @@ function AnalysisResults(props) {
   const canvasDimensions = useSelector(
     (state) => state.canvasSettings.canvasDimensions
   );
+  const imageSource = useSelector((state) => state.image.source);
 
   const outerNumColoredPixels = combinedCanvasInfo.numColoredOuterPixels;
   const innerNumColoredPixels = combinedCanvasInfo.numColoredInnerPixels;
@@ -43,6 +44,22 @@ function AnalysisResults(props) {
         }}
       >
         Recolor
+      </Button>
+
+      <Button
+        className="my-2 ml-2"
+        variant="outline-primary"
+        onClick={() => {
+          const contexts = [
+            outerCanvasInfo.context,
+            innerCanvasInfo.context,
+            combinedCanvasInfo.context,
+          ];
+
+          utils.downloadAll(contexts, imageSource);
+        }}
+      >
+        Download all
       </Button>
       <div>
         <div>Outer pixel count: {outerNumColoredPixels}</div>

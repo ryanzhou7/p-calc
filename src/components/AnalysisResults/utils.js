@@ -1,5 +1,6 @@
 import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
+import * as CanvasUtils from "../Canvas/utils";
 
 function calculatedLossPercent(outerPixels, innerPixels) {
   let percentage = (100 * (outerPixels - innerPixels)) / outerPixels;
@@ -83,4 +84,14 @@ async function findRightCutOff(outerDetectedPixels, innerDetectedPixels) {
   return Math.min(largestOuter, largestInner);
 }
 
-export { calculatedLossPercent, combinedAnalysis };
+async function downloadAll(contexts, { width, height }) {
+  for (let context of contexts) {
+    CanvasUtils.downloadImageData(
+      width,
+      height,
+      context.getImageData(0, 0, width, height)
+    );
+  }
+}
+
+export { calculatedLossPercent, combinedAnalysis, downloadAll };

@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { withOrientationChange } from "react-device-detect";
 import ImageAnalyzer from "../../components/ImageAnalyzer/ImageAnalyzer";
@@ -11,7 +11,8 @@ import { setContext as setOuterContext } from "../../redux/outerCanvasInfoReduce
 import AnalysisResults from "../../components/AnalysisResults/AnalysisResults";
 import { downloadJpegInClient } from "./utils";
 import "./index.css";
-import sample from "../../assets/target-thick.png";
+import target from "../../assets/target-thick.png";
+import sampleChart from "../../assets/fair-light-from-right.jpeg";
 
 function Manual(props) {
   // Setup
@@ -31,6 +32,11 @@ function Manual(props) {
   const canvasDimensions = useSelector(
     (state) => state.canvasSettings.canvasDimensions
   );
+
+  // Remove this later, just for testing
+  useEffect(() => {
+    dispatch(imageReducer.setImage(sampleChart));
+  }, []);
 
   // Props
   const { isPortrait } = props;
@@ -90,7 +96,7 @@ function Manual(props) {
               <img
                 className="target"
                 style={{ height: videoConstraints.height }}
-                src={sample}
+                src={target}
               />
             </div>
           </div>
