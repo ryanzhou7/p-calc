@@ -11,7 +11,7 @@ function ImageAnalyzer(props) {
   const dispatch = useDispatch();
   const SLIDER_MIN = 0;
   const SLIDER_MAX = 255;
-  const [detectionThreshold, setDetectionThreshold] = useState(0);
+  const [detectionThreshold, setDetectionThreshold] = useState(125);
 
   const changeDetectionThresholdBy = (value) => {
     setDetectionThreshold((previous) => {

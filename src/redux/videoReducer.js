@@ -2,8 +2,8 @@ const initialState = {
   videoConstraints: {
     width: 450,
     height: 320,
-    facingMode: { exact: "environment" },
-    //facingMode: "user",
+    //facingMode: { exact: "environment" },
+    facingMode: "user",
     audio: false,
     imageSmoothing: true,
     screenshotQuality: 1,

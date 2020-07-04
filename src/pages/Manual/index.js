@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setContext as setInnerContext } from "../../redux/innerCanvasInfoReducer";
 import { setContext as setOuterContext } from "../../redux/outerCanvasInfoReducer";
 import AnalysisResults from "../../components/AnalysisResults/AnalysisResults";
+import { downloadJpegInClient } from "./utils";
 import "./index.css";
 import sample from "../../assets/target-thick.png";
 

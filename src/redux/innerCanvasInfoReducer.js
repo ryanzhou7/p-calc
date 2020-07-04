@@ -23,7 +23,6 @@ export function setNumColoredPixels(numColoredPixels) {
 export function setRecolorHex(hex) {
   return { type: "SET_INNER_RECOLOR_HEX", payload: hex };
 }
-
 const initialState = {
   context: null,
   recoloredImageData: null,
@@ -60,6 +59,7 @@ export default function reducer(state = initialState, action) {
         ...state,
         recolorHex: action.payload,
       };
+
     default:
       return state;
   }

@@ -50,7 +50,6 @@ function CanvasEffectButtonGroup(props) {
       detectionWidth,
       detectionHeight
     );
-
     const setContext = isOuterEdit
       ? outerCanvasInfoReducer.setContext
       : innerCanvasInfoReducer.setContext;

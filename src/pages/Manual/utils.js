@@ -15,6 +15,13 @@ function getProportionalX(originalX, originalY, proportionalY) {
   return (originalX * proportionalY) / originalY;
 }
 
+function downloadJpegInClient(imageData, fileName) {
+  const a = document.createElement("a");
+  a.href = imageData;
+  a.download = fileName + ".jpeg";
+  a.click();
+}
+
 function getImageDataForCombinedContext() {}
 
 export {
@@ -22,4 +29,5 @@ export {
   getCurrentViewportWidth,
   getProportionalX,
   getImageDataForCombinedContext,
+  downloadJpegInClient,
 };

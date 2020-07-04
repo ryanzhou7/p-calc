@@ -17,7 +17,7 @@ function Canvas(props) {
   }, []);
 
   useEffect(() => {
-    if (image == null || canvasContext == null || canvasRef == null) {
+    if (image == null || canvasContext == null) {
       return;
     }
 
@@ -25,7 +25,7 @@ function Canvas(props) {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     canvasContext.drawImage(image, 0, 0, drawWidth, drawHeight);
-  }, [image, drawWidth, drawHeight, canvasWidth, canvasHeight, canvasContext]);
+  }, [image, drawWidth, drawHeight, canvasWidth, canvasHeight]);
 
   return (
     <div>
