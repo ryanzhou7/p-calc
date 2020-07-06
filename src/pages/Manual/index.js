@@ -13,6 +13,7 @@ import { downloadJpegInClient } from "./utils";
 import "./index.css";
 import target from "../../assets/target-thick.png";
 import sampleChart from "../../assets/fair-light-from-right.jpeg";
+import sampleChartBlack from "../../assets/black-sharpie.jpeg";
 
 function Manual(props) {
   // Setup
@@ -35,7 +36,7 @@ function Manual(props) {
 
   // Remove this later, just for testing
   useEffect(() => {
-    dispatch(imageReducer.setImage(sampleChart));
+    dispatch(imageReducer.setImage(sampleChartBlack));
   }, []);
 
   // Props
@@ -49,6 +50,8 @@ function Manual(props) {
   const capture = useCallback(() => {
     const screenshot = webcamRef.current.getScreenshot();
     dispatch(imageReducer.setImage(screenshot));
+
+    downloadJpegInClient(screenshot, "image");
   }, [webcamRef]);
 
   // Children props setup

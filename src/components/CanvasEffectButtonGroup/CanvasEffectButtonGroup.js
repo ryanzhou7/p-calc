@@ -30,14 +30,30 @@ function CanvasEffectButtonGroup(props) {
     const { width: detectionWidth, height: detectionHeight } = image;
     const detectionDimensions = { detectionWidth, detectionHeight };
 
-    const isColorDetector = isOuterEdit
-      ? ImageAnalysis.isRed(detectionThreshold)
-      : ImageAnalysis.isBlue(detectionThreshold);
+    /* original detection method */
+    // const isColorDetector = isOuterEdit
+    //   ? ImageAnalysis.isRed(detectionThreshold)
+    //   : ImageAnalysis.isBlue(detectionThreshold);
+    // const [recoloredImageData, detectedPixels] = await ImageAnalysis.detect(
+    //   canvasContext,
+    //   detectionDimensions,
+    //   isColorDetector,
+    //   recolorHex
+    // );
 
-    const [recoloredImageData, detectedPixels] = await ImageAnalysis.detect(
+    // const isColorDetector = ImageAnalysis.isRed(detectionThreshold);
+    // const [recoloredImageData, detectedPixels] = await ImageAnalysis.detect(
+    //   canvasContext,
+    //   detectionDimensions,
+    //   isColorDetector,
+    //   recolorHex
+    // );
+
+    /* grow method */
+    const [recoloredImageData, detectedPixels] = await ImageAnalysis.detectGrow(
       canvasContext,
       detectionDimensions,
-      isColorDetector,
+      isOuterEdit,
       recolorHex
     );
 
@@ -50,6 +66,7 @@ function CanvasEffectButtonGroup(props) {
       detectionWidth,
       detectionHeight
     );
+
     const setContext = isOuterEdit
       ? outerCanvasInfoReducer.setContext
       : innerCanvasInfoReducer.setContext;

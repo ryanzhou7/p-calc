@@ -7,7 +7,7 @@ function downloadImageData(width, height, imageData) {
 
   const a = document.createElement("a");
   const name = "image.jpeg";
-  a.href = canvas.toDataURL(name, 1.0);
+  a.href = canvas.toDataURL(name, 1.0); // 1.0 for max quality
   a.download = name;
   a.click();
 }

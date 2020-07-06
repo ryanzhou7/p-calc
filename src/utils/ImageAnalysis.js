@@ -1,6 +1,7 @@
 import Color from "color";
 import Coordinate from "../models/coordinate";
 import CanvasDataHelper from "../models/canvasData";
+import * as math from "mathjs";
 
 /**
  * Basic algorithm for red detection
@@ -10,9 +11,7 @@ function isRed(threshold) {
   return (color) => {
     const { r, g, b } = color;
     const [h, s, l] = Color.rgb(r, g, b).hsl().color;
-    return (
-      (h < threshold || h > 360 - threshold) && s >= 20 && (l >= 20 || l <= 90)
-    );
+    return r < 100 && g < 100 * b < 100;
   };
 }
 
@@ -72,6 +71,130 @@ async function detect(canvasContext, detectionDimensions, isColor, recolorHex) {
 
   return Promise.resolve([imageData, detectedPixels]);
 }
+
+// detectGrow
+// detectGrow
+// detectGrow
+
+async function detectGrow(
+  canvasContext,
+  detectionDimensions,
+  isOuterEdit,
+  recolorHex
+) {
+  const { detectionWidth, detectionHeight } = detectionDimensions;
+  const imageData = canvasContext.getImageData(
+    0,
+    0,
+    detectionWidth,
+    detectionHeight
+  );
+
+  const newColor = hexToRgb(recolorHex);
+  const canvasData = new CanvasDataHelper({
+    canvasWidth: detectionWidth,
+    imageArray: imageData.data,
+  });
+
+  const seedCoordinate = await findRed(canvasData, detectionDimensions);
+  const detectedPixels = await getDetectedPixels(canvasData, seedCoordinate);
+
+  for (let coor of detectedPixels) {
+    canvasData.recolor(coor, newColor);
+  }
+
+  return Promise.resolve([imageData, detectedPixels]);
+}
+
+async function findRed(canvasData, { detectionWidth, detectionHeight }) {
+  for (let threshold = 0; threshold <= 200; threshold++) {
+    // We use detection height / 2 so we only detect for the upper half of the image
+    for (let y = 0; y < detectionHeight / 2; y++) {
+      for (let x = 0; x < detectionWidth; x++) {
+        const coordinate = { x, y };
+
+        const rgbPixel = canvasData.rgbPixel(coordinate);
+        if (isRedSimple(rgbPixel, threshold)) {
+          return coordinate;
+        }
+      }
+    }
+  }
+}
+
+function isSimilar(rgbPixel1, rgbPixel2) {
+  const { r: r1, g: g1, b: b1 } = rgbPixel1;
+  const { r: r2, g: g2, b: b2 } = rgbPixel2;
+
+  const [h1, s1, l1] = Color.rgb(r1, g1, b1).hsl().color;
+  const [h2, s2, l2] = Color.rgb(r2, g2, b2).hsl().color;
+  return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2) < 200;
+}
+
+async function getDetectedPixels(canvasData, seedCoordinate) {
+  const detectedPixels = [];
+  detectedPixels.push(seedCoordinate);
+
+  let currentLevel = [];
+  let nextLevel = [];
+  const analyzedCoordinates = new Set();
+  analyzedCoordinates.add(getXYKey(seedCoordinate.x, seedCoordinate.y));
+
+  currentLevel.push(seedCoordinate);
+
+  while (currentLevel.length > 0) {
+    while (currentLevel.length > 0) {
+      const currentCoor = currentLevel.pop();
+      const rgbOriginPixel = canvasData.rgbPixel(currentCoor);
+
+      const neighbors = getNeighbors(currentCoor);
+
+      for (let neighborCoor of neighbors) {
+        const rgbNeighborPixel = canvasData.rgbPixel(neighborCoor);
+
+        const key = getXYKey(neighborCoor.x, neighborCoor.y);
+        if (
+          !analyzedCoordinates.has(key) &&
+          isSimilar(rgbOriginPixel, rgbNeighborPixel)
+        ) {
+          nextLevel.push(neighborCoor);
+          detectedPixels.push(neighborCoor);
+        }
+        analyzedCoordinates.add(key);
+      }
+    }
+    currentLevel = nextLevel;
+    nextLevel = [];
+  }
+  return detectedPixels;
+}
+
+const neighborsDelta = [
+  [1, 0],
+  [-1, 0],
+  [0, 1],
+  [0, -1],
+];
+function getNeighbors(coordinate) {
+  const neighbors = [];
+  const { x, y } = coordinate;
+
+  for (let delta of neighborsDelta) {
+    const [deltaX, deltaY] = delta;
+    neighbors.push(new Coordinate({ x: deltaX + x, y: deltaY + y }));
+  }
+
+  return neighbors;
+}
+
+function isRedSimple(color, threshold) {
+  const { r, g, b } = color;
+  return r + g + b <= threshold;
+}
+
+// detectGrow
+// detectGrow
+// detectGrow
 
 async function colorAreaWithBounds(
   { width, height },
@@ -218,4 +341,4 @@ function hexToRgb(hex) {
 function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
-export { detect, isRed, isBlue, colorAreaWithBounds };
+export { detect, detectGrow, isRed, isBlue, colorAreaWithBounds };
