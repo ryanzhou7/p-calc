@@ -1,27 +1,5 @@
-import Color from "color";
 import Coordinate from "../models/coordinate";
 import CanvasDataHelper from "../models/canvasData";
-import * as math from "mathjs";
-
-/**
- * Basic algorithm for red detection
- * @param {*} threshold
- */
-function isRed(threshold) {
-  return (color) => {
-    const { r, g, b } = color;
-    const [h, s, l] = Color.rgb(r, g, b).hsl().color;
-    return r < 100 && g < 100 * b < 100;
-  };
-}
-
-/**
- * Basic algorithm for blue detection
- * @param {*} threshold
- */
-function isBlue(threshold) {
-  return ({ r, g, b }) => b * 2 - (g + r) > 255 - threshold;
-}
 
 /**
  * Offsets access each value in a canvasContext.getImageData()
@@ -29,48 +7,6 @@ function isBlue(threshold) {
 const R_OFFSET = 0;
 const G_OFFSET = 1;
 const B_OFFSET = 2;
-
-/**
- * Detects the color, recolors it, and return the newly recolored image / number of pixels colored
- * @param {*} detectionDimensions
- * @param {*} imageData
- * @param {*} isColor
- * @param {*} recolorHex
- */
-async function detect(canvasContext, detectionDimensions, isColor, recolorHex) {
-  const { detectionWidth, detectionHeight } = detectionDimensions;
-  const imageData = canvasContext.getImageData(
-    0,
-    0,
-    detectionWidth,
-    detectionHeight
-  );
-
-  const newColor = hexToRgb(recolorHex);
-  const detectedPixels = [];
-
-  const canvasData = new CanvasDataHelper({
-    canvasWidth: detectionWidth,
-    imageArray: imageData.data,
-  });
-
-  // We use detection height / 2 so we only detect for the upper half of the image
-  for (let y = 0; y < detectionHeight / 2; y++) {
-    for (let x = 0; x < detectionWidth; x++) {
-      const coordinate = { x, y };
-
-      const rgbPixel = canvasData.rgbPixel(coordinate);
-
-      if (isColor(rgbPixel)) {
-        canvasData.recolor(coordinate, newColor);
-        const detectedCoordinate = new Coordinate(coordinate);
-        detectedPixels.push(detectedCoordinate);
-      }
-    }
-  }
-
-  return Promise.resolve([imageData, detectedPixels]);
-}
 
 // detectGrow
 // detectGrow
@@ -96,84 +32,149 @@ async function detectGrow(
     imageArray: imageData.data,
   });
 
-  const seedCoordinate = await findRed(canvasData, detectionDimensions);
-  const detectedPixels = await getDetectedPixels(canvasData, seedCoordinate);
+  const seedCoordinate = await findSeed(canvasData, detectionDimensions);
+  const laplacianArray = await getLaplacianArray(
+    canvasData,
+    detectionDimensions
+  );
+  const detectedPixels = await getDetectedPixels(
+    canvasData,
+    seedCoordinate,
+    laplacianArray,
+    detectionDimensions
+  );
 
   for (let coor of detectedPixels) {
-    canvasData.recolor(coor, newColor);
+    canvasData.recolor(coor, newColor, laplacianArray);
   }
 
   return Promise.resolve([imageData, detectedPixels]);
 }
 
-async function findRed(canvasData, { detectionWidth, detectionHeight }) {
-  for (let threshold = 0; threshold <= 200; threshold++) {
-    // We use detection height / 2 so we only detect for the upper half of the image
-    for (let y = 0; y < detectionHeight / 2; y++) {
-      for (let x = 0; x < detectionWidth; x++) {
-        const coordinate = { x, y };
+async function findSeed(canvasData, { detectionWidth, detectionHeight }) {
+  const middleX = detectionWidth / 2;
+  let coor = { x: middleX };
+  let intensity = 0;
 
-        const rgbPixel = canvasData.rgbPixel(coordinate);
-        if (isRedSimple(rgbPixel, threshold)) {
-          return coordinate;
-        }
-      }
+  // We use detection height / 2 so we only detect for the upper half of the image
+  for (let y = 0; y < detectionHeight / 2; y++) {
+    const coordinate = { x: middleX, y };
+    const rgbPixel = canvasData.rgbPixel(coordinate);
+
+    const value = rgbPixel.r * 2 - rgbPixel.b - rgbPixel.g;
+    if (value > intensity) {
+      coor.y = y;
+      intensity = value;
     }
   }
+
+  return coor;
 }
 
-function isSimilar(rgbPixel1, rgbPixel2) {
-  const { r: r1, g: g1, b: b1 } = rgbPixel1;
-  const { r: r2, g: g2, b: b2 } = rgbPixel2;
+async function getLaplacianArray(
+  canvasData,
+  { detectionWidth, detectionHeight }
+) {
+  const laplacianArray = [];
 
-  const [h1, s1, l1] = Color.rgb(r1, g1, b1).hsl().color;
-  const [h2, s2, l2] = Color.rgb(r2, g2, b2).hsl().color;
-  return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2) < 200;
+  // Calculate requires to look one over
+  for (let y = 1; y < detectionHeight - 1; y++) {
+    const row = [];
+    for (let x = 1; x < detectionWidth - 1; x++) {
+      const coordinate = { x, y };
+      const value = await calcLaplacianValue(canvasData, coordinate);
+      row.push(value);
+    }
+
+    laplacianArray.push(row);
+  }
+
+  return laplacianArray;
 }
 
-async function getDetectedPixels(canvasData, seedCoordinate) {
+async function calcLaplacianValue(canvasData, coordinate) {
+  const { x, y } = coordinate;
+  const rgbPixel = canvasData.rgbPixel(coordinate);
+
+  let sum = -4 * rgbPixel.r;
+
+  for (let delta of neighborsDelta) {
+    const [deltaX, deltaY] = delta;
+    const neighbor = new Coordinate({ x: deltaX + x, y: deltaY + y });
+    const rgbPixel = canvasData.rgbPixel(neighbor);
+    sum += rgbPixel.r;
+  }
+  return sum;
+}
+
+async function getDetectedPixels(
+  canvasData,
+  seedCoordinate,
+  laplacianArray,
+  { detectionWidth, detectionHeight }
+) {
+  const { x, y } = seedCoordinate;
+
+  const seedCoorValue = laplacianArray[x][y];
+  const isSameSign = seedCoorValue < 0 ? (v) => v <= 0 : (v) => v > 0;
+
   const detectedPixels = [];
   detectedPixels.push(seedCoordinate);
 
-  let currentLevel = [];
-  let nextLevel = [];
-  const analyzedCoordinates = new Set();
-  analyzedCoordinates.add(getXYKey(seedCoordinate.x, seedCoordinate.y));
+  let queue = [];
+  queue.push(seedCoordinate);
+  const visited = new Set();
 
-  currentLevel.push(seedCoordinate);
+  while (queue.length > 0) {
+    const currentCoor = queue.pop();
 
-  while (currentLevel.length > 0) {
-    while (currentLevel.length > 0) {
-      const currentCoor = currentLevel.pop();
-      const rgbOriginPixel = canvasData.rgbPixel(currentCoor);
-
+    try {
+      const key = getXYKey(currentCoor.x, currentCoor.y);
+      visited.add(key);
       const neighbors = getNeighbors(currentCoor);
 
       for (let neighborCoor of neighbors) {
-        const rgbNeighborPixel = canvasData.rgbPixel(neighborCoor);
-
         const key = getXYKey(neighborCoor.x, neighborCoor.y);
         if (
-          !analyzedCoordinates.has(key) &&
-          isSimilar(rgbOriginPixel, rgbNeighborPixel)
+          !visited.has(key) &&
+          isSimiliar(currentCoor, neighborCoor, canvasData, laplacianArray)
         ) {
-          nextLevel.push(neighborCoor);
+          queue.push(neighborCoor);
           detectedPixels.push(neighborCoor);
+          visited.add(key);
         }
-        analyzedCoordinates.add(key);
       }
+    } catch (e) {
+      console.error(e);
     }
-    currentLevel = nextLevel;
-    nextLevel = [];
   }
+
   return detectedPixels;
 }
 
+function isSimiliar(origin, suspect, canvasData, laplacianArray) {
+  const originRgb = canvasData.rgbPixel(origin); // + laplacianArray[coor1.x][coor1.y];
+  const suspectRgb = canvasData.rgbPixel(suspect); // + laplacianArray[coor2.x][coor2.y];
+
+  return (
+    // check if this is "red"
+    suspectRgb.r * 2 - suspectRgb.g - suspectRgb.b > 40 &&
+    // check if each of these values are not too different from the origin
+    Math.abs(originRgb.r - suspectRgb.r) < 35 &&
+    Math.abs(originRgb.g - suspectRgb.g) < 35 &&
+    Math.abs(originRgb.b - suspectRgb.b) < 35
+  );
+}
+
 const neighborsDelta = [
-  [1, 0],
+  [-1, -1],
   [-1, 0],
-  [0, 1],
+  [-1, 1],
   [0, -1],
+  [0, 1],
+  [1, -1],
+  [1, 0],
+  [1, 1],
 ];
 function getNeighbors(coordinate) {
   const neighbors = [];
@@ -186,16 +187,6 @@ function getNeighbors(coordinate) {
 
   return neighbors;
 }
-
-function isRedSimple(color, threshold) {
-  const { r, g, b } = color;
-  return r + g + b <= threshold;
-}
-
-// detectGrow
-// detectGrow
-// detectGrow
-
 async function colorAreaWithBounds(
   { width, height },
   outerCanvasInfo,
@@ -341,4 +332,4 @@ function hexToRgb(hex) {
 function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
-export { detect, detectGrow, isRed, isBlue, colorAreaWithBounds };
+export { detectGrow, colorAreaWithBounds };

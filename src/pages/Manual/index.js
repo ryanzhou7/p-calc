@@ -12,8 +12,7 @@ import AnalysisResults from "../../components/AnalysisResults/AnalysisResults";
 import { downloadJpegInClient } from "./utils";
 import "./index.css";
 import target from "../../assets/target-thick.png";
-import sampleChart from "../../assets/fair-light-from-right.jpeg";
-import sampleChartBlack from "../../assets/black-sharpie.jpeg";
+import sampleChart from "../../assets/black-red.jpeg";
 
 function Manual(props) {
   // Setup
@@ -36,7 +35,7 @@ function Manual(props) {
 
   // Remove this later, just for testing
   useEffect(() => {
-    dispatch(imageReducer.setImage(sampleChartBlack));
+    dispatch(imageReducer.setImage(sampleChart));
   }, []);
 
   // Props
