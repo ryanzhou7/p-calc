@@ -5,9 +5,10 @@ import Webcam from "react-webcam";
 import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
 import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
-import target from "../../assets/target-thick.png";
+import target from "../../assets/target/thick.png";
 import "./index.css";
-//import sampleChart from "../../assets/black-red.jpeg";
+//import sampleChart from "../../assets/top-max.jpeg";
+//import sampleChart from "../../assets/image-5.jpeg";
 
 function Auto(props) {
   // Setup
@@ -23,7 +24,7 @@ function Auto(props) {
   );
 
   // Props
-  const { isLandscape, isPortrait } = props;
+  const { isPortrait } = props;
 
   // Ref
   const webcamRef = useRef(null);

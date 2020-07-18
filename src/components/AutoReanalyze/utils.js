@@ -63,25 +63,27 @@ async function findNextMax(maxCoor, detectedPixels, canvasData, width, height) {
   const photoOriginY = height / 2;
   const distanceFromOrigin = Math.abs(maxCoor.y - photoOriginY);
   const distanceFromTop = maxCoor.y;
-  const isDownwardsSearch = distanceFromTop > distanceFromOrigin;
+
+  // If the already found coor's distance from the bottom (origin) is less than the tops then
+  // it's closer to the bottom and we are searching from top to bottom
+  const isTopToBottomSearch = distanceFromOrigin < distanceFromTop;
   const middleX = width / 2;
 
-  // If we are search downwards we seek the boundary that is the biggest y, hence initial to smal
-  let boundary = isDownwardsSearch ? Number.MAX_VALUE : Number.MIN_VALUE;
-  const boundaryComparison = isDownwardsSearch ? Math.min : Math.max;
+  // If we are search from top to bottom it means the current max is the bottom
+  // Hence, from the detected bottom line when need to find the biggest y as the boundary
+  let boundary = isTopToBottomSearch ? Number.MAX_VALUE : Number.MIN_VALUE;
+  const boundaryComparator = isTopToBottomSearch ? Math.min : Math.max;
 
   for (let { y } of detectedPixels) {
-    boundary = boundaryComparison(boundary, y);
+    boundary = boundaryComparator(boundary, y);
   }
-
-  let startY = isDownwardsSearch ? 0 : boundary;
-  let endY = isDownwardsSearch ? boundary : 0;
 
   let coor = { x: middleX };
   let intensity = 0;
 
-  while (startY !== endY) {
-    let y = startY;
+  let y = isTopToBottomSearch ? 0 : photoOriginY;
+
+  while (y !== boundary) {
     const coordinate = { x: middleX, y };
     const rgbPixel = canvasData.rgbPixel(coordinate);
 
@@ -90,10 +92,10 @@ async function findNextMax(maxCoor, detectedPixels, canvasData, width, height) {
       coor.y = y;
       intensity = value;
     }
-    if (isDownwardsSearch) {
-      startY++;
+    if (isTopToBottomSearch) {
+      y++;
     } else {
-      startY--;
+      y--;
     }
   }
   return coor;

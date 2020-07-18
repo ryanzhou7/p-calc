@@ -11,7 +11,7 @@ import { setContext as setOuterContext } from "../../redux/outerCanvasInfoReduce
 import AnalysisResults from "../../components/AnalysisResults/AnalysisResults";
 import { downloadJpegInClient } from "./utils";
 import "./index.css";
-import target from "../../assets/target-thick.png";
+import target from "../../assets/target/thick.png";
 import sampleChart from "../../assets/black-red.jpeg";
 
 function Manual(props) {
@@ -49,7 +49,6 @@ function Manual(props) {
   const capture = useCallback(() => {
     const screenshot = webcamRef.current.getScreenshot();
     dispatch(imageReducer.setImage(screenshot));
-
     downloadJpegInClient(screenshot, "image");
   }, [webcamRef]);
 

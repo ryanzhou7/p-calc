@@ -8,6 +8,10 @@ const R_OFFSET = 0;
 const G_OFFSET = 1;
 const B_OFFSET = 2;
 
+// Increase to relax restrictions
+const SEED_THRESHOLD_ADJUST = 50;
+const IS_SIMILAR_PIXEL_THRESHOLD = 50;
+
 async function detectGrow(canvasContext, detectionDimensions, recolorHex) {
   const { detectionWidth, detectionHeight } = detectionDimensions;
   const imageData = canvasContext.getImageData(
@@ -114,7 +118,7 @@ async function getDetectedPixels(canvasData, seedCoordinate) {
         const key = getXYKey(neighborCoor.x, neighborCoor.y);
         if (
           !visited.has(key) &&
-          isSimiliar(currentCoor, neighborCoor, canvasData)
+          isSimiliar(currentCoor, neighborCoor, canvasData, seedCoordinate)
         ) {
           queue.push(neighborCoor);
           detectedPixels.push(neighborCoor);
@@ -129,17 +133,21 @@ async function getDetectedPixels(canvasData, seedCoordinate) {
   return detectedPixels;
 }
 
-function isSimiliar(origin, suspect, canvasData) {
+function isSimiliar(origin, suspect, canvasData, seedCoordinate) {
+  const seedRgb = canvasData.rgbPixel(seedCoordinate);
+  const seedThreshold = seedRgb.r * 2 - seedRgb.g - seedRgb.b;
+
   const originRgb = canvasData.rgbPixel(origin);
   const suspectRgb = canvasData.rgbPixel(suspect);
 
   return (
     // check if this is "red"
-    suspectRgb.r * 2 - suspectRgb.g - suspectRgb.b > 50 &&
+    suspectRgb.r * 2 - suspectRgb.g - suspectRgb.b + SEED_THRESHOLD_ADJUST >
+      seedThreshold &&
     // check if each of these values are not too different from the origin
-    Math.abs(originRgb.r - suspectRgb.r) < 200 &&
-    Math.abs(originRgb.g - suspectRgb.g) < 200 &&
-    Math.abs(originRgb.b - suspectRgb.b) < 200
+    Math.abs(originRgb.r - suspectRgb.r) < IS_SIMILAR_PIXEL_THRESHOLD &&
+    Math.abs(originRgb.g - suspectRgb.g) < IS_SIMILAR_PIXEL_THRESHOLD &&
+    Math.abs(originRgb.b - suspectRgb.b) < IS_SIMILAR_PIXEL_THRESHOLD
   );
 }
 
