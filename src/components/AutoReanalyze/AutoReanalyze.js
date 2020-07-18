@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Button } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
@@ -29,44 +29,36 @@ function AnalysisResults(props) {
     ],
   };
 
-  // useEffects
-  useEffect(() => {
-    if (imageSource) {
-      utils.combinedAnalysis(
-        outerCanvasInfo,
-        innerCanvasInfo,
-        combinedCanvasInfo,
-        canvasDimensions,
-        dispatch
-      );
-    }
-  }, [imageSource]);
+  async function fullAnalysis() {
+    const combinedCanvasContext = await utils.fullAnalysis(
+      imageSource,
+      combinedCanvasInfo
+    );
+    // don't have to do this to update
+    //dispatch(combinedCanvasInfoReducer.setContext(combinedCanvasContext));
+  }
 
   return (
     <div>
-      <Canvas {...canvasProps} />
-      <Button
-        className="my-2"
-        variant="outline-primary"
-        onClick={() => {
-          utils.combinedAnalysis(
-            outerCanvasInfo,
-            innerCanvasInfo,
-            combinedCanvasInfo,
-            canvasDimensions,
-            dispatch
-          );
-        }}
-      >
-        Recolor
-      </Button>
-      <div>
+      <div className="d-flex justify-content-around align-items-center">
+        <Canvas {...canvasProps} />
+
         <div>
-          Calculated Loss %:{" "}
-          {utils.calculatedLossPercent(
-            outerNumColoredPixels,
-            innerNumColoredPixels
-          )}
+          <Button
+            className="my-2"
+            variant="outline-primary"
+            onClick={fullAnalysis}
+          >
+            Full analysis
+          </Button>
+
+          <div>
+            Calculated Loss %:{" "}
+            {utils.calculatedLossPercent(
+              outerNumColoredPixels,
+              innerNumColoredPixels
+            )}
+          </div>
         </div>
       </div>
     </div>

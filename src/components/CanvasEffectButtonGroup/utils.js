@@ -1,4 +1,5 @@
 import * as Canvas from "../../utils/Canvas";
+import * as ImageAnalysis from "../../utils/ImageAnalysis";
 
 async function resetCanvas(
   event,
@@ -13,4 +14,27 @@ async function resetCanvas(
   setNumPixelsColored(0);
 }
 
-export { resetCanvas };
+async function recolorDetection(image, canvasContext, recolorHex) {
+  const { width: detectionWidth, height: detectionHeight } = image;
+  const detectionDimensions = { detectionWidth, detectionHeight };
+
+  const [recoloredImageData, detectedPixels] = await ImageAnalysis.detectGrow(
+    canvasContext,
+    detectionDimensions,
+    recolorHex
+  );
+
+  canvasContext.putImageData(
+    recoloredImageData,
+    0,
+    0,
+    0,
+    0,
+    detectionWidth,
+    detectionHeight
+  );
+
+  return { canvasContext, detectedPixels };
+}
+
+export { resetCanvas, recolorDetection };

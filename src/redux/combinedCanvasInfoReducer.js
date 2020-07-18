@@ -1,11 +1,11 @@
 export function setContext(context) {
   return { type: "SET_COMBINE_CONTEXT", payload: context };
 }
-export function setNumColoredInnerPixels(context) {
-  return { type: "SET_NUM_COLORED_INNER_PIXELS", payload: context };
+export function setNumColoredInnerPixels(numInnerPixels) {
+  return { type: "SET_NUM_COLORED_INNER_PIXELS", payload: numInnerPixels };
 }
-export function setNumColoredOuterPixels(context) {
-  return { type: "SET_NUM_COLORED_OUTER_PIXELS", payload: context };
+export function setNumColoredOuterPixels(numOuterPixels) {
+  return { type: "SET_NUM_COLORED_OUTER_PIXELS", payload: numOuterPixels };
 }
 const initialState = {
   context: null,

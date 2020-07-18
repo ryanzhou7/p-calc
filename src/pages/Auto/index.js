@@ -1,11 +1,12 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { withOrientationChange } from "react-device-detect";
 import Webcam from "react-webcam";
 import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
-import AnalysisResults from "../../components/AnalysisResults/AnalysisResults";
-import sample from "../../assets/target-thick.png";
+import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
+import target from "../../assets/target-thick.png";
+//import sampleChart from "../../assets/black-red.jpeg";
 
 function Auto(props) {
   // Setup
@@ -27,6 +28,11 @@ function Auto(props) {
   const webcamRef = useRef(null);
   const captureContainerRef = useRef(null);
 
+  // UseEffect - Remove this later, just for testing
+  useEffect(() => {
+    //dispatch(imageReducer.setImage(sampleChart));
+  }, []);
+
   // Other hooks
   const capture = useCallback(() => {
     const screenshot = webcamRef.current.getScreenshot();
@@ -34,7 +40,7 @@ function Auto(props) {
   }, [webcamRef]);
 
   // Children props setup
-  const analysisResultsProps = {
+  const autoReanalyzeProps = {
     image: image,
     canvasDimensions: {
       canvasWidth: canvasDimensions.width,
@@ -65,18 +71,18 @@ function Auto(props) {
               videoConstraints={videoConstraints}
             />
             <div className="overlay">
-              <img style={{ height: videoConstraints.height }} src={sample} />
+              <img style={{ height: videoConstraints.height }} src={target} />
             </div>
           </div>
           <div className="my-3">
             <Button onClick={() => capture()} variant="outline-primary">
-              Take pictures
+              Take picture
             </Button>
           </div>
         </div>
       )}
       <div>
-        <AnalysisResults {...analysisResultsProps} />
+        <AutoReanalyze {...autoReanalyzeProps} />
       </div>
     </div>
   );

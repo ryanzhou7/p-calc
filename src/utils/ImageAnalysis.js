@@ -8,16 +8,7 @@ const R_OFFSET = 0;
 const G_OFFSET = 1;
 const B_OFFSET = 2;
 
-// detectGrow
-// detectGrow
-// detectGrow
-
-async function detectGrow(
-  canvasContext,
-  detectionDimensions,
-  isOuterEdit,
-  recolorHex
-) {
+async function detectGrow(canvasContext, detectionDimensions, recolorHex) {
   const { detectionWidth, detectionHeight } = detectionDimensions;
   const imageData = canvasContext.getImageData(
     0,
@@ -33,19 +24,10 @@ async function detectGrow(
   });
 
   const seedCoordinate = await findSeed(canvasData, detectionDimensions);
-  const laplacianArray = await getLaplacianArray(
-    canvasData,
-    detectionDimensions
-  );
-  const detectedPixels = await getDetectedPixels(
-    canvasData,
-    seedCoordinate,
-    laplacianArray,
-    detectionDimensions
-  );
+  const detectedPixels = await getDetectedPixels(canvasData, seedCoordinate);
 
   for (let coor of detectedPixels) {
-    canvasData.recolor(coor, newColor, laplacianArray);
+    canvasData.recolor(coor, newColor);
   }
 
   return Promise.resolve([imageData, detectedPixels]);
@@ -70,6 +52,10 @@ async function findSeed(canvasData, { detectionWidth, detectionHeight }) {
 
   return coor;
 }
+
+/*
+ * Laplacian
+ */
 
 async function getLaplacianArray(
   canvasData,
@@ -107,17 +93,8 @@ async function calcLaplacianValue(canvasData, coordinate) {
   return sum;
 }
 
-async function getDetectedPixels(
-  canvasData,
-  seedCoordinate,
-  laplacianArray,
-  { detectionWidth, detectionHeight }
-) {
+async function getDetectedPixels(canvasData, seedCoordinate) {
   const { x, y } = seedCoordinate;
-
-  const seedCoorValue = laplacianArray[x][y];
-  const isSameSign = seedCoorValue < 0 ? (v) => v <= 0 : (v) => v > 0;
-
   const detectedPixels = [];
   detectedPixels.push(seedCoordinate);
 
@@ -137,7 +114,7 @@ async function getDetectedPixels(
         const key = getXYKey(neighborCoor.x, neighborCoor.y);
         if (
           !visited.has(key) &&
-          isSimiliar(currentCoor, neighborCoor, canvasData, laplacianArray)
+          isSimiliar(currentCoor, neighborCoor, canvasData)
         ) {
           queue.push(neighborCoor);
           detectedPixels.push(neighborCoor);
@@ -152,17 +129,17 @@ async function getDetectedPixels(
   return detectedPixels;
 }
 
-function isSimiliar(origin, suspect, canvasData, laplacianArray) {
-  const originRgb = canvasData.rgbPixel(origin); // + laplacianArray[coor1.x][coor1.y];
-  const suspectRgb = canvasData.rgbPixel(suspect); // + laplacianArray[coor2.x][coor2.y];
+function isSimiliar(origin, suspect, canvasData) {
+  const originRgb = canvasData.rgbPixel(origin);
+  const suspectRgb = canvasData.rgbPixel(suspect);
 
   return (
     // check if this is "red"
-    suspectRgb.r * 2 - suspectRgb.g - suspectRgb.b > 40 &&
+    suspectRgb.r * 2 - suspectRgb.g - suspectRgb.b > 50 &&
     // check if each of these values are not too different from the origin
-    Math.abs(originRgb.r - suspectRgb.r) < 35 &&
-    Math.abs(originRgb.g - suspectRgb.g) < 35 &&
-    Math.abs(originRgb.b - suspectRgb.b) < 35
+    Math.abs(originRgb.r - suspectRgb.r) < 200 &&
+    Math.abs(originRgb.g - suspectRgb.g) < 200 &&
+    Math.abs(originRgb.b - suspectRgb.b) < 200
   );
 }
 
@@ -332,4 +309,4 @@ function hexToRgb(hex) {
 function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
-export { detectGrow, colorAreaWithBounds };
+export { detectGrow, colorAreaWithBounds, getDetectedPixels };

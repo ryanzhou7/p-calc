@@ -18,7 +18,7 @@ function Manual(props) {
   // Setup
   const dispatch = useDispatch();
 
-  // Redux
+  // State
   const videoConstraints = useSelector(
     (state) => state.videoReducer.videoConstraints
   );

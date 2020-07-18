@@ -20,53 +20,18 @@ function CanvasEffectButtonGroup(props) {
 
   // Props
   const { recolorHex } = props;
-  const [detectionThreshold] = props.detectionThreshold;
 
   // local
   const currentCanvasInfo = isOuterEdit ? outerCanvasInfo : innerCanvasInfo;
 
-  // TODO move this to utils
-  async function recolorDetection(canvasContext) {
-    const { width: detectionWidth, height: detectionHeight } = image;
-    const detectionDimensions = { detectionWidth, detectionHeight };
+  async function recolorDetection() {
+    let canvasContextInput = currentCanvasInfo.context;
 
-    /* original detection method */
-    // const isColorDetector = isOuterEdit
-    //   ? ImageAnalysis.isRed(detectionThreshold)
-    //   : ImageAnalysis.isBlue(detectionThreshold);
-    // const [recoloredImageData, detectedPixels] = await ImageAnalysis.detect(
-    //   canvasContext,
-    //   detectionDimensions,
-    //   isColorDetector,
-    //   recolorHex
-    // );
-
-    // const isColorDetector = ImageAnalysis.isRed(detectionThreshold);
-    // const [recoloredImageData, detectedPixels] = await ImageAnalysis.detect(
-    //   canvasContext,
-    //   detectionDimensions,
-    //   isColorDetector,
-    //   recolorHex
-    // );
-
-    /* grow method */
-    const [recoloredImageData, detectedPixels] = await ImageAnalysis.detectGrow(
-      canvasContext,
-      detectionDimensions,
-      isOuterEdit,
+    const { canvasContext, detectedPixels } = await utils.recolorDetection(
+      image,
+      canvasContextInput,
       recolorHex
     );
-
-    canvasContext.putImageData(
-      recoloredImageData,
-      0,
-      0,
-      0,
-      0,
-      detectionWidth,
-      detectionHeight
-    );
-
     const setContext = isOuterEdit
       ? outerCanvasInfoReducer.setContext
       : innerCanvasInfoReducer.setContext;
@@ -83,7 +48,7 @@ function CanvasEffectButtonGroup(props) {
       <Button
         variant="outline-primary"
         className="mx-1"
-        onClick={() => recolorDetection(currentCanvasInfo.context)}
+        onClick={() => recolorDetection()}
       >
         Recolor detected
       </Button>

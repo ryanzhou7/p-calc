@@ -22,12 +22,9 @@ function downloadJpegInClient(imageData, fileName) {
   a.click();
 }
 
-function getImageDataForCombinedContext() {}
-
 export {
   saveSelectedImage,
   getCurrentViewportWidth,
   getProportionalX,
-  getImageDataForCombinedContext,
   downloadJpegInClient,
 };
