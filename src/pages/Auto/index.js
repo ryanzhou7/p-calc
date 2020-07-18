@@ -6,6 +6,7 @@ import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
 import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
 import target from "../../assets/target-thick.png";
+import "./index.css";
 //import sampleChart from "../../assets/black-red.jpeg";
 
 function Auto(props) {
@@ -67,11 +68,15 @@ function Auto(props) {
               height={videoConstraints.height}
               ref={webcamRef}
               screenshotFormat="image/jpeg"
-              width={videoConstraints.height}
+              width={videoConstraints.width}
               videoConstraints={videoConstraints}
             />
             <div className="overlay">
-              <img style={{ height: videoConstraints.height }} src={target} />
+              <img
+                className="target"
+                style={{ height: videoConstraints.height }}
+                src={target}
+              />
             </div>
           </div>
           <div className="my-3">
