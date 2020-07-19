@@ -9,8 +9,8 @@ const G_OFFSET = 1;
 const B_OFFSET = 2;
 
 // Increase to relax restrictions
-const SEED_THRESHOLD_ADJUST = 45;
-const IS_SIMILAR_PIXEL_THRESHOLD = 45;
+const SEED_THRESHOLD_ADJUST = 40;
+const IS_SIMILAR_PIXEL_THRESHOLD = 40;
 
 async function detectGrow(canvasContext, detectionDimensions, recolorHex) {
   const { detectionWidth, detectionHeight } = detectionDimensions;
@@ -182,14 +182,14 @@ async function colorAreaWithBounds(
     height
   );
 
-  const outerNumPixelsColored = await updateImageData(
+  const outerNumPixelsColored = await updateImageDataOld(
     { width, height },
     imageData,
     { leftX, rightX },
     outerCanvasInfo
   );
 
-  const innerNumPixelsColored = await updateImageData(
+  const innerNumPixelsColored = await updateImageDataOld(
     { width, height },
     imageData,
     { leftX, rightX },
@@ -204,6 +204,34 @@ async function colorAreaWithBounds(
 }
 
 async function updateImageData(
+  canvasData,
+  { leftX, rightX, height },
+  recolor,
+  detectedPixels
+) {
+  let numDetectedPixels = 0;
+  const coloredPixels = new Set();
+  for (let coordinate of detectedPixels) {
+    const { x, y } = coordinate;
+
+    // Go down a vertical line
+    for (let i = y; i < height / 2; i++) {
+      const key = getXYKey(x, i);
+      const verticalCoordinate = { x, y: i };
+
+      // Color this pixel only if it has not been colored before and is within bounds
+      if (!coloredPixels.has(key) && leftX <= x && x <= rightX) {
+        coloredPixels.add(key);
+        canvasData.recolor(verticalCoordinate, recolor);
+        numDetectedPixels++;
+      }
+    }
+  }
+
+  return numDetectedPixels;
+}
+
+async function updateImageDataOld(
   { width, height },
   imageData,
   { leftX, rightX },
@@ -313,4 +341,4 @@ function hexToRgb(hex) {
 function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
-export { detectGrow, colorAreaWithBounds, getDetectedPixels };
+export { detectGrow, colorAreaWithBounds, getDetectedPixels, updateImageData };

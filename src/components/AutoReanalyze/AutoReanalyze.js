@@ -20,6 +20,9 @@ function AnalysisResults(props) {
   const outerNumColoredPixels = combinedCanvasInfo.numColoredOuterPixels;
   const innerNumColoredPixels = combinedCanvasInfo.numColoredInnerPixels;
 
+  let topPixelsCount = 0;
+  let bottomPixelsCount = 0;
+
   // Child props
   const canvasProps = {
     ...props,
@@ -30,12 +33,22 @@ function AnalysisResults(props) {
   };
 
   async function fullAnalysis() {
-    const combinedCanvasContext = await utils.fullAnalysis(
-      imageSource,
-      combinedCanvasInfo
+    const {
+      topPixelsCount: top,
+      bottomPixelsCount: bottom,
+      context,
+    } = await utils.fullAnalysis(imageSource, combinedCanvasInfo);
+    topPixelsCount = top;
+    bottomPixelsCount = bottom;
+
+    // don't have to do this to update ?
+    dispatch(combinedCanvasInfoReducer.setContext(context));
+    dispatch(
+      combinedCanvasInfoReducer.setNumColoredOuterPixels(topPixelsCount)
     );
-    // don't have to do this to update
-    //dispatch(combinedCanvasInfoReducer.setContext(combinedCanvasContext));
+    dispatch(
+      combinedCanvasInfoReducer.setNumColoredInnerPixels(bottomPixelsCount)
+    );
   }
 
   return (

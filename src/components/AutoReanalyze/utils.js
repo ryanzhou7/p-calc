@@ -9,24 +9,31 @@ async function fullAnalysis(image, combinedCanvasInfo) {
     detectionHeight: height,
   };
 
-  // setup
+  /*
+   * Setup
+   */
+
   const { context } = combinedCanvasInfo;
   context.drawImage(image, 0, 0, width, height);
-  const imageData = context.getImageData(0, 0, width, height);
+  let imageData = context.getImageData(0, 0, width, height);
 
   const canvasData = new CanvasDataHelper({
     canvasWidth: dimensions.detectionWidth,
     imageArray: imageData.data,
   });
 
-  // Get "max" intense coordinate
+  /*
+   * Max / Next Max
+   */
+
+  // Max
   const maxCoor = await findMax(canvasData, dimensions);
   const maxDetectedPixels = await ImageAnalysis.getDetectedPixels(
     canvasData,
     maxCoor
   );
 
-  // find next Max
+  // Next max
   const nextMaxCoor = await findNextMax(
     maxCoor,
     maxDetectedPixels,
@@ -34,17 +41,53 @@ async function fullAnalysis(image, combinedCanvasInfo) {
     width,
     height
   );
-
   const nextMaxdetectedPixels = await ImageAnalysis.getDetectedPixels(
     canvasData,
     nextMaxCoor
   );
 
-  const allDetectedPixels = maxDetectedPixels.concat(nextMaxdetectedPixels);
+  /*
+   * Max / Next Max -> top / bottom
+   */
 
-  for (let coor of allDetectedPixels) {
-    canvasData.recolor(coor, { r: 0, g: 0, b: 255 });
+  // assume that max coor is above next max
+  let topDetectedPixels = maxDetectedPixels;
+  let bottomDetectedPixels = nextMaxdetectedPixels;
+
+  // Means that max coor is not above next max
+  if (maxCoor.y > nextMaxCoor.y) {
+    // Switch them
+    [topDetectedPixels, bottomDetectedPixels] = [
+      bottomDetectedPixels,
+      topDetectedPixels,
+    ];
   }
+
+  /*
+   * Recolor
+   */
+
+  //  Cutoff finding
+  const { left: leftX, right: rightX } = await findCutOff(
+    topDetectedPixels,
+    bottomDetectedPixels
+  );
+
+  // Recoloring
+  const recolor = { r: 0, g: 255, b: 0 };
+  const topPixelsCount = await ImageAnalysis.updateImageData(
+    canvasData,
+    { leftX, rightX, height },
+    recolor,
+    topDetectedPixels
+  );
+
+  const bottomPixelsCount = await ImageAnalysis.updateImageData(
+    canvasData,
+    { leftX, rightX, height },
+    { r: 0, g: 255, b: 255 },
+    bottomDetectedPixels
+  );
 
   context.putImageData(
     imageData,
@@ -56,7 +99,7 @@ async function fullAnalysis(image, combinedCanvasInfo) {
     dimensions.detectionHeight
   );
 
-  return Promise.resolve([context]);
+  return Promise.resolve({ topPixelsCount, bottomPixelsCount, context });
 }
 
 async function findNextMax(maxCoor, detectedPixels, canvasData, width, height) {
@@ -136,8 +179,7 @@ async function combinedAnalysis(
 ) {
   const outerDetectedPixels = outerCanvasInfo.detectedPixels;
   const innerDetectedPixels = innerCanvasInfo.detectedPixels;
-  const leftX = await findLeftCutOff(outerDetectedPixels, innerDetectedPixels);
-  const rightX = await findRightCutOff(
+  const { left: leftX, right: rightX } = await findCutOff(
     outerDetectedPixels,
     innerDetectedPixels
   );
@@ -173,35 +215,29 @@ async function combinedAnalysis(
   );
 }
 
-async function findLeftCutOff(outerDetectedPixels, innerDetectedPixels) {
-  let smallestOuter = Number.MAX_SAFE_INTEGER;
-  for (let coordinate of outerDetectedPixels) {
+async function findCutOff(detectedPixels1, detectedPixels2) {
+  let smallestX1 = Number.MAX_VALUE;
+  let smallestX2 = Number.MAX_VALUE;
+
+  let largestX1 = 0;
+  let largestX2 = 0;
+
+  for (let coordinate of detectedPixels1) {
     const { x } = coordinate;
-    smallestOuter = Math.min(smallestOuter, x);
+    smallestX1 = Math.min(smallestX1, x);
+    largestX1 = Math.max(largestX1, x);
   }
 
-  let smallestInner = Number.MAX_SAFE_INTEGER;
-  for (let coordinate of innerDetectedPixels) {
+  for (let coordinate of detectedPixels2) {
     const { x } = coordinate;
-    smallestInner = Math.min(smallestInner, x);
+    smallestX2 = Math.min(smallestX2, x);
+    largestX2 = Math.max(largestX2, x);
   }
 
-  return Math.max(smallestOuter, smallestInner);
-}
-async function findRightCutOff(outerDetectedPixels, innerDetectedPixels) {
-  let largestOuter = 0;
-  for (let coordinate of outerDetectedPixels) {
-    const { x } = coordinate;
-    largestOuter = Math.max(largestOuter, x);
-  }
-
-  let largestInner = 0;
-  for (let coordinate of innerDetectedPixels) {
-    const { x } = coordinate;
-    largestInner = Math.max(largestInner, x);
-  }
-
-  return Math.min(largestOuter, largestInner);
+  return {
+    left: Math.max(smallestX1, smallestX2),
+    right: Math.min(largestX1, largestX2),
+  };
 }
 
 export { calculatedLossPercent, combinedAnalysis, fullAnalysis };
