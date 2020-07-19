@@ -29,6 +29,7 @@ function Auto(props) {
   // Ref
   const webcamRef = useRef(null);
   const captureContainerRef = useRef(null);
+  const autoAnalyzeContainerRef = useRef(null);
 
   // UseEffect - Remove this later, just for testing
   useEffect(() => {
@@ -39,10 +40,12 @@ function Auto(props) {
   const capture = useCallback(() => {
     const screenshot = webcamRef.current.getScreenshot();
     dispatch(imageReducer.setImage(screenshot));
+    window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
   }, [webcamRef]);
 
   // Children props setup
   const autoReanalyzeProps = {
+    webcamRef,
     image: image,
     canvasDimensions: {
       canvasWidth: canvasDimensions.width,
@@ -81,13 +84,11 @@ function Auto(props) {
             </div>
           </div>
           <div className="my-3">
-            <Button onClick={() => capture()} variant="outline-primary">
-              Take picture
-            </Button>
+            <Button onClick={() => capture()}>Take picture</Button>
           </div>
         </div>
       )}
-      <div>
+      <div ref={autoAnalyzeContainerRef}>
         <AutoReanalyze {...autoReanalyzeProps} />
       </div>
     </div>

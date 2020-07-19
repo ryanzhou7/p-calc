@@ -20,8 +20,8 @@ function AnalysisResults(props) {
   const outerNumColoredPixels = combinedCanvasInfo.numColoredOuterPixels;
   const innerNumColoredPixels = combinedCanvasInfo.numColoredInnerPixels;
 
-  let topPixelsCount = 0;
-  let bottomPixelsCount = 0;
+  // Props
+  const { webcamRef } = props;
 
   // Child props
   const canvasProps = {
@@ -38,17 +38,11 @@ function AnalysisResults(props) {
       bottomPixelsCount: bottom,
       context,
     } = await utils.fullAnalysis(imageSource, combinedCanvasInfo);
-    topPixelsCount = top;
-    bottomPixelsCount = bottom;
 
     // don't have to do this to update ?
     dispatch(combinedCanvasInfoReducer.setContext(context));
-    dispatch(
-      combinedCanvasInfoReducer.setNumColoredOuterPixels(topPixelsCount)
-    );
-    dispatch(
-      combinedCanvasInfoReducer.setNumColoredInnerPixels(bottomPixelsCount)
-    );
+    dispatch(combinedCanvasInfoReducer.setNumColoredOuterPixels(top));
+    dispatch(combinedCanvasInfoReducer.setNumColoredInnerPixels(bottom));
   }
 
   return (
@@ -58,19 +52,31 @@ function AnalysisResults(props) {
 
         <div>
           <Button
-            className="my-2"
+            className="my-1"
             variant="outline-primary"
-            onClick={fullAnalysis}
+            onClick={() => {
+              window.scrollTo(0, webcamRef.current.offsetTop);
+            }}
           >
-            Full analysis
+            Retake
           </Button>
 
           <div>
-            Calculated Loss %:{" "}
+            <div className="my-4">
+              <Button className="mr-4" variant="outline-primary">
+                -
+              </Button>
+              <Button variant="outline-primary">+</Button>
+            </div>
+            <Button onClick={fullAnalysis}>Analyze</Button>
+          </div>
+          <div className="mt-4">
+            Loss:{" "}
             {utils.calculatedLossPercent(
               outerNumColoredPixels,
               innerNumColoredPixels
             )}
+            %
           </div>
         </div>
       </div>
