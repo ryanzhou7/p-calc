@@ -9,8 +9,8 @@ const G_OFFSET = 1;
 const B_OFFSET = 2;
 
 // Increase to relax restrictions
-const SEED_THRESHOLD_ADJUST = 50;
-const IS_SIMILAR_PIXEL_THRESHOLD = 50;
+const SEED_THRESHOLD_ADJUST = 45;
+const IS_SIMILAR_PIXEL_THRESHOLD = 45;
 
 async function detectGrow(canvasContext, detectionDimensions, recolorHex) {
   const { detectionWidth, detectionHeight } = detectionDimensions;
@@ -109,24 +109,20 @@ async function getDetectedPixels(canvasData, seedCoordinate) {
   while (queue.length > 0) {
     const currentCoor = queue.pop();
 
-    try {
-      const key = getXYKey(currentCoor.x, currentCoor.y);
-      visited.add(key);
-      const neighbors = getNeighbors(currentCoor);
+    const key = getXYKey(currentCoor.x, currentCoor.y);
+    visited.add(key);
+    const neighbors = getNeighbors(currentCoor);
 
-      for (let neighborCoor of neighbors) {
-        const key = getXYKey(neighborCoor.x, neighborCoor.y);
-        if (
-          !visited.has(key) &&
-          isSimiliar(currentCoor, neighborCoor, canvasData, seedCoordinate)
-        ) {
-          queue.push(neighborCoor);
-          detectedPixels.push(neighborCoor);
-          visited.add(key);
-        }
+    for (let neighborCoor of neighbors) {
+      const key = getXYKey(neighborCoor.x, neighborCoor.y);
+      if (
+        !visited.has(key) &&
+        isSimiliar(currentCoor, neighborCoor, canvasData, seedCoordinate)
+      ) {
+        queue.push(neighborCoor);
+        detectedPixels.push(neighborCoor);
+        visited.add(key);
       }
-    } catch (e) {
-      console.error(e);
     }
   }
 

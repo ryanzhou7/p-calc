@@ -8,7 +8,7 @@ import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
 import target from "../../assets/target/thick.png";
 import "./index.css";
 //import sampleChart from "../../assets/top-max.jpeg";
-//import sampleChart from "../../assets/image-5.jpeg";
+import sampleChart from "../../assets/image-5.jpeg";
 
 function Auto(props) {
   // Setup
@@ -32,7 +32,7 @@ function Auto(props) {
 
   // UseEffect - Remove this later, just for testing
   useEffect(() => {
-    //dispatch(imageReducer.setImage(sampleChart));
+    dispatch(imageReducer.setImage(sampleChart));
   }, []);
 
   // Other hooks

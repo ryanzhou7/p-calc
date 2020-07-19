@@ -10,32 +10,7 @@ import {
 function Home() {
   return (
     <>
-      <Router>
-        <div>
-          <nav>
-            <ul>
-              <li>
-                <NavLink to="/auto" activeClassName="selected">
-                  Auto
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/manual" activeClassName="selected">
-                  Manual
-                </NavLink>
-              </li>
-            </ul>
-          </nav>
-          <Switch>
-            <Route path="/manual">
-              <Manual />
-            </Route>
-            <Route path="/auto">
-              <Auto />
-            </Route>
-          </Switch>
-        </div>
-      </Router>
+      <Auto />
     </>
   );
 }

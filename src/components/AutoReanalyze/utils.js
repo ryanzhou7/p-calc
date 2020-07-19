@@ -40,7 +40,7 @@ async function fullAnalysis(image, combinedCanvasInfo) {
     nextMaxCoor
   );
 
-  const allDetectedPixels = [...maxDetectedPixels, ...nextMaxdetectedPixels];
+  const allDetectedPixels = maxDetectedPixels.concat(nextMaxdetectedPixels);
 
   for (let coor of allDetectedPixels) {
     canvasData.recolor(coor, { r: 0, g: 0, b: 255 });
@@ -60,23 +60,28 @@ async function fullAnalysis(image, combinedCanvasInfo) {
 }
 
 async function findNextMax(maxCoor, detectedPixels, canvasData, width, height) {
+  // Setup
   const photoOriginY = height / 2;
+  const middleX = width / 2;
+
   const distanceFromOrigin = Math.abs(maxCoor.y - photoOriginY);
   const distanceFromTop = maxCoor.y;
 
   // If the already found coor's distance from the bottom (origin) is less than the tops then
   // it's closer to the bottom and we are searching from top to bottom
   const isTopToBottomSearch = distanceFromOrigin < distanceFromTop;
-  const middleX = width / 2;
 
   // If we are search from top to bottom it means the current max is the bottom
   // Hence, from the detected bottom line when need to find the biggest y as the boundary
-  let boundary = isTopToBottomSearch ? Number.MAX_VALUE : Number.MIN_VALUE;
-  const boundaryComparator = isTopToBottomSearch ? Math.min : Math.max;
+  let boundary = isTopToBottomSearch ? Number.MIN_VALUE : Number.MAX_VALUE;
+  const boundaryComparator = isTopToBottomSearch ? Math.max : Math.min;
 
   for (let { y } of detectedPixels) {
     boundary = boundaryComparator(boundary, y);
   }
+
+  // Ensure that boundary is least some distance from the top / bottom
+  boundary += isTopToBottomSearch ? -5 : 5;
 
   let coor = { x: middleX };
   let intensity = 0;
@@ -92,11 +97,7 @@ async function findNextMax(maxCoor, detectedPixels, canvasData, width, height) {
       coor.y = y;
       intensity = value;
     }
-    if (isTopToBottomSearch) {
-      y++;
-    } else {
-      y--;
-    }
+    isTopToBottomSearch ? y++ : y--;
   }
   return coor;
 }
