@@ -1,27 +1,27 @@
 {
   "files": {
-    "main.css": "/p-calc/static/css/main.94d9e93d.chunk.css",
-    "main.js": "/p-calc/static/js/main.bb23bbf8.chunk.js",
-    "main.js.map": "/p-calc/static/js/main.bb23bbf8.chunk.js.map",
+    "main.css": "/p-calc/static/css/main.3243ab18.chunk.css",
+    "main.js": "/p-calc/static/js/main.58da7b3e.chunk.js",
+    "main.js.map": "/p-calc/static/js/main.58da7b3e.chunk.js.map",
     "runtime-main.js": "/p-calc/static/js/runtime-main.f90e82a6.js",
     "runtime-main.js.map": "/p-calc/static/js/runtime-main.f90e82a6.js.map",
     "static/css/2.de424728.chunk.css": "/p-calc/static/css/2.de424728.chunk.css",
-    "static/js/2.c13b136d.chunk.js": "/p-calc/static/js/2.c13b136d.chunk.js",
-    "static/js/2.c13b136d.chunk.js.map": "/p-calc/static/js/2.c13b136d.chunk.js.map",
+    "static/js/2.b72a39b6.chunk.js": "/p-calc/static/js/2.b72a39b6.chunk.js",
+    "static/js/2.b72a39b6.chunk.js.map": "/p-calc/static/js/2.b72a39b6.chunk.js.map",
     "index.html": "/p-calc/index.html",
-    "precache-manifest.3a44e0155047b2c221733e7712a151c0.js": "/p-calc/precache-manifest.3a44e0155047b2c221733e7712a151c0.js",
+    "precache-manifest.fa1d121855ddb1dc51f4e2e407c0a2a5.js": "/p-calc/precache-manifest.fa1d121855ddb1dc51f4e2e407c0a2a5.js",
     "service-worker.js": "/p-calc/service-worker.js",
     "static/css/2.de424728.chunk.css.map": "/p-calc/static/css/2.de424728.chunk.css.map",
-    "static/css/main.94d9e93d.chunk.css.map": "/p-calc/static/css/main.94d9e93d.chunk.css.map",
-    "static/js/2.c13b136d.chunk.js.LICENSE.txt": "/p-calc/static/js/2.c13b136d.chunk.js.LICENSE.txt",
-    "static/media/black-red.jpeg": "/p-calc/static/media/black-red.048e3ad1.jpeg",
-    "static/media/thick.png": "/p-calc/static/media/thick.c9dcc9e1.png"
+    "static/css/main.3243ab18.chunk.css.map": "/p-calc/static/css/main.3243ab18.chunk.css.map",
+    "static/js/2.b72a39b6.chunk.js.LICENSE.txt": "/p-calc/static/js/2.b72a39b6.chunk.js.LICENSE.txt",
+    "static/media/thick.png": "/p-calc/static/media/thick.c9dcc9e1.png",
+    "static/media/top-max.jpeg": "/p-calc/static/media/top-max.9741321e.jpeg"
   },
   "entrypoints": [
     "static/js/runtime-main.f90e82a6.js",
     "static/css/2.de424728.chunk.css",
-    "static/js/2.c13b136d.chunk.js",
-    "static/css/main.94d9e93d.chunk.css",
-    "static/js/main.bb23bbf8.chunk.js"
+    "static/js/2.b72a39b6.chunk.js",
+    "static/css/main.3243ab18.chunk.css",
+    "static/js/main.58da7b3e.chunk.js"
   ]
 }
