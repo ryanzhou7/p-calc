@@ -34,6 +34,8 @@ export default class CanvasDataHelper {
     this.imageArray[greenIndex] = Number(g);
     this.imageArray[blueIndex] = Number(b);
   }
+
+  tint(pixelAtCoordinate, newColor) {}
 }
 
 /**

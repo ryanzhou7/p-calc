@@ -42,7 +42,6 @@ function Auto(props) {
     const screenshot = webcamRef.current.getScreenshot();
     dispatch(imageReducer.setImage(screenshot));
     window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
-    //DomHelper.downloadJpegInClient(screenshot);
   }, [webcamRef]);
 
   // Children props setup
