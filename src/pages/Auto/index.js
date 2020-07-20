@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
 import target from "../../assets/target/thick.png";
 import "./index.css";
+import * as DomHelper from "../../utils/DomHelper";
 import sampleChart from "../../assets/top-max.jpeg";
 //import sampleChart from "../../assets/image-5.jpeg";
 
@@ -33,7 +34,7 @@ function Auto(props) {
 
   // UseEffect - Remove this later, just for testing
   useEffect(() => {
-    dispatch(imageReducer.setImage(sampleChart));
+    //dispatch(imageReducer.setImage(sampleChart));
   }, []);
 
   // Other hooks
@@ -41,6 +42,7 @@ function Auto(props) {
     const screenshot = webcamRef.current.getScreenshot();
     dispatch(imageReducer.setImage(screenshot));
     window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
+    //DomHelper.downloadJpegInClient(screenshot);
   }, [webcamRef]);
 
   // Children props setup
@@ -59,6 +61,7 @@ function Auto(props) {
 
   return (
     <div className="App">
+      <h2>Ptosis calculator</h2>
       {isPortrait && <h5>Please rotate your device</h5>}
 
       {!isPortrait && (

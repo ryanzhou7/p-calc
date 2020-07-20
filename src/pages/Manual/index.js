@@ -5,11 +5,11 @@ import ImageAnalyzer from "../../components/ImageAnalyzer/ImageAnalyzer";
 import Canvas from "../../components/Canvas/Canvas";
 import Webcam from "react-webcam";
 import * as imageReducer from "../../redux/imageReducer";
+import * as DomHelper from "../../utils/DomHelper";
 import { useSelector, useDispatch } from "react-redux";
 import { setContext as setInnerContext } from "../../redux/innerCanvasInfoReducer";
 import { setContext as setOuterContext } from "../../redux/outerCanvasInfoReducer";
 import AnalysisResults from "../../components/AnalysisResults/AnalysisResults";
-import { downloadJpegInClient } from "./utils";
 import "./index.css";
 import target from "../../assets/target/thick.png";
 import sampleChart from "../../assets/black-red.jpeg";
@@ -49,7 +49,7 @@ function Manual(props) {
   const capture = useCallback(() => {
     const screenshot = webcamRef.current.getScreenshot();
     dispatch(imageReducer.setImage(screenshot));
-    downloadJpegInClient(screenshot, "image");
+    DomHelper.downloadJpegInClient(screenshot, "image");
   }, [webcamRef]);
 
   // Children props setup

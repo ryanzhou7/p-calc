@@ -15,9 +15,16 @@ async function getImageFromInput(event) {
   });
 }
 
+function downloadJpegInClient(imageData, fileName) {
+  const a = document.createElement("a");
+  a.href = imageData;
+  a.download = fileName + ".jpeg";
+  a.click();
+}
+
 function setFromInput(event, setter) {
   const { value } = event.target;
   setter(value);
 }
 
-export { getImageFromInput, setFromInput };
+export { getImageFromInput, setFromInput, downloadJpegInClient };
