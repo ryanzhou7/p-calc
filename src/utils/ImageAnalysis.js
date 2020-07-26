@@ -1,5 +1,6 @@
 import Coordinate from "../models/coordinate";
 import CanvasDataHelper from "../models/canvasData";
+import * as math from "mathjs";
 
 /**
  * Offsets access each value in a canvasContext.getImageData()
@@ -9,32 +10,21 @@ const G_OFFSET = 1;
 const B_OFFSET = 2;
 
 // Increase to relax restrictions
-const SEED_THRESHOLD_ADJUST = 40;
-const IS_SIMILAR_PIXEL_THRESHOLD = 40;
+const SEED_THRESHOLD_ADJUST = 46;
+const IS_SIMILAR_PIXEL_THRESHOLD = 46;
 
-async function detectGrow(canvasContext, detectionDimensions, recolorHex) {
-  const { detectionWidth, detectionHeight } = detectionDimensions;
-  const imageData = canvasContext.getImageData(
-    0,
-    0,
-    detectionWidth,
-    detectionHeight
-  );
+async function colorEdges(canvasData, { detectionWidth, detectionHeight }) {
+  for (let y = 5; y < detectionHeight / 2; y++) {
+    for (let x = 5; x < detectionWidth; x++) {
+      const coor = { x, y };
 
-  const newColor = hexToRgb(recolorHex);
-  const canvasData = new CanvasDataHelper({
-    canvasWidth: detectionWidth,
-    imageArray: imageData.data,
-  });
-
-  const seedCoordinate = await findSeed(canvasData, detectionDimensions);
-  const detectedPixels = await getDetectedPixels(canvasData, seedCoordinate);
-
-  for (let coor of detectedPixels) {
-    canvasData.recolor(coor, newColor);
+      if (isEdge(coor, canvasData)) {
+        canvasData.recolor(coor, { r: 255, g: 255, b: 255 });
+      } else {
+        canvasData.recolor(coor, { r: 0, g: 0, b: 0 });
+      }
+    }
   }
-
-  return Promise.resolve([imageData, detectedPixels]);
 }
 
 async function findSeed(canvasData, { detectionWidth, detectionHeight }) {
@@ -115,6 +105,8 @@ async function getDetectedPixels(canvasData, seedCoordinate) {
 
     for (let neighborCoor of neighbors) {
       const key = getXYKey(neighborCoor.x, neighborCoor.y);
+
+      // If this is not added before and is similar, add it
       if (
         !visited.has(key) &&
         isSimiliar(currentCoor, neighborCoor, canvasData, seedCoordinate)
@@ -128,7 +120,69 @@ async function getDetectedPixels(canvasData, seedCoordinate) {
 
   return detectedPixels;
 }
+const laplacianOperator = [
+  [1, 1, 1],
+  [1, -8, 1],
+  [1, 1, 1],
+];
+function isEdge(coor, canvasData) {
+  const { x, y } = coor;
+  const n3 = [
+    [
+      canvasData.rRelative({ x: x - 1, y: y - 1 }),
+      canvasData.rRelative({ x: x, y: y - 1 }),
+      canvasData.rRelative({ x: x + 1, y: y - 1 }),
+    ],
+    [
+      canvasData.rRelative({ x: x - 1, y: y }),
+      canvasData.rRelative({ x: x, y: y }),
+      canvasData.rRelative({ x: x + 1, y: y }),
+    ],
+    [
+      canvasData.rRelative({ x: x - 1, y: y + 1 }),
+      canvasData.rRelative({ x: x, y: y + 1 }),
+      canvasData.rRelative({ x: x + 1, y: y + 1 }),
+    ],
+  ];
 
+  const result = math.multiply(laplacianOperator, n3);
+  return isZeroCrossing(result);
+}
+
+function isZeroCrossing(matrix) {
+  const upLeft = matrix[0][0];
+  const downRight = matrix[2][2];
+
+  const upMiddle = matrix[0][1];
+  const downMiddle = matrix[2][1];
+
+  const downLeft = matrix[2][0];
+  const upRight = matrix[0][2];
+
+  const middleLeft = matrix[1][0];
+  const middleRight = matrix[1][2];
+
+  return (
+    (differentSign(upLeft, downRight) &&
+      differentAboveThreshold(upLeft, downRight)) ||
+    (differentSign(upMiddle, downMiddle) &&
+      differentAboveThreshold(upMiddle, downMiddle)) ||
+    (differentSign(downLeft, upRight) &&
+      differentAboveThreshold(downLeft, upRight)) ||
+    (differentSign(middleLeft, middleRight) &&
+      differentAboveThreshold(middleLeft, middleRight))
+  );
+}
+
+function differentSign(value1, value2) {
+  return (value1 < 0 && value2 > 0) || (value1 > 0 && value2 < 0);
+}
+
+function differentAboveThreshold(value1, value2) {
+  return Math.abs(value1 - value2) > 50;
+}
+
+// isEdge(currentCoor, neighborCoor, canvasData, seedCoordinate)
 function isSimiliar(origin, suspect, canvasData, seedCoordinate) {
   const seedRgb = canvasData.rgbPixel(seedCoordinate);
   const seedThreshold = seedRgb.r * 2 - seedRgb.g - seedRgb.b;
@@ -341,4 +395,4 @@ function hexToRgb(hex) {
 function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
-export { detectGrow, colorAreaWithBounds, getDetectedPixels, updateImageData };
+export { colorAreaWithBounds, getDetectedPixels, updateImageData };

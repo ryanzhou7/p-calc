@@ -14,7 +14,7 @@
     "bootstrap": "^4.4.1",
     "color": "^3.1.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
-    "mathjs": "^7.0.2",
+    "mathjs": "^7.1.0",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.1",
     "react-device-detect": "^1.13.1",
