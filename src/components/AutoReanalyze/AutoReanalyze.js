@@ -68,7 +68,14 @@ function AnalysisResults(props) {
               </Button>
               <Button variant="outline-primary">+</Button>
             </div>
-            <Button onClick={fullAnalysis}>Analyze</Button>
+            <Button
+              onClick={() => {
+                //fullAnalysis();
+                utils.colorEdges(imageSource, combinedCanvasInfo);
+              }}
+            >
+              Analyze
+            </Button>
           </div>
           <div className="mt-4">
             Loss:{" "}

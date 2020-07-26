@@ -2,6 +2,42 @@ import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
 import CanvasDataHelper from "../../models/canvasData";
 
+async function colorEdges(image, combinedCanvasInfo) {
+  const { width, height } = image;
+  const dimensions = {
+    detectionWidth: width,
+    detectionHeight: height,
+  };
+
+  const { context } = combinedCanvasInfo;
+  context.drawImage(image, 0, 0, width, height);
+  let imageData = context.getImageData(0, 0, width, height);
+
+  const canvasData = new CanvasDataHelper({
+    canvasWidth: dimensions.detectionWidth,
+    imageArray: imageData.data,
+  });
+
+  for (let y = 5; y < height / 2; y++) {
+    for (let x = 5; x < width - 10; x++) {
+      const coor = { x, y };
+      if (ImageAnalysis.isEdge(coor, canvasData)) {
+        canvasData.recolor(coor, { r: 0, g: 255, b: 0 });
+      }
+    }
+  }
+
+  context.putImageData(
+    imageData,
+    0,
+    0,
+    0,
+    0,
+    dimensions.detectionWidth,
+    dimensions.detectionHeight
+  );
+}
+
 async function fullAnalysis(image, combinedCanvasInfo) {
   const { width, height } = image;
   const dimensions = {
@@ -240,4 +276,4 @@ async function findCutOff(detectedPixels1, detectedPixels2) {
   };
 }
 
-export { calculatedLossPercent, combinedAnalysis, fullAnalysis };
+export { calculatedLossPercent, combinedAnalysis, fullAnalysis, colorEdges };

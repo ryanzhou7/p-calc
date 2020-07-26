@@ -13,20 +13,6 @@ const B_OFFSET = 2;
 const SEED_THRESHOLD_ADJUST = 46;
 const IS_SIMILAR_PIXEL_THRESHOLD = 46;
 
-async function colorEdges(canvasData, { detectionWidth, detectionHeight }) {
-  for (let y = 5; y < detectionHeight / 2; y++) {
-    for (let x = 5; x < detectionWidth; x++) {
-      const coor = { x, y };
-
-      if (isEdge(coor, canvasData)) {
-        canvasData.recolor(coor, { r: 255, g: 255, b: 255 });
-      } else {
-        canvasData.recolor(coor, { r: 0, g: 0, b: 0 });
-      }
-    }
-  }
-}
-
 async function findSeed(canvasData, { detectionWidth, detectionHeight }) {
   const middleX = detectionWidth / 2;
   let coor = { x: middleX };
@@ -163,23 +149,23 @@ function isZeroCrossing(matrix) {
   const middleRight = matrix[1][2];
 
   return (
-    (differentSign(upLeft, downRight) &&
-      differentAboveThreshold(upLeft, downRight)) ||
-    (differentSign(upMiddle, downMiddle) &&
-      differentAboveThreshold(upMiddle, downMiddle)) ||
-    (differentSign(downLeft, upRight) &&
-      differentAboveThreshold(downLeft, upRight)) ||
-    (differentSign(middleLeft, middleRight) &&
-      differentAboveThreshold(middleLeft, middleRight))
+    (isDifferentSign(upLeft, downRight) &&
+      isDifferentAboveThreshold(upLeft, downRight)) ||
+    (isDifferentSign(upMiddle, downMiddle) &&
+      isDifferentAboveThreshold(upMiddle, downMiddle)) ||
+    (isDifferentSign(downLeft, upRight) &&
+      isDifferentAboveThreshold(downLeft, upRight)) ||
+    (isDifferentSign(middleLeft, middleRight) &&
+      isDifferentAboveThreshold(middleLeft, middleRight))
   );
 }
 
-function differentSign(value1, value2) {
+function isDifferentSign(value1, value2) {
   return (value1 < 0 && value2 > 0) || (value1 > 0 && value2 < 0);
 }
 
-function differentAboveThreshold(value1, value2) {
-  return Math.abs(value1 - value2) > 50;
+function isDifferentAboveThreshold(value1, value2) {
+  return Math.abs(value1 - value2) > 0;
 }
 
 // isEdge(currentCoor, neighborCoor, canvasData, seedCoordinate)
@@ -395,4 +381,4 @@ function hexToRgb(hex) {
 function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
-export { colorAreaWithBounds, getDetectedPixels, updateImageData };
+export { colorAreaWithBounds, getDetectedPixels, updateImageData, isEdge };
