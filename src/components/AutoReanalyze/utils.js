@@ -4,9 +4,8 @@ import CanvasDataHelper from "../../models/canvasData";
 import sampleChart from "../../assets/image-5.jpeg";
 import jsfeat from "jsfeat";
 
-async function canny(image, combinedCanvasInfo) {
+async function getEdgeCanvasHelper(image, context) {
   const { width, height } = image;
-  const { context } = combinedCanvasInfo;
   context.drawImage(image, 0, 0, width, height);
   let imageData = context.getImageData(0, 0, width, height);
 
@@ -16,7 +15,7 @@ async function canny(image, combinedCanvasInfo) {
   let img_u8 = new jsfeat.matrix_t(columns, rows, data_type);
   jsfeat.imgproc.grayscale(imageData.data, width, height, img_u8);
 
-  let r = 4; // 0 -4
+  let r = 2; // 0 -4
   let kernel_size = (r + 1) << 1;
   let low_threshold = 20; // 1 - 127
   let high_threshold = 50; // 1 - 127
@@ -35,7 +34,12 @@ async function canny(image, combinedCanvasInfo) {
     data_u32[i] = alpha | (pix << 16) | (pix << 8) | pix;
   }
 
-  context.putImageData(imageData, 0, 0);
+  const edgeCanvas = new CanvasDataHelper({
+    canvasWidth: width,
+    imageArray: imageData.data,
+  });
+
+  return edgeCanvas;
 }
 
 async function colorEdges(image, combinedCanvasInfo) {
@@ -74,12 +78,17 @@ async function colorEdges(image, combinedCanvasInfo) {
   );
 }
 
-async function fullAnalysis(image, combinedCanvasInfo) {
+async function fullAnalysis(image, combinedCanvasInfo, canvasRef) {
   const { width, height } = image;
   const dimensions = {
     detectionWidth: width,
     detectionHeight: height,
   };
+
+  const { current: canvas } = canvasRef;
+  const edgeContext = canvas.getContext("2d");
+
+  const edgeCanvas = await getEdgeCanvasHelper(image, edgeContext);
 
   /*
    * Setup
@@ -102,7 +111,8 @@ async function fullAnalysis(image, combinedCanvasInfo) {
   const maxCoor = await findMax(canvasData, dimensions);
   const maxDetectedPixels = await ImageAnalysis.getDetectedPixels(
     canvasData,
-    maxCoor
+    maxCoor,
+    edgeCanvas
   );
 
   // Next max
@@ -115,7 +125,8 @@ async function fullAnalysis(image, combinedCanvasInfo) {
   );
   const nextMaxdetectedPixels = await ImageAnalysis.getDetectedPixels(
     canvasData,
-    nextMaxCoor
+    nextMaxCoor,
+    edgeCanvas
   );
 
   /*
@@ -312,10 +323,4 @@ async function findCutOff(detectedPixels1, detectedPixels2) {
   };
 }
 
-export {
-  calculatedLossPercent,
-  combinedAnalysis,
-  fullAnalysis,
-  colorEdges,
-  canny,
-};
+export { calculatedLossPercent, combinedAnalysis, fullAnalysis, colorEdges };

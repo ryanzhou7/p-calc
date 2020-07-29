@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Button } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
@@ -32,12 +32,15 @@ function AnalysisResults(props) {
     ],
   };
 
-  async function fullAnalysis() {
+  const canvasRef = useRef(null);
+  let cannyContext = null;
+
+  async function fullAnalysis(cannyContext) {
     const {
       topPixelsCount: top,
       bottomPixelsCount: bottom,
       context,
-    } = await utils.fullAnalysis(imageSource, combinedCanvasInfo);
+    } = await utils.fullAnalysis(imageSource, combinedCanvasInfo, canvasRef);
 
     // don't have to do this to update ?
     dispatch(combinedCanvasInfoReducer.setContext(context));
@@ -45,10 +48,17 @@ function AnalysisResults(props) {
     dispatch(combinedCanvasInfoReducer.setNumColoredInnerPixels(bottom));
   }
 
+  useEffect(() => {
+    const { current: canvas } = canvasRef;
+    cannyContext = canvas.getContext("2d");
+  }, []);
+
   return (
     <div>
       <div className="d-flex justify-content-around align-items-center">
         <Canvas {...canvasProps} />
+
+        <canvas style={{ display: "none" }} ref={canvasRef} />
 
         <div>
           <Button
@@ -70,9 +80,8 @@ function AnalysisResults(props) {
             </div>
             <Button
               onClick={() => {
-                //fullAnalysis();
-                //utils.colorEdges(imageSource, combinedCanvasInfo);
-                utils.canny(imageSource, combinedCanvasInfo);
+                fullAnalysis(cannyContext);
+                //utils.canny(imageSource, combinedCanvasInfo);
               }}
             >
               Analyze

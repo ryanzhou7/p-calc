@@ -73,7 +73,7 @@ async function calcLaplacianValue(canvasData, coordinate) {
   return sum;
 }
 
-async function getDetectedPixels(canvasData, seedCoordinate) {
+async function getDetectedPixels(canvasData, seedCoordinate, edgeCanvas) {
   const { x, y } = seedCoordinate;
   const detectedPixels = [];
   detectedPixels.push(seedCoordinate);
@@ -81,8 +81,8 @@ async function getDetectedPixels(canvasData, seedCoordinate) {
   let queue = [];
   queue.push(seedCoordinate);
   const visited = new Set();
-
-  while (queue.length > 0) {
+  let count = 0;
+  while (queue.length > 0 && count < 400) {
     const currentCoor = queue.pop();
 
     const key = getXYKey(currentCoor.x, currentCoor.y);
@@ -93,15 +93,13 @@ async function getDetectedPixels(canvasData, seedCoordinate) {
       const key = getXYKey(neighborCoor.x, neighborCoor.y);
 
       // If this is not added before and is similar, add it
-      if (
-        !visited.has(key) &&
-        isSimiliar(currentCoor, neighborCoor, canvasData, seedCoordinate)
-      ) {
+      if (!visited.has(key) && !isEdge(neighborCoor, edgeCanvas)) {
         queue.push(neighborCoor);
         detectedPixels.push(neighborCoor);
         visited.add(key);
       }
     }
+    count++;
   }
 
   return detectedPixels;
@@ -111,29 +109,6 @@ const laplacianOperator = [
   [1, -8, 1],
   [1, 1, 1],
 ];
-function isEdge(coor, canvasData) {
-  const { x, y } = coor;
-  const n3 = [
-    [
-      canvasData.rRelative({ x: x - 1, y: y - 1 }),
-      canvasData.rRelative({ x: x, y: y - 1 }),
-      canvasData.rRelative({ x: x + 1, y: y - 1 }),
-    ],
-    [
-      canvasData.rRelative({ x: x - 1, y: y }),
-      canvasData.rRelative({ x: x, y: y }),
-      canvasData.rRelative({ x: x + 1, y: y }),
-    ],
-    [
-      canvasData.rRelative({ x: x - 1, y: y + 1 }),
-      canvasData.rRelative({ x: x, y: y + 1 }),
-      canvasData.rRelative({ x: x + 1, y: y + 1 }),
-    ],
-  ];
-
-  const result = math.multiply(laplacianOperator, n3);
-  return isZeroCrossing(result);
-}
 
 function findMatrixMax(matrix) {
   let max = Number.MIN_VALUE;
@@ -179,34 +154,23 @@ function isDifferentAboveThreshold(value1, value2, max) {
   return Math.abs(value1 - value2) > 0.3 * max;
 }
 
-// isEdge(currentCoor, neighborCoor, canvasData, seedCoordinate)
-function isSimiliar(origin, suspect, canvasData, seedCoordinate) {
-  const seedRgb = canvasData.rgbPixel(seedCoordinate);
-  const seedThreshold = seedRgb.r * 2 - seedRgb.g - seedRgb.b;
-
-  const originRgb = canvasData.rgbPixel(origin);
-  const suspectRgb = canvasData.rgbPixel(suspect);
-
-  return (
-    // check if this is "red"
-    suspectRgb.r * 2 - suspectRgb.g - suspectRgb.b + SEED_THRESHOLD_ADJUST >
-      seedThreshold &&
-    // check if each of these values are not too different from the origin
-    Math.abs(originRgb.r - suspectRgb.r) < IS_SIMILAR_PIXEL_THRESHOLD &&
-    Math.abs(originRgb.g - suspectRgb.g) < IS_SIMILAR_PIXEL_THRESHOLD &&
-    Math.abs(originRgb.b - suspectRgb.b) < IS_SIMILAR_PIXEL_THRESHOLD
-  );
+function isEdge(coor, canvasData) {
+  const rgbPixel = canvasData.rgbPixel(coor);
+  // if all black then it is a edge pixel
+  return rgbPixel.r === 255 && rgbPixel.g === 255 && rgbPixel.b === 255;
+}
+function isSimiliar(origin, suspect, edgeCanvas, seedCoordinate) {
+  const possibleEdge = edgeCanvas.rgbPixel(suspect);
+  const isEdge =
+    possibleEdge.r === 255 && possibleEdge.g === 255 && possibleEdge.b === 255;
+  return !isEdge;
 }
 
 const neighborsDelta = [
-  [-1, -1],
   [-1, 0],
-  [-1, 1],
   [0, -1],
   [0, 1],
-  [1, -1],
   [1, 0],
-  [1, 1],
 ];
 function getNeighbors(coordinate) {
   const neighbors = [];

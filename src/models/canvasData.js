@@ -4,6 +4,7 @@
 const R_OFFSET = 0;
 const G_OFFSET = 1;
 const B_OFFSET = 2;
+const ALPHA_OFFSET = 3;
 
 export default class CanvasDataHelper {
   constructor({ canvasWidth, imageArray }) {
@@ -19,7 +20,19 @@ export default class CanvasDataHelper {
     const redValue = this.imageArray[redIndex];
     const greenValue = this.imageArray[greenIndex];
     const blueValue = this.imageArray[blueIndex];
+    if (redValue !== 0 && greenValue !== 0 && blueValue !== 0) {
+      const alphaIndex = getIndex(x, y, this.canvasWidth) + ALPHA_OFFSET;
+      const alphaValue = this.imageArray[alphaIndex];
+    }
     return { r: redValue, g: greenValue, b: blueValue };
+  }
+
+  rgbaPixel({ x, y }) {
+    const rgb = this.rgbPixel({ x, y });
+    const alphaIndex = getIndex(x, y, this.canvasWidth) + ALPHA_OFFSET;
+    const alphaValue = this.imageArray[alphaIndex];
+    rgb.alpha = alphaValue;
+    return rgb;
   }
 
   recolor(pixelAtCoordinate, newColor) {
