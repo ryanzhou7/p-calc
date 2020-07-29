@@ -71,7 +71,8 @@ function AnalysisResults(props) {
             <Button
               onClick={() => {
                 //fullAnalysis();
-                utils.colorEdges(imageSource, combinedCanvasInfo);
+                //utils.colorEdges(imageSource, combinedCanvasInfo);
+                utils.canny(imageSource, combinedCanvasInfo);
               }}
             >
               Analyze

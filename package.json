@@ -14,6 +14,7 @@
     "bootstrap": "^4.4.1",
     "color": "^3.1.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
+    "jsfeat": "0.0.8",
     "mathjs": "^7.1.0",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.1",

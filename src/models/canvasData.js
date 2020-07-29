@@ -37,7 +37,7 @@ export default class CanvasDataHelper {
 
   rRelative(coor) {
     const { r, g, b } = this.rgbPixel(coor);
-    return g;
+    return b; //r * 2 - g - b;
   }
 
   tint(pixelAtCoordinate, newColor) {}

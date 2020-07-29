@@ -1,6 +1,42 @@
 import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
 import CanvasDataHelper from "../../models/canvasData";
+import sampleChart from "../../assets/image-5.jpeg";
+import jsfeat from "jsfeat";
+
+async function canny(image, combinedCanvasInfo) {
+  const { width, height } = image;
+  const { context } = combinedCanvasInfo;
+  context.drawImage(image, 0, 0, width, height);
+  let imageData = context.getImageData(0, 0, width, height);
+
+  const columns = 450,
+    rows = 320,
+    data_type = jsfeat.U8_t;
+  let img_u8 = new jsfeat.matrix_t(columns, rows, data_type);
+  jsfeat.imgproc.grayscale(imageData.data, width, height, img_u8);
+
+  let r = 4; // 0 -4
+  let kernel_size = (r + 1) << 1;
+  let low_threshold = 20; // 1 - 127
+  let high_threshold = 50; // 1 - 127
+
+  jsfeat.imgproc.gaussian_blur(img_u8, img_u8, kernel_size, 0);
+
+  jsfeat.imgproc.canny(img_u8, img_u8, low_threshold, high_threshold);
+
+  // render result back to canvas
+  var data_u32 = new Uint32Array(imageData.data.buffer);
+  var alpha = 0xff << 24;
+  var i = img_u8.cols * img_u8.rows,
+    pix = 0;
+  while (--i >= 0) {
+    pix = img_u8.data[i];
+    data_u32[i] = alpha | (pix << 16) | (pix << 8) | pix;
+  }
+
+  context.putImageData(imageData, 0, 0);
+}
 
 async function colorEdges(image, combinedCanvasInfo) {
   const { width, height } = image;
@@ -276,4 +312,10 @@ async function findCutOff(detectedPixels1, detectedPixels2) {
   };
 }
 
-export { calculatedLossPercent, combinedAnalysis, fullAnalysis, colorEdges };
+export {
+  calculatedLossPercent,
+  combinedAnalysis,
+  fullAnalysis,
+  colorEdges,
+  canny,
+};

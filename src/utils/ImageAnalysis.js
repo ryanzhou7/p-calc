@@ -135,6 +135,16 @@ function isEdge(coor, canvasData) {
   return isZeroCrossing(result);
 }
 
+function findMatrixMax(matrix) {
+  let max = Number.MIN_VALUE;
+  for (let r = 0; r < matrix.length; r++) {
+    for (let c = 0; c < matrix[r].length; c++) {
+      max = Math.max(max, matrix[r][c]);
+    }
+  }
+  return max;
+}
+
 function isZeroCrossing(matrix) {
   const upLeft = matrix[0][0];
   const downRight = matrix[2][2];
@@ -148,15 +158,16 @@ function isZeroCrossing(matrix) {
   const middleLeft = matrix[1][0];
   const middleRight = matrix[1][2];
 
+  const max = findMatrixMax(matrix);
   return (
     (isDifferentSign(upLeft, downRight) &&
-      isDifferentAboveThreshold(upLeft, downRight)) ||
+      isDifferentAboveThreshold(upLeft, downRight, max)) ||
     (isDifferentSign(upMiddle, downMiddle) &&
-      isDifferentAboveThreshold(upMiddle, downMiddle)) ||
+      isDifferentAboveThreshold(upMiddle, downMiddle, max)) ||
     (isDifferentSign(downLeft, upRight) &&
-      isDifferentAboveThreshold(downLeft, upRight)) ||
+      isDifferentAboveThreshold(downLeft, upRight, max)) ||
     (isDifferentSign(middleLeft, middleRight) &&
-      isDifferentAboveThreshold(middleLeft, middleRight))
+      isDifferentAboveThreshold(middleLeft, middleRight, max))
   );
 }
 
@@ -164,8 +175,8 @@ function isDifferentSign(value1, value2) {
   return (value1 < 0 && value2 > 0) || (value1 > 0 && value2 < 0);
 }
 
-function isDifferentAboveThreshold(value1, value2) {
-  return Math.abs(value1 - value2) > 0;
+function isDifferentAboveThreshold(value1, value2, max) {
+  return Math.abs(value1 - value2) > 0.3 * max;
 }
 
 // isEdge(currentCoor, neighborCoor, canvasData, seedCoordinate)

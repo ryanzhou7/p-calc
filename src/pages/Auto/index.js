@@ -9,6 +9,7 @@ import target from "../../assets/target/thick.png";
 import "./index.css";
 import * as DomHelper from "../../utils/DomHelper";
 //import sampleChart from "../../assets/top-max.jpeg";
+//import sampleChart from "../../assets/image-5-grey.jpg";
 import sampleChart from "../../assets/image-5.jpeg";
 
 function Auto(props) {
