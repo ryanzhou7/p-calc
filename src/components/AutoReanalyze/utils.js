@@ -1,7 +1,6 @@
 import * as ImageAnalysis from "../../utils/ImageAnalysis";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
 import CanvasDataHelper from "../../models/canvasData";
-import sampleChart from "../../assets/image-5.jpeg";
 import jsfeat from "jsfeat";
 
 async function getEdgeCanvasHelper(image, context) {
@@ -17,8 +16,8 @@ async function getEdgeCanvasHelper(image, context) {
 
   let r = 2; // 0 -4
   let kernel_size = (r + 1) << 1;
-  let low_threshold = 20; // 1 - 127
-  let high_threshold = 50; // 1 - 127
+  let low_threshold = 120; // 1 - 127
+  let high_threshold = 120; // 1 - 127
 
   jsfeat.imgproc.gaussian_blur(img_u8, img_u8, kernel_size, 0);
 
@@ -33,6 +32,8 @@ async function getEdgeCanvasHelper(image, context) {
     pix = img_u8.data[i];
     data_u32[i] = alpha | (pix << 16) | (pix << 8) | pix;
   }
+
+  context.putImageData(imageData, 0, 0, 0, 0, width, height);
 
   const edgeCanvas = new CanvasDataHelper({
     canvasWidth: width,
@@ -323,4 +324,10 @@ async function findCutOff(detectedPixels1, detectedPixels2) {
   };
 }
 
-export { calculatedLossPercent, combinedAnalysis, fullAnalysis, colorEdges };
+export {
+  calculatedLossPercent,
+  combinedAnalysis,
+  fullAnalysis,
+  colorEdges,
+  getEdgeCanvasHelper,
+};

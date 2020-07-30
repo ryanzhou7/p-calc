@@ -33,25 +33,19 @@ function AnalysisResults(props) {
   };
 
   const canvasRef = useRef(null);
-  let cannyContext = null;
 
-  async function fullAnalysis(cannyContext) {
-    const {
-      topPixelsCount: top,
-      bottomPixelsCount: bottom,
-      context,
-    } = await utils.fullAnalysis(imageSource, combinedCanvasInfo, canvasRef);
-
+  async function fullAnalysis() {
+    utils.getEdgeCanvasHelper(imageSource, combinedCanvasInfo.context);
+    // const {
+    //   topPixelsCount: top,
+    //   bottomPixelsCount: bottom,
+    //   context,
+    // } = await utils.fullAnalysis(imageSource, combinedCanvasInfo, canvasRef);
     // don't have to do this to update ?
-    dispatch(combinedCanvasInfoReducer.setContext(context));
-    dispatch(combinedCanvasInfoReducer.setNumColoredOuterPixels(top));
-    dispatch(combinedCanvasInfoReducer.setNumColoredInnerPixels(bottom));
+    // dispatch(combinedCanvasInfoReducer.setContext(context));
+    // dispatch(combinedCanvasInfoReducer.setNumColoredOuterPixels(top));
+    // dispatch(combinedCanvasInfoReducer.setNumColoredInnerPixels(bottom));
   }
-
-  useEffect(() => {
-    const { current: canvas } = canvasRef;
-    cannyContext = canvas.getContext("2d");
-  }, []);
 
   return (
     <div>
@@ -80,8 +74,7 @@ function AnalysisResults(props) {
             </div>
             <Button
               onClick={() => {
-                fullAnalysis(cannyContext);
-                //utils.canny(imageSource, combinedCanvasInfo);
+                fullAnalysis();
               }}
             >
               Analyze
