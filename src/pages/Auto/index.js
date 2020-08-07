@@ -34,7 +34,7 @@ function Auto(props) {
 
   // UseEffect - Remove this later, just for testing
   useEffect(() => {
-    dispatch(imageReducer.setImage(sampleChart));
+    //dispatch(imageReducer.setImage(sampleChart));
   }, []);
 
   // Other hooks
@@ -42,7 +42,7 @@ function Auto(props) {
     const screenshot = webcamRef.current.getScreenshot();
 
     // Downloads image
-    DomHelper.downloadJpegInClient(screenshot, "close");
+    //DomHelper.downloadJpegInClient(screenshot, "close");
 
     dispatch(imageReducer.setImage(screenshot));
     window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
