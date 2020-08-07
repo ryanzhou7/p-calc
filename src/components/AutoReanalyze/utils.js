@@ -14,7 +14,7 @@ async function getEdgeCanvasHelper(image, context) {
   let img_u8 = new jsfeat.matrix_t(columns, rows, data_type);
   jsfeat.imgproc.grayscale(imageData.data, width, height, img_u8);
 
-  let r = 2; // 0 -4
+  let r = 3; // 0 -4
   let kernel_size = (r + 1) << 1;
   let low_threshold = 120; // 1 - 127
   let high_threshold = 120; // 1 - 127
@@ -33,6 +33,7 @@ async function getEdgeCanvasHelper(image, context) {
     data_u32[i] = alpha | (pix << 16) | (pix << 8) | pix;
   }
 
+  // Draw canny
   context.putImageData(imageData, 0, 0, 0, 0, width, height);
 
   const edgeCanvas = new CanvasDataHelper({
@@ -113,7 +114,8 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef) {
   const maxDetectedPixels = await ImageAnalysis.getDetectedPixels(
     canvasData,
     maxCoor,
-    edgeCanvas
+    edgeCanvas,
+    { width, height }
   );
 
   // Next max
@@ -127,7 +129,18 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef) {
   const nextMaxdetectedPixels = await ImageAnalysis.getDetectedPixels(
     canvasData,
     nextMaxCoor,
-    edgeCanvas
+    edgeCanvas,
+    { width, height }
+  );
+
+  context.putImageData(
+    imageData,
+    0,
+    0,
+    0,
+    0,
+    dimensions.detectionWidth,
+    dimensions.detectionHeight
   );
 
   /*

@@ -8,9 +8,10 @@ import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
 import target from "../../assets/target/thick-half.png";
 import "./index.css";
 import * as DomHelper from "../../utils/DomHelper";
-//import sampleChart from "../../assets/top-max.jpeg";
-//import sampleChart from "../../assets/image-5-grey.jpg";
-import sampleChart from "../../assets/image-5.jpeg";
+import sampleChart from "../../assets/top-max.jpeg";
+//import sampleChart from "../../assets/image-5.jpeg";
+//import sampleChart from "../../assets/close.jpeg";
+//import sampleChart from "../../assets/IMG_3790.jpg";
 
 function Auto(props) {
   // Setup
@@ -41,6 +42,10 @@ function Auto(props) {
   // Other hooks
   const capture = useCallback(() => {
     const screenshot = webcamRef.current.getScreenshot();
+
+    // Downloads image
+    DomHelper.downloadJpegInClient(screenshot, "close");
+
     dispatch(imageReducer.setImage(screenshot));
     window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
   }, [webcamRef]);

@@ -35,7 +35,9 @@ function AnalysisResults(props) {
   const canvasRef = useRef(null);
 
   async function fullAnalysis() {
-    utils.getEdgeCanvasHelper(imageSource, combinedCanvasInfo.context);
+    // Draw canny
+    //utils.getEdgeCanvasHelper(imageSource, combinedCanvasInfo.context);
+    await utils.fullAnalysis(imageSource, combinedCanvasInfo, canvasRef);
     // const {
     //   topPixelsCount: top,
     //   bottomPixelsCount: bottom,

@@ -9,6 +9,10 @@ const R_OFFSET = 0;
 const G_OFFSET = 1;
 const B_OFFSET = 2;
 
+// Increase to relax restrictions
+const SEED_THRESHOLD_ADJUST = 60;
+const IS_SIMILAR_PIXEL_THRESHOLD = 60;
+
 async function findSeed(canvasData, { detectionWidth, detectionHeight }) {
   const middleX = detectionWidth / 2;
   let coor = { x: middleX };
@@ -69,7 +73,15 @@ async function calcLaplacianValue(canvasData, coordinate) {
   return sum;
 }
 
-async function getDetectedPixels(canvasData, seedCoordinate, edgeCanvas) {
+const red = { r: 255, g: 0, b: 0 };
+const green = { r: 0, g: 255, b: 0 };
+const blue = { r: 0, g: 0, b: 255 };
+async function getDetectedPixels(
+  canvasData,
+  seedCoordinate,
+  edgeCanvas,
+  dimensions
+) {
   const { x, y } = seedCoordinate;
   const detectedPixels = [];
   detectedPixels.push(seedCoordinate);
@@ -77,29 +89,56 @@ async function getDetectedPixels(canvasData, seedCoordinate, edgeCanvas) {
   let queue = [];
   queue.push(seedCoordinate);
   const visited = new Set();
+  visited.add(seedCoordinate);
   let count = 0;
-  while (queue.length > 0 && count < 400) {
+  while (queue.length > 0) {
     const currentCoor = queue.pop();
 
     const key = getXYKey(currentCoor.x, currentCoor.y);
-    visited.add(key);
     const neighbors = getNeighbors(currentCoor);
 
     for (let neighborCoor of neighbors) {
       const key = getXYKey(neighborCoor.x, neighborCoor.y);
 
-      // If this is not added before and is similar, add it
-      if (!visited.has(key) && !isEdge(neighborCoor, edgeCanvas)) {
+      if (
+        !visited.has(key) &&
+        isSimiliar(currentCoor, neighborCoor, canvasData, seedCoordinate) &&
+        isWithinBoundary(neighborCoor, dimensions)
+      ) {
         queue.push(neighborCoor);
         detectedPixels.push(neighborCoor);
-        visited.add(key);
       }
+      visited.add(key);
     }
     count++;
   }
 
   return detectedPixels;
 }
+
+function isSimiliar(origin, suspect, canvasData, seedCoordinate) {
+  const seedRgb = canvasData.rgbPixel(seedCoordinate);
+  const seedThreshold = seedRgb.r * 2 - seedRgb.g - seedRgb.b;
+
+  const originRgb = canvasData.rgbPixel(origin);
+  const suspectRgb = canvasData.rgbPixel(suspect);
+
+  return (
+    // check if this is "red"
+    suspectRgb.r * 2 - suspectRgb.g - suspectRgb.b + SEED_THRESHOLD_ADJUST >
+      seedThreshold &&
+    // check if each of these values are not too different from the origin
+    Math.abs(originRgb.r - suspectRgb.r) < IS_SIMILAR_PIXEL_THRESHOLD &&
+    Math.abs(originRgb.g - suspectRgb.g) < IS_SIMILAR_PIXEL_THRESHOLD &&
+    Math.abs(originRgb.b - suspectRgb.b) < IS_SIMILAR_PIXEL_THRESHOLD
+  );
+}
+
+function isWithinBoundary(coor, dimensions) {
+  const { x, y } = coor;
+  return x > 0 && x < dimensions.width && y > 0 && y < dimensions.height;
+}
+
 const laplacianOperator = [
   [1, 1, 1],
   [1, -8, 1],
@@ -154,12 +193,6 @@ function isEdge(coor, canvasData) {
   const rgbPixel = canvasData.rgbPixel(coor);
   // if all black then it is a edge pixel
   return rgbPixel.r === 255 && rgbPixel.g === 255 && rgbPixel.b === 255;
-}
-function isSimiliar(origin, suspect, edgeCanvas, seedCoordinate) {
-  const possibleEdge = edgeCanvas.rgbPixel(suspect);
-  const isEdge =
-    possibleEdge.r === 255 && possibleEdge.g === 255 && possibleEdge.b === 255;
-  return !isEdge;
 }
 
 const neighborsDelta = [
