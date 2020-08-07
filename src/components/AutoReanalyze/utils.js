@@ -221,7 +221,7 @@ async function findNextMax(maxCoor, detectedPixels, canvasData, width, height) {
   }
 
   // Ensure that boundary is least some distance from the top / bottom
-  boundary += isTopToBottomSearch ? -5 : 5;
+  boundary += isTopToBottomSearch ? -20 : 20;
 
   let coor = { x: middleX };
   let intensity = 0;
