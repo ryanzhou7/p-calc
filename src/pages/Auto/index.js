@@ -10,8 +10,6 @@ import "./index.css";
 import * as DomHelper from "../../utils/DomHelper";
 import sampleChart from "../../assets/top-max.jpeg";
 //import sampleChart from "../../assets/image-5.jpeg";
-//import sampleChart from "../../assets/close.jpeg";
-//import sampleChart from "../../assets/IMG_3790.jpg";
 
 function Auto(props) {
   // Setup

@@ -10,8 +10,8 @@ const G_OFFSET = 1;
 const B_OFFSET = 2;
 
 // Increase to relax restrictions
-const SEED_THRESHOLD_ADJUST = 60;
-const IS_SIMILAR_PIXEL_THRESHOLD = 60;
+const SEED_THRESHOLD_ADJUST = 45;
+const IS_SIMILAR_PIXEL_THRESHOLD = 100;
 
 async function findSeed(canvasData, { detectionWidth, detectionHeight }) {
   const middleX = detectionWidth / 2;
