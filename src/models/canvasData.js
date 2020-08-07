@@ -53,7 +53,28 @@ export default class CanvasDataHelper {
     return b; //r * 2 - g - b;
   }
 
-  tint(pixelAtCoordinate, newColor) {}
+  tint(pixelAtCoordinate, newColor) {
+    const { r: newR, g: newG, b: newB } = newColor;
+
+    const { x, y } = pixelAtCoordinate;
+
+    const redIndex = getIndex(x, y, this.canvasWidth) + R_OFFSET;
+    const greenIndex = getIndex(x, y, this.canvasWidth) + G_OFFSET;
+    const blueIndex = getIndex(x, y, this.canvasWidth) + B_OFFSET;
+
+    const r = this.imageArray[redIndex];
+    const g = this.imageArray[greenIndex];
+    const b = this.imageArray[blueIndex];
+
+    this.imageArray[redIndex] += this.tintDelta(r, newR);
+    this.imageArray[greenIndex] += this.tintDelta(g, newG);
+    this.imageArray[blueIndex] += this.tintDelta(b, newB);
+  }
+
+  tintDelta(start, end) {
+    const tintFactor = 3;
+    return (end - start) / 3;
+  }
 }
 
 /**

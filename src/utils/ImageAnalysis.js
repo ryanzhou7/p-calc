@@ -266,7 +266,9 @@ async function updateImageData(
       // Color this pixel only if it has not been colored before and is within bounds
       if (!coloredPixels.has(key) && leftX <= x && x <= rightX) {
         coloredPixels.add(key);
-        canvasData.recolor(verticalCoordinate, recolor);
+        //canvasData.recolor(verticalCoordinate, recolor);
+
+        canvasData.tint(verticalCoordinate, recolor);
         numDetectedPixels++;
       }
     }
