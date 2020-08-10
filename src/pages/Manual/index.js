@@ -35,7 +35,7 @@ function Manual(props) {
 
   // Remove this later, just for testing
   useEffect(() => {
-    dispatch(imageReducer.setImage(sampleChart));
+    dispatch(imageReducer.setImageOnload(sampleChart));
   }, []);
 
   // Props
@@ -48,7 +48,7 @@ function Manual(props) {
   // Other hooks
   const capture = useCallback(() => {
     const screenshot = webcamRef.current.getScreenshot();
-    dispatch(imageReducer.setImage(screenshot));
+    dispatch(imageReducer.setImageOnload(screenshot));
     DomHelper.downloadJpegInClient(screenshot, "image");
   }, [webcamRef]);
 

@@ -2,6 +2,9 @@ import Coordinate from "../models/coordinate";
 import CanvasDataHelper from "../models/canvasData";
 import * as math from "mathjs";
 
+const convert = require("color-convert");
+const DeltaE = require("delta-e");
+
 /**
  * Offsets access each value in a canvasContext.getImageData()
  */
@@ -10,7 +13,7 @@ const G_OFFSET = 1;
 const B_OFFSET = 2;
 
 // Increase to relax restrictions
-const SEED_THRESHOLD_ADJUST = 45;
+const SEED_THRESHOLD_ADJUST = 70;
 const IS_SIMILAR_PIXEL_THRESHOLD = 100;
 
 async function findSeed(canvasData, { detectionWidth, detectionHeight }) {
@@ -101,9 +104,9 @@ async function getDetectedPixels(
       const key = getXYKey(neighborCoor.x, neighborCoor.y);
 
       if (
+        isWithinBoundary(neighborCoor, dimensions) &&
         !visited.has(key) &&
-        isSimiliar(currentCoor, neighborCoor, canvasData, seedCoordinate) &&
-        isWithinBoundary(neighborCoor, dimensions)
+        isSimiliar(currentCoor, neighborCoor, canvasData, seedCoordinate)
       ) {
         queue.push(neighborCoor);
         detectedPixels.push(neighborCoor);
@@ -117,21 +120,30 @@ async function getDetectedPixels(
 }
 
 function isSimiliar(origin, suspect, canvasData, seedCoordinate) {
-  const seedRgb = canvasData.rgbPixel(seedCoordinate);
-  const seedThreshold = seedRgb.r * 2 - seedRgb.g - seedRgb.b;
+  //const seedRgb = canvasData.rgbPixel(seedCoordinate);
+  //const seedThreshold = seedRgb.r * 2 - seedRgb.g - seedRgb.b;
 
-  const originRgb = canvasData.rgbPixel(origin);
+  const originRgb = canvasData.rgbPixel(seedCoordinate);
   const suspectRgb = canvasData.rgbPixel(suspect);
 
-  return (
-    // check if this is "red"
-    suspectRgb.r * 2 - suspectRgb.g - suspectRgb.b + SEED_THRESHOLD_ADJUST >
-      seedThreshold &&
-    // check if each of these values are not too different from the origin
-    Math.abs(originRgb.r - suspectRgb.r) < IS_SIMILAR_PIXEL_THRESHOLD &&
-    Math.abs(originRgb.g - suspectRgb.g) < IS_SIMILAR_PIXEL_THRESHOLD &&
-    Math.abs(originRgb.b - suspectRgb.b) < IS_SIMILAR_PIXEL_THRESHOLD
-  );
+  const originLab = convert.rgb.lab(originRgb.r, originRgb.g, originRgb.b);
+  const suspectLab = convert.rgb.lab(suspectRgb.r, suspectRgb.g, suspectRgb.b);
+
+  const lab1 = { L: originLab[0], A: originLab[1], B: originLab[2] };
+  const lab2 = { L: suspectLab[0], A: suspectLab[1], B: suspectLab[2] };
+
+  return DeltaE.getDeltaE00(lab1, lab2) < 20;
+
+  // is red / is within range check
+  // return (
+  //   // check if this is "red"
+  //   suspectRgb.r * 2 - suspectRgb.g - suspectRgb.b + SEED_THRESHOLD_ADJUST >
+  //     seedThreshold &&
+  //   // check if each of these values are not too different from the origin
+  //   Math.abs(originRgb.r - suspectRgb.r) < IS_SIMILAR_PIXEL_THRESHOLD &&
+  //   Math.abs(originRgb.g - suspectRgb.g) < IS_SIMILAR_PIXEL_THRESHOLD &&
+  //   Math.abs(originRgb.b - suspectRgb.b) < IS_SIMILAR_PIXEL_THRESHOLD
+  // );
 }
 
 function isWithinBoundary(coor, dimensions) {

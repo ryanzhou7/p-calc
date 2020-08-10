@@ -8,8 +8,9 @@ import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
 import target from "../../assets/target/thick-half.png";
 import "./index.css";
 import * as DomHelper from "../../utils/DomHelper";
-import sampleChart from "../../assets/top-max.jpeg";
-//import sampleChart from "../../assets/image-5.jpeg";
+//import sampleChart from "../../assets/top-max.jpeg";
+import sampleChart from "../../assets/image-5.jpeg";
+//import sampleChart from "../../assets/4.jpeg";
 
 function Auto(props) {
   // Setup
@@ -34,7 +35,7 @@ function Auto(props) {
 
   // UseEffect - Remove this later, just for testing
   useEffect(() => {
-    //dispatch(imageReducer.setImage(sampleChart));
+    dispatch(imageReducer.setImageOnload(sampleChart));
   }, []);
 
   // Other hooks
@@ -44,6 +45,7 @@ function Auto(props) {
     // Downloads image
     //DomHelper.downloadJpegInClient(screenshot, "close");
 
+    dispatch(imageReducer.setImageOnload(screenshot));
     dispatch(imageReducer.setImage(screenshot));
     window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
   }, [webcamRef]);

@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
 import Canvas from "../Canvas/Canvas";
 import * as utils from "./utils";
+import * as DomHelper from "../../utils/DomHelper";
 
 function AnalysisResults(props) {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ function AnalysisResults(props) {
     (state) => state.canvasSettings.canvasDimensions
   );
   const imageSource = useSelector((state) => state.image.source);
+  const image = useSelector((state) => state.image.image);
 
   const outerNumColoredPixels = combinedCanvasInfo.numColoredOuterPixels;
   const innerNumColoredPixels = combinedCanvasInfo.numColoredInnerPixels;
@@ -69,17 +71,22 @@ function AnalysisResults(props) {
 
           <div>
             <div className="my-4">
-              <Button className="mr-4" variant="outline-primary">
-                -
+              <Button
+                onClick={() => {
+                  fullAnalysis();
+                }}
+              >
+                Analyze
               </Button>
-              <Button variant="outline-primary">+</Button>
             </div>
+
             <Button
+              variant="outline-primary"
               onClick={() => {
-                fullAnalysis();
+                DomHelper.downloadJpegInClient(image, "close");
               }}
             >
-              Analyze
+              Download
             </Button>
           </div>
           <div className="mt-4">

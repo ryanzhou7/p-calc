@@ -13,6 +13,8 @@
     "@types/react-router-dom": "^5.1.5",
     "bootstrap": "^4.4.1",
     "color": "^3.1.2",
+    "color-convert": "^2.0.1",
+    "delta-e": "0.0.8",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "jsfeat": "0.0.8",
     "mathjs": "^7.1.0",
