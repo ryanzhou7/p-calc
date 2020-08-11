@@ -93,7 +93,6 @@ async function getDetectedPixels(
   queue.push(seedCoordinate);
   const visited = new Set();
   visited.add(seedCoordinate);
-  let count = 0;
   while (queue.length > 0) {
     const currentCoor = queue.pop();
 
@@ -113,7 +112,6 @@ async function getDetectedPixels(
       }
       visited.add(key);
     }
-    count++;
   }
 
   return detectedPixels;
@@ -141,7 +139,9 @@ function isSimiliar(origin, suspect, canvasData, seedCoordinate) {
     B: suspectLab[2],
   };
 
-  return DeltaE.getDeltaE00(seedLabObj, suspectLabObj) < 20;
+  return (
+    DeltaE.getDeltaE00(seedLabObj, suspectLabObj) < 20 //||DeltaE.getDeltaE00(originLabObj, suspectLabObj) < 5
+  );
 
   // is red / is within range check
   // return (
@@ -217,10 +217,14 @@ function isEdge(coor, canvasData) {
 }
 
 const neighborsDelta = [
+  [-1, -1],
   [-1, 0],
+  [-1, 1],
   [0, -1],
   [0, 1],
+  [1, -1],
   [1, 0],
+  [1, 1],
 ];
 function getNeighbors(coordinate) {
   const neighbors = [];
