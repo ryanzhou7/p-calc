@@ -9,8 +9,7 @@ import target from "../../assets/target/thick-half.png";
 import "./index.css";
 import * as DomHelper from "../../utils/DomHelper";
 //import sampleChart from "../../assets/top-max.jpeg";
-import sampleChart from "../../assets/image-5.jpeg";
-//import sampleChart from "../../assets/4.jpeg";
+import sampleChart from "../../assets/7.jpeg";
 
 function Auto(props) {
   // Setup

@@ -2,7 +2,7 @@ import Coordinate from "../models/coordinate";
 import CanvasDataHelper from "../models/canvasData";
 import * as math from "mathjs";
 
-const convert = require("color-convert");
+const colorSpace = require("color-space");
 const DeltaE = require("delta-e");
 
 /**
@@ -120,19 +120,28 @@ async function getDetectedPixels(
 }
 
 function isSimiliar(origin, suspect, canvasData, seedCoordinate) {
-  //const seedRgb = canvasData.rgbPixel(seedCoordinate);
-  //const seedThreshold = seedRgb.r * 2 - seedRgb.g - seedRgb.b;
+  const seedRgb = canvasData.rgbPixel(seedCoordinate);
+  const seedLab = colorSpace.rgb.lab([seedRgb.r, seedRgb.g, seedRgb.b]);
+  const seedLabObj = { L: seedLab[0], A: seedLab[1], B: seedLab[2] };
 
-  const originRgb = canvasData.rgbPixel(seedCoordinate);
+  const originRgb = canvasData.rgbPixel(origin);
   const suspectRgb = canvasData.rgbPixel(suspect);
 
-  const originLab = convert.rgb.lab(originRgb.r, originRgb.g, originRgb.b);
-  const suspectLab = convert.rgb.lab(suspectRgb.r, suspectRgb.g, suspectRgb.b);
+  const originLab = colorSpace.rgb.lab([originRgb.r, originRgb.g, originRgb.b]);
+  const suspectLab = colorSpace.rgb.lab([
+    suspectRgb.r,
+    suspectRgb.g,
+    suspectRgb.b,
+  ]);
 
-  const lab1 = { L: originLab[0], A: originLab[1], B: originLab[2] };
-  const lab2 = { L: suspectLab[0], A: suspectLab[1], B: suspectLab[2] };
+  const originLabObj = { L: originLab[0], A: originLab[1], B: originLab[2] };
+  const suspectLabObj = {
+    L: suspectLab[0],
+    A: suspectLab[1],
+    B: suspectLab[2],
+  };
 
-  return DeltaE.getDeltaE00(lab1, lab2) < 20;
+  return DeltaE.getDeltaE00(seedLabObj, suspectLabObj) < 20;
 
   // is red / is within range check
   // return (

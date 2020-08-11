@@ -126,6 +126,7 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef) {
     width,
     height
   );
+
   const nextMaxdetectedPixels = await ImageAnalysis.getDetectedPixels(
     canvasData,
     nextMaxCoor,
@@ -213,18 +214,19 @@ async function findNextMax(maxCoor, detectedPixels, canvasData, width, height) {
 
   // If we are search from top to bottom it means the current max is the bottom
   // Hence, from the detected bottom line when need to find the biggest y as the boundary
-  let boundary = isTopToBottomSearch ? Number.MIN_VALUE : Number.MAX_VALUE;
+  //let boundary = isTopToBottomSearch ? Number.MIN_VALUE : Number.MAX_VALUE;
+  let boundary = distanceFromTop;
   const boundaryComparator = isTopToBottomSearch ? Math.max : Math.min;
 
   for (let { y } of detectedPixels) {
-    boundary = boundaryComparator(boundary, y);
+    //boundary = boundaryComparator(boundary, y);
   }
 
-  // Ensure that boundary is least some distance from the top / bottom
-  boundary += isTopToBottomSearch ? -20 : 20;
+  // Ensure that boundary is least some distance from the top / bottom so it won't be mistaken
+  boundary += isTopToBottomSearch ? -10 : 10;
 
   let coor = { x: middleX };
-  let intensity = 0;
+  let intensity = Number.MIN_SAFE_INTEGER;
 
   let y = isTopToBottomSearch ? 0 : photoOriginY;
 
@@ -233,8 +235,9 @@ async function findNextMax(maxCoor, detectedPixels, canvasData, width, height) {
     const rgbPixel = canvasData.rgbPixel(coordinate);
 
     const value = rgbPixel.r * 2 - rgbPixel.b - rgbPixel.g;
+
     if (value > intensity) {
-      coor.y = y;
+      coor = { y: y, x: middleX };
       intensity = value;
     }
     isTopToBottomSearch ? y++ : y--;
@@ -313,8 +316,8 @@ async function combinedAnalysis(
 }
 
 async function findCutOff(detectedPixels1, detectedPixels2) {
-  let smallestX1 = Number.MAX_VALUE;
-  let smallestX2 = Number.MAX_VALUE;
+  let smallestX1 = Number.MAX_SAFE_INTEGER;
+  let smallestX2 = Number.MAX_SAFE_INTEGER;
 
   let largestX1 = 0;
   let largestX2 = 0;
