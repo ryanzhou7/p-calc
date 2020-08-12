@@ -83,54 +83,42 @@ function AnalysisResults(props) {
             Retake
           </Button>
 
-          <div>
-            <div className="my-4">
-              <Button
-                onClick={() => {
-                  fullAnalysis();
-                }}
-              >
-                Analyze
-              </Button>
-            </div>
-
-            <div className="my-4">
-              <Button
-                className="mr-2"
-                onClick={() => {
-                  changeThresholdBy(-5);
-                  fullAnalysis();
-                }}
-              >
-                Detect less
-              </Button>
-              <Button
-                onClick={() => {
-                  changeThresholdBy(5);
-                  fullAnalysis();
-                }}
-              >
-                Detect more
-              </Button>
-            </div>
-
+          <div className="my-4">
             <Button
-              variant="outline-primary"
+              className="mr-2"
               onClick={() => {
-                DomHelper.downloadJpegInClient(image, "close");
+                changeThresholdBy(-5);
+                fullAnalysis();
               }}
             >
-              Download
+              Detect less
+            </Button>
+            <Button
+              onClick={() => {
+                changeThresholdBy(5);
+                fullAnalysis();
+              }}
+            >
+              Detect more
             </Button>
           </div>
-          <div className="mt-4">
-            Loss:{" "}
-            {utils.calculatedLossPercent(
-              outerNumColoredPixels,
-              innerNumColoredPixels
-            )}
-            %
-          </div>
+
+          <Button
+            variant="outline-primary"
+            onClick={() => {
+              DomHelper.downloadJpegInClient(image, "close");
+            }}
+          >
+            Download
+          </Button>
+        </div>
+        <div className="mt-4">
+          Loss:{" "}
+          {utils.calculatedLossPercent(
+            outerNumColoredPixels,
+            innerNumColoredPixels
+          )}
+          %
         </div>
       </div>
     </div>
