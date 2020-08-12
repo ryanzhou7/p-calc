@@ -1,10 +1,10 @@
 import React from "react";
-import Home from "../../pages/Home";
+import AutoReanalyze from "../../pages/Auto/index";
 
 function App() {
   return (
     <>
-      <Home />
+      <AutoReanalyze />
     </>
   );
 }

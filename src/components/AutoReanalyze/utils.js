@@ -80,7 +80,7 @@ async function colorEdges(image, combinedCanvasInfo) {
   );
 }
 
-async function fullAnalysis(image, combinedCanvasInfo, canvasRef) {
+async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
   const { width, height } = image;
   const dimensions = {
     detectionWidth: width,
@@ -115,7 +115,8 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef) {
     canvasData,
     maxCoor,
     edgeCanvas,
-    { width, height }
+    { width, height },
+    threshold
   );
 
   // Next max
@@ -131,18 +132,13 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef) {
     canvasData,
     nextMaxCoor,
     edgeCanvas,
-    { width, height }
+    { width, height },
+    threshold
   );
 
-  context.putImageData(
-    imageData,
-    0,
-    0,
-    0,
-    0,
-    dimensions.detectionWidth,
-    dimensions.detectionHeight
-  );
+  // TODO don't need this I think
+  console.log("max: " + maxDetectedPixels.length);
+  console.log("next: " + nextMaxdetectedPixels.length);
 
   /*
    * Max / Next Max -> top / bottom
@@ -183,7 +179,7 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef) {
   const bottomPixelsCount = await ImageAnalysis.updateImageData(
     canvasData,
     { leftX, rightX, height },
-    { r: 0, g: 255, b: 255 },
+    { r: 0, g: 0, b: 255 },
     bottomDetectedPixels
   );
 

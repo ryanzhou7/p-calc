@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
@@ -18,6 +18,7 @@ function AnalysisResults(props) {
   );
   const imageSource = useSelector((state) => state.image.source);
   const image = useSelector((state) => state.image.image);
+  const [threshold, setThreshold] = useState(20);
 
   const outerNumColoredPixels = combinedCanvasInfo.numColoredOuterPixels;
   const innerNumColoredPixels = combinedCanvasInfo.numColoredInnerPixels;
@@ -36,19 +37,32 @@ function AnalysisResults(props) {
 
   const canvasRef = useRef(null);
 
+  const changeThresholdBy = (value) => {
+    let change = Math.max(0, threshold + value);
+    setThreshold(change);
+  };
+
+  useEffect(() => {
+    if (imageSource) {
+      fullAnalysis();
+    }
+  }, [imageSource]);
+
   async function fullAnalysis() {
     // Draw canny
     //utils.getEdgeCanvasHelper(imageSource, combinedCanvasInfo.context);
-    await utils.fullAnalysis(imageSource, combinedCanvasInfo, canvasRef);
-    // const {
-    //   topPixelsCount: top,
-    //   bottomPixelsCount: bottom,
-    //   context,
-    // } = await utils.fullAnalysis(imageSource, combinedCanvasInfo, canvasRef);
-    // don't have to do this to update ?
-    // dispatch(combinedCanvasInfoReducer.setContext(context));
-    // dispatch(combinedCanvasInfoReducer.setNumColoredOuterPixels(top));
-    // dispatch(combinedCanvasInfoReducer.setNumColoredInnerPixels(bottom));
+    const { topPixelsCount, bottomPixelsCount } = await utils.fullAnalysis(
+      imageSource,
+      combinedCanvasInfo,
+      canvasRef,
+      threshold
+    );
+    dispatch(
+      combinedCanvasInfoReducer.setNumColoredOuterPixels(topPixelsCount)
+    );
+    dispatch(
+      combinedCanvasInfoReducer.setNumColoredInnerPixels(bottomPixelsCount)
+    );
   }
 
   return (
@@ -77,6 +91,26 @@ function AnalysisResults(props) {
                 }}
               >
                 Analyze
+              </Button>
+            </div>
+
+            <div className="my-4">
+              <Button
+                className="mr-2"
+                onClick={() => {
+                  changeThresholdBy(-5);
+                  fullAnalysis();
+                }}
+              >
+                Detect less
+              </Button>
+              <Button
+                onClick={() => {
+                  changeThresholdBy(5);
+                  fullAnalysis();
+                }}
+              >
+                Detect more
               </Button>
             </div>
 

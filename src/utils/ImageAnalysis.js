@@ -83,7 +83,8 @@ async function getDetectedPixels(
   canvasData,
   seedCoordinate,
   edgeCanvas,
-  dimensions
+  dimensions,
+  threshold
 ) {
   const { x, y } = seedCoordinate;
   const detectedPixels = [];
@@ -105,7 +106,13 @@ async function getDetectedPixels(
       if (
         isWithinBoundary(neighborCoor, dimensions) &&
         !visited.has(key) &&
-        isSimiliar(currentCoor, neighborCoor, canvasData, seedCoordinate)
+        isSimiliar(
+          currentCoor,
+          neighborCoor,
+          canvasData,
+          seedCoordinate,
+          threshold
+        )
       ) {
         queue.push(neighborCoor);
         detectedPixels.push(neighborCoor);
@@ -117,7 +124,7 @@ async function getDetectedPixels(
   return detectedPixels;
 }
 
-function isSimiliar(origin, suspect, canvasData, seedCoordinate) {
+function isSimiliar(origin, suspect, canvasData, seedCoordinate, threshold) {
   const seedRgb = canvasData.rgbPixel(seedCoordinate);
   const seedLab = colorSpace.rgb.lab([seedRgb.r, seedRgb.g, seedRgb.b]);
   const seedLabObj = { L: seedLab[0], A: seedLab[1], B: seedLab[2] };
@@ -139,9 +146,7 @@ function isSimiliar(origin, suspect, canvasData, seedCoordinate) {
     B: suspectLab[2],
   };
 
-  return (
-    DeltaE.getDeltaE00(seedLabObj, suspectLabObj) < 20 //||DeltaE.getDeltaE00(originLabObj, suspectLabObj) < 5
-  );
+  return DeltaE.getDeltaE00(seedLabObj, suspectLabObj) < threshold;
 
   // is red / is within range check
   // return (
@@ -285,6 +290,7 @@ async function updateImageData(
 
     // Go down a vertical line
     for (let i = y; i < height / 2; i++) {
+      //for (let i = y; i <= y; i++) {
       const key = getXYKey(x, i);
       const verticalCoordinate = { x, y: i };
 
