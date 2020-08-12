@@ -60,6 +60,7 @@ function Auto(props) {
       drawWidth: canvasDimensions.width,
       drawHeight: canvasDimensions.height,
     },
+    isPortrait,
   };
 
   return (

@@ -24,7 +24,7 @@ function AnalysisResults(props) {
   const innerNumColoredPixels = combinedCanvasInfo.numColoredInnerPixels;
 
   // Props
-  const { webcamRef } = props;
+  const { webcamRef, isPortrait } = props;
 
   // Child props
   const canvasProps = {
@@ -73,52 +73,58 @@ function AnalysisResults(props) {
         <canvas style={{ display: "none" }} ref={canvasRef} />
 
         <div>
-          <Button
-            className="my-1"
-            variant="outline-primary"
-            onClick={() => {
-              window.scrollTo(0, webcamRef.current.offsetTop);
-            }}
-          >
-            Retake
-          </Button>
+          {!isPortrait && (
+            <div>
+              <Button
+                className="my-1"
+                variant="outline-primary"
+                onClick={() => {
+                  window.scrollTo(0, webcamRef.current.offsetTop);
+                }}
+              >
+                Retake
+              </Button>
 
-          <div className="my-4">
-            <Button
-              className="mr-2"
-              onClick={() => {
-                changeThresholdBy(-5);
-                fullAnalysis();
-              }}
-            >
-              Detect less
-            </Button>
-            <Button
-              onClick={() => {
-                changeThresholdBy(5);
-                fullAnalysis();
-              }}
-            >
-              Detect more
-            </Button>
-          </div>
+              <div>
+                <div className="my-4">
+                  <Button
+                    className="mr-2"
+                    onClick={() => {
+                      changeThresholdBy(-5);
+                      fullAnalysis();
+                    }}
+                  >
+                    Detect less
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      changeThresholdBy(5);
+                      fullAnalysis();
+                    }}
+                  >
+                    Detect more
+                  </Button>
+                </div>
 
-          <Button
-            variant="outline-primary"
-            onClick={() => {
-              DomHelper.downloadJpegInClient(image, "close");
-            }}
-          >
-            Download
-          </Button>
-        </div>
-        <div className="mt-4">
-          Loss:{" "}
-          {utils.calculatedLossPercent(
-            outerNumColoredPixels,
-            innerNumColoredPixels
+                <Button
+                  variant="outline-primary"
+                  onClick={() => {
+                    DomHelper.downloadJpegInClient(image, "close");
+                  }}
+                >
+                  Download
+                </Button>
+              </div>
+            </div>
           )}
-          %
+          <h3 className="mt-4">
+            Loss:{" "}
+            {utils.calculatedLossPercent(
+              outerNumColoredPixels,
+              innerNumColoredPixels
+            )}
+            %
+          </h3>
         </div>
       </div>
     </div>
