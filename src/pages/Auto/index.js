@@ -33,7 +33,7 @@ function Auto(props) {
 
   // UseEffect - Remove this later, just for testing
   useEffect(() => {
-    dispatch(imageReducer.setImageOnload(sampleChart));
+    //dispatch(imageReducer.setImageOnload(sampleChart));
   }, []);
 
   // Other hooks
