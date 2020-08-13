@@ -120,13 +120,7 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
   );
 
   // Next max
-  const nextMaxCoor = await findNextMax(
-    maxCoor,
-    maxDetectedPixels,
-    canvasData,
-    width,
-    height
-  );
+  const nextMaxCoor = await findNextMax(maxCoor, canvasData, width, height);
 
   const nextMaxdetectedPixels = await ImageAnalysis.getDetectedPixels(
     canvasData,
@@ -135,10 +129,6 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
     { width, height },
     threshold
   );
-
-  // TODO don't need this I think
-  console.log("max: " + maxDetectedPixels.length);
-  console.log("next: " + nextMaxdetectedPixels.length);
 
   /*
    * Max / Next Max -> top / bottom
@@ -193,10 +183,10 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
     dimensions.detectionHeight
   );
 
-  return Promise.resolve({ topPixelsCount, bottomPixelsCount, context });
+  return Promise.resolve({ topPixelsCount, bottomPixelsCount });
 }
 
-async function findNextMax(maxCoor, detectedPixels, canvasData, width, height) {
+async function findNextMax(maxCoor, canvasData, width, height) {
   // Setup
   const photoOriginY = height / 2;
   const middleX = width / 2;
@@ -207,16 +197,7 @@ async function findNextMax(maxCoor, detectedPixels, canvasData, width, height) {
   // If the already found coor's distance from the bottom (origin) is less than the tops then
   // it's closer to the bottom and we are searching from top to bottom
   const isTopToBottomSearch = distanceFromOrigin < distanceFromTop;
-
-  // If we are search from top to bottom it means the current max is the bottom
-  // Hence, from the detected bottom line when need to find the biggest y as the boundary
-  //let boundary = isTopToBottomSearch ? Number.MIN_VALUE : Number.MAX_VALUE;
   let boundary = distanceFromTop;
-  const boundaryComparator = isTopToBottomSearch ? Math.max : Math.min;
-
-  for (let { y } of detectedPixels) {
-    //boundary = boundaryComparator(boundary, y);
-  }
 
   // Ensure that boundary is least some distance from the top / bottom so it won't be mistaken
   boundary += isTopToBottomSearch ? -10 : 10;
