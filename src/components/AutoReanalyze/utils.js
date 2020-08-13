@@ -87,9 +87,9 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
     detectionHeight: height,
   };
 
+  // Edge canvas stuff
   const { current: canvas } = canvasRef;
   const edgeContext = canvas.getContext("2d");
-
   const edgeCanvas = await getEdgeCanvasHelper(image, edgeContext);
 
   /*

@@ -12,12 +12,7 @@ function AnalysisResults(props) {
   const dispatch = useDispatch();
 
   // State
-  const outerCanvasInfo = useSelector((state) => state.outerCanvasInfo);
-  const innerCanvasInfo = useSelector((state) => state.innerCanvasInfo);
   const combinedCanvasInfo = useSelector((state) => state.combinedCanvasInfo);
-  const canvasDimensions = useSelector(
-    (state) => state.canvasSettings.canvasDimensions
-  );
   const imageSource = useSelector((state) => state.image.source);
   const [threshold, setThreshold] = useState(20);
 
@@ -26,6 +21,7 @@ function AnalysisResults(props) {
 
   // Props
   const { webcamRef, isPortrait } = props;
+  const analyisLayoutClass = isPortrait ? "flex-column" : "";
 
   // Child props
   const canvasProps = {
@@ -66,23 +62,25 @@ function AnalysisResults(props) {
 
   return (
     <div>
-      <div className="d-flex justify-content-around align-items-center">
+      <div
+        className={`d-flex justify-content-around align-items-center ${analyisLayoutClass}`}
+      >
         <Canvas {...canvasProps} />
 
-        <canvas style={{ display: "none" }} ref={canvasRef} />
-
-        <div>
+        <div className="mt-3">
           {imageSource && (
             <div>
-              <Button
-                className="my-4"
-                variant="outline-primary"
-                onClick={() => {
-                  window.scrollTo(0, webcamRef.current.offsetTop);
-                }}
-              >
-                Retake picture
-              </Button>
+              {!isPortrait && (
+                <Button
+                  className="my-4"
+                  variant="outline-primary"
+                  onClick={() => {
+                    window.scrollTo(0, webcamRef.current.offsetTop);
+                  }}
+                >
+                  Retake picture
+                </Button>
+              )}
 
               <div>
                 <Card>
@@ -150,7 +148,13 @@ function AnalysisResults(props) {
             </h3>
           )}
         </div>
+        {isPortrait && imageSource && (
+          <label>Rotate your device to retake picture</label>
+        )}
       </div>
+
+      {/* Used for edge canvas */}
+      <canvas style={{ display: "none" }} ref={canvasRef} />
     </div>
   );
 }

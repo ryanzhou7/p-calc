@@ -63,7 +63,7 @@ function Auto(props) {
   return (
     <div className="App">
       <h2>Ptosis calculator</h2>
-      {isPortrait && <h3>Please rotate your device</h3>}
+      {isPortrait && !image && <h3>Please rotate your device</h3>}
 
       {!isPortrait && (
         <Card>
