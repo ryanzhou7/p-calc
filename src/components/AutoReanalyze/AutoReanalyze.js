@@ -34,23 +34,23 @@ function AnalysisResults(props) {
 
   const canvasRef = useRef(null);
 
-  const changeThresholdBy = (value) => {
-    let change = Math.max(0, threshold + value);
-    setThreshold(change);
-  };
+  function changeThresholdBy(value) {
+    setThreshold((previous) => Math.max(0, previous + value));
+  }
 
   useEffect(() => {
     if (imageSource) {
-      fullAnalysis();
+      fullAnalysis(0);
     }
   }, [imageSource]);
 
-  async function fullAnalysis() {
+  async function fullAnalysis(thresholdChange) {
+    const newThreshold = threshold + thresholdChange;
     const { topPixelsCount, bottomPixelsCount } = await utils.fullAnalysis(
       imageSource,
       combinedCanvasInfo,
       canvasRef,
-      threshold
+      newThreshold
     );
     dispatch(
       combinedCanvasInfoReducer.setNumColoredOuterPixels(topPixelsCount)
@@ -58,6 +58,7 @@ function AnalysisResults(props) {
     dispatch(
       combinedCanvasInfoReducer.setNumColoredInnerPixels(bottomPixelsCount)
     );
+    changeThresholdBy(thresholdChange);
   }
 
   return (
@@ -85,22 +86,20 @@ function AnalysisResults(props) {
               <div>
                 <Card>
                   <Card.Body>
-                    <Card.Title>Detect</Card.Title>
+                    <Card.Title>Detect: {threshold}</Card.Title>
 
                     <div className="container">
                       <div className="row justify-content-around mb-3">
                         <Button
-                          onClick={() => {
-                            changeThresholdBy(-2);
-                            fullAnalysis();
+                          onClick={(e) => {
+                            fullAnalysis(-2);
                           }}
                         >
                           <FontAwesomeIcon icon="minus" size="1x" />
                         </Button>
                         <Button
-                          onClick={() => {
-                            changeThresholdBy(2);
-                            fullAnalysis();
+                          onClick={(e) => {
+                            fullAnalysis(2);
                           }}
                         >
                           <FontAwesomeIcon icon="plus" size="1x" />
@@ -108,9 +107,8 @@ function AnalysisResults(props) {
                       </div>
                       <div className="row justify-content-around">
                         <Button
-                          onClick={() => {
-                            changeThresholdBy(-5);
-                            fullAnalysis();
+                          onClick={(e) => {
+                            fullAnalysis(-5);
                           }}
                         >
                           <FontAwesomeIcon icon="minus" size="1x" />
@@ -118,9 +116,8 @@ function AnalysisResults(props) {
                           <FontAwesomeIcon icon="minus" size="1x" />
                         </Button>
                         <Button
-                          onClick={() => {
-                            changeThresholdBy(5);
-                            fullAnalysis();
+                          onClick={(e) => {
+                            fullAnalysis(5);
                           }}
                         >
                           <FontAwesomeIcon icon="plus" size="1x" />
