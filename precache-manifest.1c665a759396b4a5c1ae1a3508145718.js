@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "df400d77daaab2aa838cf81d9507dae0",
+    "revision": "0a3d423acdab0fd61bd3b7e1e38d7d1c",
     "url": "/p-calc/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/p-calc/static/css/2.de424728.chunk.css"
   },
   {
-    "revision": "b105cab7049eb779d1c6",
+    "revision": "10fa4d625e77e37d8619",
     "url": "/p-calc/static/css/main.3243ab18.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/p-calc/static/js/2.df277dd9.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "b105cab7049eb779d1c6",
-    "url": "/p-calc/static/js/main.0994da84.chunk.js"
+    "revision": "10fa4d625e77e37d8619",
+    "url": "/p-calc/static/js/main.3eff3a9d.chunk.js"
   },
   {
     "revision": "c4d9494a3bb9472be5e9",
