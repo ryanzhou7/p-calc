@@ -86,7 +86,7 @@ function AnalysisResults(props) {
               <div>
                 <Card>
                   <Card.Body>
-                    <Card.Title>Detect: {threshold}</Card.Title>
+                    <Card.Title>Sensitivity: {threshold}</Card.Title>
 
                     <div className="container">
                       <div className="row justify-content-around mb-3">
