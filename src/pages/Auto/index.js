@@ -38,7 +38,6 @@ function Auto(props) {
   // Other hooks
   //const capture = useCallback(() => {
   const capture = () => {
-    console.log("capture");
     const screenshot = webcamRef.current.getScreenshot();
 
     dispatch(imageReducer.setImageOnload(screenshot));
@@ -64,9 +63,7 @@ function Auto(props) {
   return (
     <div className="App">
       <h2>Ptosis calculator</h2>
-      <div
-        className="mx-auto"
-      >
+      <div className="mx-auto">
         <div className="capture-container mx-auto">
           <Webcam
             audio={false}
@@ -79,15 +76,16 @@ function Auto(props) {
            <div className="overlay">
             <img
               className="target"
-              style={{ width: videoConstraints.width }}
+              //width -20 leaves some padding on the left and right side
+              style={{ width: videoConstraints.width-20 }}
               src={target}
             />
           </div>
         </div>
 
       </div>
-      <div className="my-3 z-top" >
-        <Button onClick={() => capture()}>
+      <div className="my-3 z-top mx-auto" >
+        <Button className="capture-button" onClick={() => capture()}>
           <FontAwesomeIcon icon="camera" size="3x" />
         </Button>
       </div>

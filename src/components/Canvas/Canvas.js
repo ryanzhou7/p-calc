@@ -29,7 +29,7 @@ function Canvas(props) {
 
   return (
     <div>
-      <canvas ref={canvasRef} className="border" />
+      <canvas ref={canvasRef} />
     </div>
   );
 }

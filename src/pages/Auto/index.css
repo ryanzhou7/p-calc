@@ -17,3 +17,7 @@
   position: "relative";
   float: "top" ;
 }
+
+.capture-button{
+  padding: 6px 30px !important;
+}

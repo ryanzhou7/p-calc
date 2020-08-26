@@ -3,82 +3,8 @@ import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReduce
 import CanvasDataHelper from "../../models/canvasData";
 import jsfeat from "jsfeat";
 
-async function getEdgeCanvasHelper(image, context) {
-  const { width, height } = image;
-  context.drawImage(image, 0, 0, width, height);
-  let imageData = context.getImageData(0, 0, width, height);
-
-  const columns = 450,
-    rows = 320,
-    data_type = jsfeat.U8_t;
-  let img_u8 = new jsfeat.matrix_t(columns, rows, data_type);
-  jsfeat.imgproc.grayscale(imageData.data, width, height, img_u8);
-
-  let r = 3; // 0 -4
-  let kernel_size = (r + 1) << 1;
-  let low_threshold = 120; // 1 - 127
-  let high_threshold = 120; // 1 - 127
-
-  jsfeat.imgproc.gaussian_blur(img_u8, img_u8, kernel_size, 0);
-
-  jsfeat.imgproc.canny(img_u8, img_u8, low_threshold, high_threshold);
-
-  // render result back to canvas
-  var data_u32 = new Uint32Array(imageData.data.buffer);
-  var alpha = 0xff << 24;
-  var i = img_u8.cols * img_u8.rows,
-    pix = 0;
-  while (--i >= 0) {
-    pix = img_u8.data[i];
-    data_u32[i] = alpha | (pix << 16) | (pix << 8) | pix;
-  }
-
-  // Draw canny
-  context.putImageData(imageData, 0, 0, 0, 0, width, height);
-
-  const edgeCanvas = new CanvasDataHelper({
-    canvasWidth: width,
-    imageArray: imageData.data,
-  });
-
-  return edgeCanvas;
-}
-
-async function colorEdges(image, combinedCanvasInfo) {
-  const { width, height } = image;
-  const dimensions = {
-    detectionWidth: width,
-    detectionHeight: height,
-  };
-
-  const { context } = combinedCanvasInfo;
-  context.drawImage(image, 0, 0, width, height);
-  let imageData = context.getImageData(0, 0, width, height);
-
-  const canvasData = new CanvasDataHelper({
-    canvasWidth: dimensions.detectionWidth,
-    imageArray: imageData.data,
-  });
-
-  for (let y = 5; y < height / 2; y++) {
-    for (let x = 5; x < width - 10; x++) {
-      const coor = { x, y };
-      if (ImageAnalysis.isEdge(coor, canvasData)) {
-        canvasData.recolor(coor, { r: 0, g: 255, b: 0 });
-      }
-    }
-  }
-
-  context.putImageData(
-    imageData,
-    0,
-    0,
-    0,
-    0,
-    dimensions.detectionWidth,
-    dimensions.detectionHeight
-  );
-}
+// Consider that some non chart area will be capture, thus start the calculations from a padding, not from the very top
+const START_HEIGHT = 30;
 
 async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
   const { width, height } = image;
@@ -205,7 +131,7 @@ async function findNextMax(maxCoor, canvasData, width, height) {
   let coor = { x: middleX };
   let intensity = Number.MIN_SAFE_INTEGER;
 
-  let y = isTopToBottomSearch ? 0 : photoOriginY;
+  let y = isTopToBottomSearch ? START_HEIGHT : photoOriginY;
 
   while (y !== boundary) {
     const coordinate = { x: middleX, y };
@@ -228,7 +154,7 @@ async function findMax(canvasData, { detectionWidth, detectionHeight }) {
   let intensity = 0;
 
   // We use detection height / 2 so we only detect for the upper half of the image
-  for (let y = 0; y < detectionHeight / 2; y++) {
+  for (let y = START_HEIGHT; y < detectionHeight / 2; y++) {
     const coordinate = { x: middleX, y };
     const rgbPixel = canvasData.rgbPixel(coordinate);
 
@@ -244,7 +170,7 @@ async function findMax(canvasData, { detectionWidth, detectionHeight }) {
 
 function calculatedLossPercent(outerPixels, innerPixels) {
   let percentage = (100 * (outerPixels - innerPixels)) / outerPixels;
-  return percentage.toFixed(4);
+  return percentage.toFixed(2);
 }
 
 async function combinedAnalysis(
@@ -315,6 +241,84 @@ async function findCutOff(detectedPixels1, detectedPixels2) {
     left: Math.max(smallestX1, smallestX2),
     right: Math.min(largestX1, largestX2),
   };
+}
+
+/* Not in use  */
+async function getEdgeCanvasHelper(image, context) {
+  const { width, height } = image;
+  context.drawImage(image, 0, 0, width, height);
+  let imageData = context.getImageData(0, 0, width, height);
+
+  const columns = 450,
+    rows = 320,
+    data_type = jsfeat.U8_t;
+  let img_u8 = new jsfeat.matrix_t(columns, rows, data_type);
+  jsfeat.imgproc.grayscale(imageData.data, width, height, img_u8);
+
+  let r = 3; // 0 -4
+  let kernel_size = (r + 1) << 1;
+  let low_threshold = 120; // 1 - 127
+  let high_threshold = 120; // 1 - 127
+
+  jsfeat.imgproc.gaussian_blur(img_u8, img_u8, kernel_size, 0);
+
+  jsfeat.imgproc.canny(img_u8, img_u8, low_threshold, high_threshold);
+
+  // render result back to canvas
+  var data_u32 = new Uint32Array(imageData.data.buffer);
+  var alpha = 0xff << 24;
+  var i = img_u8.cols * img_u8.rows,
+    pix = 0;
+  while (--i >= 0) {
+    pix = img_u8.data[i];
+    data_u32[i] = alpha | (pix << 16) | (pix << 8) | pix;
+  }
+
+  // Draw canny
+  context.putImageData(imageData, 0, 0, 0, 0, width, height);
+
+  const edgeCanvas = new CanvasDataHelper({
+    canvasWidth: width,
+    imageArray: imageData.data,
+  });
+
+  return edgeCanvas;
+}
+
+async function colorEdges(image, combinedCanvasInfo) {
+  const { width, height } = image;
+  const dimensions = {
+    detectionWidth: width,
+    detectionHeight: height,
+  };
+
+  const { context } = combinedCanvasInfo;
+  context.drawImage(image, 0, 0, width, height);
+  let imageData = context.getImageData(0, 0, width, height);
+
+  const canvasData = new CanvasDataHelper({
+    canvasWidth: dimensions.detectionWidth,
+    imageArray: imageData.data,
+  });
+
+  for (let y = 5; y < height / 2; y++) {
+    for (let x = 5; x < width - 10; x++) {
+      const coor = { x, y };
+      if (ImageAnalysis.isEdge(coor, canvasData)) {
+        canvasData.recolor(coor, { r: 0, g: 255, b: 0 });
+      }
+    }
+  }
+
+  context.putImageData(
+    imageData,
+    0,
+    0,
+    0,
+    0,
+    dimensions.detectionWidth,
+    dimensions.detectionHeight
+  );
 }
 
 export {
