@@ -39,6 +39,7 @@ function AnalysisResults(props) {
   }
 
   useEffect(() => {
+    console.log("change");
     if (imageSource) {
       fullAnalysis(0);
     }
@@ -71,7 +72,6 @@ function AnalysisResults(props) {
         <div className="mt-3">
           {imageSource && (
             <div>
-              {!isPortrait && (
                 <Button
                   className="my-4"
                   variant="outline-primary"
@@ -81,7 +81,6 @@ function AnalysisResults(props) {
                 >
                   Retake picture
                 </Button>
-              )}
 
               <div>
                 <Card>
@@ -145,9 +144,6 @@ function AnalysisResults(props) {
             </h3>
           )}
         </div>
-        {isPortrait && imageSource && (
-          <label>Rotate your device to retake picture</label>
-        )}
       </div>
 
       {/* Used for edge canvas */}
