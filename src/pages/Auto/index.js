@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import { withOrientationChange } from "react-device-detect";
 import Webcam from "react-webcam";
@@ -35,11 +35,8 @@ function Auto(props) {
     //dispatch(imageReducer.setImageOnload(sampleChart));
   }, []);
 
-  // Other hooks
-  //const capture = useCallback(() => {
   const capture = () => {
     const screenshot = webcamRef.current.getScreenshot();
-
     dispatch(imageReducer.setImageOnload(screenshot));
     dispatch(imageReducer.setImage(screenshot));
     window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
@@ -62,33 +59,34 @@ function Auto(props) {
 
   return (
     <div className="App">
-      <h2>Ptosis calculator</h2>
-      <div className="mx-auto">
-        <div className="capture-container mx-auto">
-          <Webcam
-            audio={false}
-            height={videoConstraints.height}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            width={videoConstraints.width}
-            videoConstraints={videoConstraints}
-          />
-           <div className="overlay">
-            <img
-              className="target"
-              //width -20 leaves some padding on the left and right side
-              style={{ width: videoConstraints.width-20 }}
-              src={target}
+      <Card className="mt-4">
+        <h2 className="card-title">Capture chart</h2>
+        <div className="mx-auto">
+          <div className="capture-container mx-auto">
+            <Webcam
+              audio={false}
+              height={videoConstraints.height}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              width={videoConstraints.width}
+              videoConstraints={videoConstraints}
             />
+            <div className="overlay">
+              <img
+                className="target"
+                //width -20 leaves some padding on the left and right side
+                style={{ width: videoConstraints.width - 20 }}
+                src={target}
+              />
+            </div>
           </div>
         </div>
-
-      </div>
-      <div className="my-3 z-top mx-auto" >
-        <Button className="capture-button" onClick={() => capture()}>
-          <FontAwesomeIcon icon="camera" size="3x" />
-        </Button>
-      </div>
+        <div className="my-2 z-top mx-auto">
+          <Button className="capture-button" onClick={() => capture()}>
+            <FontAwesomeIcon icon="camera" size="3x" />
+          </Button>
+        </div>
+      </Card>
       <div className="mt-4" ref={autoAnalyzeContainerRef}>
         <AutoReanalyze {...autoReanalyzeProps} />
       </div>

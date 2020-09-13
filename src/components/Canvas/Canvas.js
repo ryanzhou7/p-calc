@@ -28,7 +28,7 @@ function Canvas(props) {
   }, [image, drawWidth, drawHeight, canvasWidth, canvasHeight]);
 
   return (
-    <div>
+    <div className="mx-auto">
       <canvas ref={canvasRef} />
     </div>
   );
