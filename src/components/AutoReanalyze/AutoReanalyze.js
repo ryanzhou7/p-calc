@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import Canvas from "../Canvas/Canvas";
 import * as utils from "./utils";
+import * as DomHelper from "../../utils/DomHelper";
 
 function AnalysisResults(props) {
   const dispatch = useDispatch();

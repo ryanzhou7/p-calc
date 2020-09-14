@@ -5,10 +5,10 @@ import Webcam from "react-webcam";
 import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
 import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
-import target from "../../assets/target/thick-half.png";
+import target from "../../assets/target/thick.png";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import sampleChart from "../../assets/sample/7.jpeg";
+import sampleChart from "../../assets/sample/400.jpeg";
 
 function Auto(props) {
   // Setup
@@ -74,6 +74,7 @@ function Auto(props) {
             <div className="overlay">
               <img
                 className="target"
+
                 //width -20 leaves some padding on the left and right side
                 style={{ width: videoConstraints.width - 20 }}
                 src={target}
