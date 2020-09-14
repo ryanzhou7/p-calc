@@ -5,8 +5,8 @@ import jsfeat from "jsfeat";
 // Consider that some non chart area will be capture, thus start the calculations from a padding, not from the very top
 const START_HEIGHT = 30;
 
-// If the y coor is greater? 
-const WITHIN_HEIGHT = 185;
+// If the y coor is greater than this is number it is lower, thus within
+const WITHIN_HEIGHT = 182;
 
 async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
   const { width, height } = image;
