@@ -1,14 +1,14 @@
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import { withOrientationChange } from "react-device-detect";
 import Webcam from "react-webcam";
 import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
 import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
-import target from "../../assets/target/thick-half.png";
+import target from "../../assets/target/thick.png";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import sampleChart from "../../assets/sample/7.jpeg";
+import sampleChart from "../../assets/sample/400.jpeg";
 
 function Auto(props) {
   // Setup
@@ -28,7 +28,6 @@ function Auto(props) {
 
   // Ref
   const webcamRef = useRef(null);
-  const captureContainerRef = useRef(null);
   const autoAnalyzeContainerRef = useRef(null);
 
   // UseEffect - Remove this later, just for testing
@@ -36,14 +35,12 @@ function Auto(props) {
     //dispatch(imageReducer.setImageOnload(sampleChart));
   }, []);
 
-  // Other hooks
-  const capture = useCallback(() => {
+  const capture = () => {
     const screenshot = webcamRef.current.getScreenshot();
-
     dispatch(imageReducer.setImageOnload(screenshot));
     dispatch(imageReducer.setImage(screenshot));
     window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
-  }, [webcamRef]);
+  };
 
   // Children props setup
   const autoReanalyzeProps = {
@@ -62,40 +59,35 @@ function Auto(props) {
 
   return (
     <div className="App">
-      <h2>Ptosis calculator</h2>
-      {isPortrait && !image && <h3>Please rotate your device</h3>}
+      <Card className="mt-4">
+        <h2 className="card-title">Capture chart</h2>
+        <div className="mx-auto">
+          <div className="capture-container mx-auto">
+            <Webcam
+              audio={false}
+              height={videoConstraints.height}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              width={videoConstraints.width}
+              videoConstraints={videoConstraints}
+            />
+            <div className="overlay">
+              <img
+                className="target"
 
-      {!isPortrait && (
-        <Card>
-          <div
-            className="d-flex align-items-center mx-auto"
-            ref={captureContainerRef}
-          >
-            <div style={{ position: "relative", float: "top" }}>
-              <Webcam
-                audio={false}
-                height={videoConstraints.height}
-                ref={webcamRef}
-                screenshotFormat="image/jpeg"
-                width={videoConstraints.width}
-                videoConstraints={videoConstraints}
+                //width -20 leaves some padding on the left and right side
+                style={{ width: videoConstraints.width - 20 }}
+                src={target}
               />
-              <div className="overlay">
-                <img
-                  className="target"
-                  style={{ height: videoConstraints.height }}
-                  src={target}
-                />
-              </div>
-            </div>
-            <div className="ml-5 my-3">
-              <Button onClick={() => capture()}>
-                <FontAwesomeIcon icon="camera" size="3x" />
-              </Button>
             </div>
           </div>
-        </Card>
-      )}
+        </div>
+        <div className="my-2 z-top mx-auto">
+          <Button className="capture-button" onClick={() => capture()}>
+            <FontAwesomeIcon icon="camera" size="3x" />
+          </Button>
+        </div>
+      </Card>
       <div className="mt-4" ref={autoAnalyzeContainerRef}>
         <AutoReanalyze {...autoReanalyzeProps} />
       </div>

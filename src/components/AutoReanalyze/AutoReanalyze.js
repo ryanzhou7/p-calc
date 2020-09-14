@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import Canvas from "../Canvas/Canvas";
 import * as utils from "./utils";
+import * as DomHelper from "../../utils/DomHelper";
 
 function AnalysisResults(props) {
   const dispatch = useDispatch();
@@ -20,8 +19,7 @@ function AnalysisResults(props) {
   const innerNumColoredPixels = combinedCanvasInfo.numColoredInnerPixels;
 
   // Props
-  const { webcamRef, isPortrait } = props;
-  const analyisLayoutClass = isPortrait ? "flex-column" : "";
+  const { webcamRef } = props;
 
   // Child props
   const canvasProps = {
@@ -62,97 +60,86 @@ function AnalysisResults(props) {
   }
 
   return (
-    <div>
-      <div
-        className={`d-flex justify-content-around align-items-center ${analyisLayoutClass}`}
-      >
+    <Card>
+      {imageSource && <h2 className="card-title">Results</h2>}
+      <div>
         <Canvas {...canvasProps} />
-
-        <div className="mt-3">
-          {imageSource && (
+        {imageSource && (
+          <div
+            className={`d-flex justify-content-around align-items-center mb-4`}
+          >
             <div>
-              {!isPortrait && (
-                <Button
-                  className="my-4"
-                  variant="outline-primary"
-                  onClick={() => {
-                    window.scrollTo(0, webcamRef.current.offsetTop);
-                  }}
-                >
-                  Retake picture
-                </Button>
-              )}
+              <Button
+                variant="outline-primary"
+                onClick={() => {
+                  window.scrollTo(0, webcamRef.current.offsetTop);
+                }}
+              >
+                Retake picture
+              </Button>
 
               <div>
-                <Card>
-                  <Card.Body>
-                    <Card.Title>Sensitivity: {threshold}</Card.Title>
-
-                    <div className="container">
-                      <div className="row justify-content-around mb-3">
-                        <Button
-                          onClick={(e) => {
-                            fullAnalysis(-2);
-                          }}
-                        >
-                          <FontAwesomeIcon icon="minus" size="1x" />
-                        </Button>
-                        <Button
-                          onClick={(e) => {
-                            fullAnalysis(2);
-                          }}
-                        >
-                          <FontAwesomeIcon icon="plus" size="1x" />
-                        </Button>
-                      </div>
-                      <div className="row justify-content-around">
-                        <Button
-                          onClick={(e) => {
-                            fullAnalysis(-5);
-                          }}
-                        >
-                          <FontAwesomeIcon icon="minus" size="1x" />
-                          {"  "}
-                          <FontAwesomeIcon icon="minus" size="1x" />
-                        </Button>
-                        <Button
-                          onClick={(e) => {
-                            fullAnalysis(5);
-                          }}
-                        >
-                          <FontAwesomeIcon icon="plus" size="1x" />
-                          {"  "}
-                          <FontAwesomeIcon icon="plus" size="1x" />
-                        </Button>
-                      </div>
-                    </div>
-                  </Card.Body>
-                </Card>
-
-                <div className="my-4"></div>
+                <h3 className="mt-4">
+                  Loss:{" "}
+                  {utils.calculatedLossPercent(
+                    outerNumColoredPixels,
+                    innerNumColoredPixels
+                  )}
+                  %
+                </h3>
               </div>
             </div>
-          )}
 
-          {imageSource && (
-            <h3 className="mt-4">
-              Loss:{" "}
-              {utils.calculatedLossPercent(
-                outerNumColoredPixels,
-                innerNumColoredPixels
-              )}
-              %
-            </h3>
-          )}
-        </div>
-        {isPortrait && imageSource && (
-          <label>Rotate your device to retake picture</label>
+            <Card>
+              <Card.Body>
+                <Card.Title>Sensitivity: {threshold}</Card.Title>
+                <div className="container">
+                  <div className="row justify-content-around mb-3">
+                    <Button
+                      onClick={(e) => {
+                        fullAnalysis(-2);
+                      }}
+                    >
+                      <FontAwesomeIcon icon="minus" size="1x" />
+                    </Button>
+                    <Button
+                      onClick={(e) => {
+                        fullAnalysis(2);
+                      }}
+                    >
+                      <FontAwesomeIcon icon="plus" size="1x" />
+                    </Button>
+                  </div>
+                  <div className="row justify-content-between">
+                    <Button
+                      onClick={(e) => {
+                        fullAnalysis(-5);
+                      }}
+                    >
+                      <FontAwesomeIcon icon="minus" size="1x" />
+                      {"  "}
+                      <FontAwesomeIcon icon="minus" size="1x" />
+                    </Button>
+                    <Button
+                      onClick={(e) => {
+                        fullAnalysis(5);
+                      }}
+                    >
+                      <FontAwesomeIcon icon="plus" size="1x" />
+                      {"  "}
+                      <FontAwesomeIcon icon="plus" size="1x" />
+                    </Button>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
         )}
       </div>
 
       {/* Used for edge canvas */}
       <canvas style={{ display: "none" }} ref={canvasRef} />
-    </div>
+    </Card>
   );
 }
 

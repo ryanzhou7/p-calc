@@ -1,9 +1,9 @@
 const initialState = {
   videoConstraints: {
-    width: 450,
-    height: 320,
-    //width: 560,
-    //height: 280,
+
+    // These numbers should match those in the canvas settings
+    width: 400,
+    height: 400,
     facingMode: { exact: "environment" },
     //facingMode: "user",
     audio: false,
