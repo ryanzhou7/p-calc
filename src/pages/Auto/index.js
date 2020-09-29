@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { withOrientationChange } from "react-device-detect";
 import Webcam from "react-webcam";
@@ -8,11 +8,17 @@ import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
 import target from "../../assets/target/thick.png";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import sampleChart from "../../assets/sample/400.jpeg";
+import sampleChart from "../../assets/sample/fail-4.jpeg";
+import * as DomHelper from "../../utils/DomHelper";
+
+// For the analysis
+const START_THRESHOLD = 20;
+let imageForDownload = null;
 
 function Auto(props) {
   // Setup
   const dispatch = useDispatch();
+  const [threshold, setThreshold] = useState(START_THRESHOLD);
 
   // Redux
   const videoConstraints = useSelector(
@@ -22,6 +28,7 @@ function Auto(props) {
   const canvasDimensions = useSelector(
     (state) => state.canvasSettings.canvasDimensions
   );
+  const combinedCanvasInfo = useSelector((state) => state.combinedCanvasInfo);
 
   // Props
   const { isPortrait } = props;
@@ -30,16 +37,23 @@ function Auto(props) {
   const webcamRef = useRef(null);
   const autoAnalyzeContainerRef = useRef(null);
 
-  // UseEffect - Remove this later, just for testing
+  // Set a default image for debuggin bad images
   useEffect(() => {
     //dispatch(imageReducer.setImageOnload(sampleChart));
   }, []);
 
   const capture = () => {
+    // reset threshold
+    setThreshold(START_THRESHOLD);
+
     const screenshot = webcamRef.current.getScreenshot();
     dispatch(imageReducer.setImageOnload(screenshot));
     dispatch(imageReducer.setImage(screenshot));
     window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
+
+    imageForDownload = screenshot;
+    // Download image
+    //DomHelper.downloadJpegInClient(screenshot, "fail");
   };
 
   // Children props setup
@@ -55,6 +69,7 @@ function Auto(props) {
       drawHeight: canvasDimensions.height,
     },
     isPortrait,
+    thresholdState: [threshold, setThreshold],
   };
 
   return (
@@ -74,7 +89,6 @@ function Auto(props) {
             <div className="overlay">
               <img
                 className="target"
-
                 //width -20 leaves some padding on the left and right side
                 style={{ width: videoConstraints.width - 20 }}
                 src={target}
@@ -88,6 +102,14 @@ function Auto(props) {
           </Button>
         </div>
       </Card>
+
+      {/* Download picture */}
+      {/* <button
+        onClick={() => DomHelper.downloadJpegInClient(imageForDownload, "fail")}
+      >
+        Download
+      </button> */}
+
       <div className="mt-4" ref={autoAnalyzeContainerRef}>
         <AutoReanalyze {...autoReanalyzeProps} />
       </div>

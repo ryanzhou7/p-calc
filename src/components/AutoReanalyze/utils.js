@@ -3,7 +3,7 @@ import CanvasDataHelper from "../../models/canvasData";
 import jsfeat from "jsfeat";
 
 // Consider that some non chart area will be capture, thus start the calculations from a padding, not from the very top
-const START_HEIGHT = 30;
+const START_HEIGHT = 40;
 
 // If the y coor is greater than this is number it is lower, thus within
 const WITHIN_HEIGHT = 182;
@@ -80,23 +80,20 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
    */
 
   //  Cutoff finding
-  const cuttOff = await findCutOff(
-    topDetectedPixels,
-    bottomDetectedPixels
-  );
+  const cuttOff = await findCutOff(topDetectedPixels, bottomDetectedPixels);
 
   // Recoloring
   const recolor = { r: 0, g: 255, b: 0 };
   const topPixelsCount = await ImageAnalysis.updateImageData(
     canvasData,
-    { leftX: cuttOff.top.left.x , rightX: cuttOff.top.right.x , height },
+    { leftX: cuttOff.top.left.x, rightX: cuttOff.top.right.x, height },
     recolor,
     topDetectedPixels
   );
 
   const bottomPixelsCount = await ImageAnalysis.updateImageData(
     canvasData,
-    { leftX: cuttOff.bottom.left.x , rightX: cuttOff.bottom.right.x, height },
+    { leftX: cuttOff.bottom.left.x, rightX: cuttOff.bottom.right.x, height },
     { r: 0, g: 0, b: 255 },
     bottomDetectedPixels
   );
@@ -127,8 +124,8 @@ async function findNextMax(maxCoor, canvasData, width, height) {
   const isTopToBottomSearch = distanceFromOrigin < distanceFromTop;
   let boundary = distanceFromTop;
 
-  // Ensure that boundary is least some distance from the top / bottom so it won't be mistaken
-  boundary += isTopToBottomSearch ? -10 : 10;
+  // Ensure that boundary is least some distance between the top and bottom so it won't be mistaken
+  boundary += isTopToBottomSearch ? -5 : 5;
 
   let coor = { x: middleX };
   let intensity = Number.MIN_SAFE_INTEGER;
@@ -197,37 +194,48 @@ function calculatedLossPercent(outerPixels, innerPixels) {
  * @param {*} bottomPixels
  */
 async function findCutOff(topPixels, bottomPixels) {
-
   const bounds = findBounds(topPixels, bottomPixels);
-  
+
   /*
    * Leftside
    */
-  
-   // both are NOT within 
-  if( !(bounds.top.left.y > WITHIN_HEIGHT && bounds.bottom.left.y > WITHIN_HEIGHT) &&
 
-      // bottom is within and the top is more left
-    !(bounds.bottom.left.y > WITHIN_HEIGHT && bounds.top.left.x < bounds.bottom.left.x) ){
-
-      // Cap the cutoff to the more limiting of the x on the left side
-      const left = Math.max(bounds.top.left.x, bounds.bottom.left.x);
-      bounds.top.left.x = left;
-      bounds.bottom.left.x = left;
+  // both are NOT within
+  if (
+    !(
+      bounds.top.left.y > WITHIN_HEIGHT && bounds.bottom.left.y > WITHIN_HEIGHT
+    ) &&
+    // bottom is within and the top is more left
+    !(
+      bounds.bottom.left.y > WITHIN_HEIGHT &&
+      bounds.top.left.x < bounds.bottom.left.x
+    )
+  ) {
+    // Cap the cutoff to the more limiting of the x on the left side
+    const left = Math.max(bounds.top.left.x, bounds.bottom.left.x);
+    bounds.top.left.x = left;
+    bounds.bottom.left.x = left;
   }
 
   /*
    * Rightside
    */
 
-      // both are NOT within 
-  if( !(bounds.top.right.y > WITHIN_HEIGHT && bounds.bottom.right.y > WITHIN_HEIGHT) &&
-
-      // bottom is within and the top is more left
-    !(bounds.bottom.right.y > WITHIN_HEIGHT && bounds.top.right.x > bounds.bottom.right.x) ){
-      const right = Math.min(bounds.top.right.x, bounds.bottom.right.x);
-      bounds.top.right.x = right;
-      bounds.bottom.right.x = right;
+  // both are NOT within
+  if (
+    !(
+      bounds.top.right.y > WITHIN_HEIGHT &&
+      bounds.bottom.right.y > WITHIN_HEIGHT
+    ) &&
+    // bottom is within and the top is more left
+    !(
+      bounds.bottom.right.y > WITHIN_HEIGHT &&
+      bounds.top.right.x > bounds.bottom.right.x
+    )
+  ) {
+    const right = Math.min(bounds.top.right.x, bounds.bottom.right.x);
+    bounds.top.right.x = right;
+    bounds.bottom.right.x = right;
   }
   return bounds;
 }
@@ -238,7 +246,6 @@ async function findCutOff(topPixels, bottomPixels) {
  * @param {*} bottomPixels
  */
 function findBounds(topPixels, bottomPixels) {
-
   const out = {
     top: {
       left: {
@@ -259,28 +266,28 @@ function findBounds(topPixels, bottomPixels) {
         x: 0,
         y: undefined,
       },
-    }
+    },
   };
 
   for (let coordinate of topPixels) {
     const { x, y } = coordinate;
-    if( x < out.top.left.x ){
+    if (x < out.top.left.x) {
       out.top.left.x = x;
       out.top.left.y = y;
     }
-    if( x > out.top.right.x ){
+    if (x > out.top.right.x) {
       out.top.right.x = x;
       out.top.right.y = y;
     }
   }
 
   for (let coordinate of bottomPixels) {
-    const { x, y } = coordinate;    
-    if( x < out.bottom.left.x ){
+    const { x, y } = coordinate;
+    if (x < out.bottom.left.x) {
       out.bottom.left.x = x;
       out.bottom.left.y = y;
     }
-    if( x > out.bottom.right.x ){
+    if (x > out.bottom.right.x) {
       out.bottom.right.x = x;
       out.bottom.right.y = y;
     }
@@ -367,9 +374,4 @@ async function colorEdges(image, combinedCanvasInfo) {
   );
 }
 
-export {
-  calculatedLossPercent,
-  fullAnalysis,
-  colorEdges,
-  getEdgeCanvasHelper,
-}; 
+export { calculatedLossPercent, fullAnalysis, colorEdges, getEdgeCanvasHelper };
