@@ -19,7 +19,8 @@ function AnalysisResults(props) {
   const innerNumColoredPixels = combinedCanvasInfo.numColoredInnerPixels;
 
   // Props
-  const { webcamRef } = props;
+  const { webcamRef, webcamContainerRef } = props;
+  const [isCameraOn, setIsCameraOn] = props.cameraState;
 
   // Child props
   const canvasProps = {
@@ -73,7 +74,8 @@ function AnalysisResults(props) {
               <Button
                 variant="outline-primary"
                 onClick={() => {
-                  window.scrollTo(0, webcamRef.current.offsetTop);
+                  setIsCameraOn(true);
+                  window.scrollTo(0, webcamContainerRef.current.offsetTop);
                 }}
               >
                 Retake picture

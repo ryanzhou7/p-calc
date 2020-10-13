@@ -3,9 +3,9 @@ import CanvasDataHelper from "../../models/canvasData";
 import jsfeat from "jsfeat";
 
 // Consider that some non chart area will be capture, thus start the calculations from a padding, not from the very top
-const START_HEIGHT = 40;
+const START_HEIGHT = 5;
 
-// If the y coor is greater than this is number it is lower, thus within
+// If the y coor is greater than this is number it is lower, thus within, the 5% rule
 const WITHIN_HEIGHT = 182;
 
 async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {

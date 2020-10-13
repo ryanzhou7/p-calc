@@ -5,10 +5,10 @@ import Webcam from "react-webcam";
 import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
 import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
-import target from "../../assets/target/thick.png";
+import target from "../../assets/target/circle.png";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import sampleChart from "../../assets/sample/fail-4.jpeg";
+import sampleChart from "../../assets/sample/fail-2.jpeg";
 import * as DomHelper from "../../utils/DomHelper";
 
 // For the analysis
@@ -19,6 +19,7 @@ function Auto(props) {
   // Setup
   const dispatch = useDispatch();
   const [threshold, setThreshold] = useState(START_THRESHOLD);
+  const [isCameraOn, setIsCameraOn] = useState(true);
 
   // Redux
   const videoConstraints = useSelector(
@@ -34,15 +35,21 @@ function Auto(props) {
   const { isPortrait } = props;
 
   // Ref
+  const webcamContainerRef = useRef(null);
   const webcamRef = useRef(null);
   const autoAnalyzeContainerRef = useRef(null);
 
   // Set a default image for debuggin bad images
   useEffect(() => {
-    //dispatch(imageReducer.setImageOnload(sampleChart));
+    dispatch(imageReducer.setImageOnload(sampleChart));
   }, []);
 
   const capture = () => {
+    if (!isCameraOn) {
+      setIsCameraOn(true);
+      return;
+    }
+
     // reset threshold
     setThreshold(START_THRESHOLD);
 
@@ -50,6 +57,8 @@ function Auto(props) {
     dispatch(imageReducer.setImageOnload(screenshot));
     dispatch(imageReducer.setImage(screenshot));
     window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
+
+    setIsCameraOn(false);
 
     imageForDownload = screenshot;
     // Download image
@@ -59,6 +68,7 @@ function Auto(props) {
   // Children props setup
   const autoReanalyzeProps = {
     webcamRef,
+    webcamContainerRef,
     image: image,
     canvasDimensions: {
       canvasWidth: canvasDimensions.width,
@@ -70,6 +80,7 @@ function Auto(props) {
     },
     isPortrait,
     thresholdState: [threshold, setThreshold],
+    cameraState: [isCameraOn, setIsCameraOn],
   };
 
   return (
@@ -77,23 +88,27 @@ function Auto(props) {
       <Card className="mt-4">
         <h2 className="card-title">Capture chart</h2>
         <div className="mx-auto">
-          <div className="capture-container mx-auto">
-            <Webcam
-              audio={false}
-              height={videoConstraints.height}
-              ref={webcamRef}
-              screenshotFormat="image/jpeg"
-              width={videoConstraints.width}
-              videoConstraints={videoConstraints}
-            />
-            <div className="overlay">
-              <img
-                className="target"
-                //width -20 leaves some padding on the left and right side
-                style={{ width: videoConstraints.width - 20 }}
-                src={target}
-              />
-            </div>
+          <div className="capture-container mx-auto" ref={webcamContainerRef}>
+            {isCameraOn && (
+              <>
+                <Webcam
+                  ref={webcamRef}
+                  audio={false}
+                  height={videoConstraints.height}
+                  screenshotFormat="image/jpeg"
+                  width={videoConstraints.width}
+                  videoConstraints={videoConstraints}
+                />
+                <div className="overlay">
+                  <img
+                    className="target"
+                    //width -20 leaves some padding on the left and right side
+                    style={{ width: videoConstraints.width - 20 }}
+                    src={target}
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div className="my-2 z-top mx-auto">

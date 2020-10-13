@@ -268,15 +268,13 @@ async function updateImageData(
     const { x, y } = coordinate;
 
     // Go down a vertical line, stop slightly less than the middle
-    for (let i = y; i < height / 2 - 5; i++) {
+    for (let i = y; i < height / 2; i++) {
       const key = getXYKey(x, i);
       const verticalCoordinate = { x, y: i };
 
       // Color this pixel only if it has not been colored before and is within bounds
       if (!coloredPixels.has(key) && leftX <= x && x <= rightX) {
         coloredPixels.add(key);
-        //canvasData.recolor(verticalCoordinate, recolor);
-
         canvasData.tint(verticalCoordinate, recolor);
         numDetectedPixels++;
       }
