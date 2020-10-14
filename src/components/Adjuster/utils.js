@@ -1,4 +1,4 @@
-import * as ImageAnalysis from "../../utils/ImageAnalysis";
+import * as ImageAnalysis from "./ImageAnalysis";
 import CanvasDataHelper from "../../models/canvasData";
 import jsfeat from "jsfeat";
 

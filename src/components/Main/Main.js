@@ -1,14 +1,15 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { withOrientationChange } from "react-device-detect";
 import Webcam from "react-webcam";
 import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
-import AutoReanalyze from "../../components/AutoReanalyze/AutoReanalyze";
+import Adjuster from "../Adjuster/Adjuster";
 import target from "../../assets/target/circle.png";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import sampleChart from "../../assets/sample/fail-2.jpeg";
+
+//import sampleChart from "../../assets/sample/fail-2.jpeg";
 import * as DomHelper from "../../utils/DomHelper";
 
 // For the analysis
@@ -41,7 +42,7 @@ function Auto(props) {
 
   // Set a default image for debuggin bad images
   useEffect(() => {
-    dispatch(imageReducer.setImageOnload(sampleChart));
+    //dispatch(imageReducer.setImageOnload(sampleChart));
   }, []);
 
   const capture = () => {
@@ -83,10 +84,25 @@ function Auto(props) {
     cameraState: [isCameraOn, setIsCameraOn],
   };
 
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      Simple tooltip
+    </Tooltip>
+  );
+
   return (
     <div className="App">
       <Card className="mt-4">
-        <h2 className="card-title">Capture chart</h2>
+        {/* <OverlayTrigger
+          placement="bottom"
+          delay={{ show: 250, hide: 400 }}
+          overlay={renderTooltip}
+        > */}
+        <h2 className="card-title">
+          Capture chart{" "}
+          {/*<FontAwesomeIcon icon="question-circle" size="1x" /> */}
+        </h2>
+        {/* </OverlayTrigger> */}
         <div className="mx-auto">
           <div className="capture-container mx-auto" ref={webcamContainerRef}>
             {isCameraOn && (
@@ -126,7 +142,7 @@ function Auto(props) {
       </button> */}
 
       <div className="mt-4" ref={autoAnalyzeContainerRef}>
-        <AutoReanalyze {...autoReanalyzeProps} />
+        <Adjuster {...autoReanalyzeProps} />
       </div>
       <br />
       <br />

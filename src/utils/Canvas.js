@@ -1,7 +1,4 @@
-// TODO to be implemented / fixed!
-
 const WIDTH_PADDING = 50;
-
 async function drawRotated(context, canvas, degrees, image) {
   if (canvas == null || image == null || context == null) {
     return;
@@ -36,18 +33,4 @@ function degreesToRadians(degrees) {
   return degrees * 0.01745;
 }
 
-function clearCanvasDrawing(context, width, height) {
-  if (context == null) {
-    return;
-  }
-  context.clearRect(0, 0, width, height);
-}
-
-function setWithImage(context, width, height, image) {
-  if (context == null) {
-    return;
-  }
-  context.drawImage(image, 0, 0, width, height);
-}
-
-export { drawRotated, drawAxis, clearCanvasDrawing, setWithImage };
+export { drawRotated, drawAxis };
