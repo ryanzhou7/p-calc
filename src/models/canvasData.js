@@ -48,11 +48,6 @@ export default class CanvasDataHelper {
     this.imageArray[blueIndex] = Number(b);
   }
 
-  rRelative(coor) {
-    const { r, g, b } = this.rgbPixel(coor);
-    return b; //r * 2 - g - b;
-  }
-
   tint(pixelAtCoordinate, newColor) {
     const { r: newR, g: newG, b: newB } = newColor;
 

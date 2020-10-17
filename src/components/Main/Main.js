@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, Card, OverlayTrigger, Popover } from "react-bootstrap";
 import { withOrientationChange } from "react-device-detect";
 import Webcam from "react-webcam";
 import * as imageReducer from "../../redux/imageReducer";
@@ -8,9 +8,6 @@ import Adjuster from "../Adjuster/Adjuster";
 import target from "../../assets/target/circle.png";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-//import sampleChart from "../../assets/sample/fail-2.jpeg";
-import * as DomHelper from "../../utils/DomHelper";
 
 // For the analysis
 const START_THRESHOLD = 20;
@@ -84,25 +81,26 @@ function Auto(props) {
     cameraState: [isCameraOn, setIsCameraOn],
   };
 
-  const renderTooltip = (props) => (
-    <Tooltip id="button-tooltip" {...props}>
-      Simple tooltip
-    </Tooltip>
+  const popover = (
+    <Popover id="popover-basic">
+      <Popover.Content>
+        Draw your chart with red sharpie. Align the red target's circle
+        concentrically with the chart's smallest circle that still encompasses
+        all of the the drawn lines for increased accuracy. Also ensure the
+        target cross is aligned with the chart. Camera focus will happen
+        automatically. Tap the (?) again to close this popover.
+      </Popover.Content>
+    </Popover>
   );
-
   return (
-    <div className="App">
+    <div className="App mt-2">
+      <h2 className="card-title" style={{ display: "inline" }}>
+        Capture chart{" "}
+      </h2>
+      <OverlayTrigger trigger="click" placement="bottom" overlay={popover}>
+        <FontAwesomeIcon icon="question-circle" size="2x" />
+      </OverlayTrigger>
       <Card className="mt-4">
-        {/* <OverlayTrigger
-          placement="bottom"
-          delay={{ show: 250, hide: 400 }}
-          overlay={renderTooltip}
-        > */}
-        <h2 className="card-title">
-          Capture chart{" "}
-          {/*<FontAwesomeIcon icon="question-circle" size="1x" /> */}
-        </h2>
-        {/* </OverlayTrigger> */}
         <div className="mx-auto">
           <div className="capture-container mx-auto" ref={webcamContainerRef}>
             {isCameraOn && (
@@ -133,13 +131,6 @@ function Auto(props) {
           </Button>
         </div>
       </Card>
-
-      {/* Download picture */}
-      {/* <button
-        onClick={() => DomHelper.downloadJpegInClient(imageForDownload, "fail")}
-      >
-        Download
-      </button> */}
 
       <div className="mt-4" ref={autoAnalyzeContainerRef}>
         <Adjuster {...autoReanalyzeProps} />

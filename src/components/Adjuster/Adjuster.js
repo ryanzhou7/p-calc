@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
@@ -13,14 +13,15 @@ function AnalysisResults(props) {
   // State
   const combinedCanvasInfo = useSelector((state) => state.combinedCanvasInfo);
   const imageSource = useSelector((state) => state.image.source);
+  const imageForDownload = useSelector((state) => state.image.image);
   const [threshold, setThreshold] = props.thresholdState;
 
   const outerNumColoredPixels = combinedCanvasInfo.numColoredOuterPixels;
   const innerNumColoredPixels = combinedCanvasInfo.numColoredInnerPixels;
 
   // Props
-  const { webcamRef, webcamContainerRef } = props;
-  const [isCameraOn, setIsCameraOn] = props.cameraState;
+  const { webcamContainerRef } = props;
+  const [, setIsCameraOn] = props.cameraState;
 
   // Child props
   const canvasProps = {
@@ -39,20 +40,18 @@ function AnalysisResults(props) {
 
   useEffect(() => {
     if (imageSource) {
-      fullAnalysis(0);
+      fullAnalysis();
     }
   }, [imageSource, threshold]);
 
-  async function fullAnalysis(thresholdChange) {
-    const newThreshold = threshold + thresholdChange;
-    changeThresholdBy(thresholdChange);
-
+  async function fullAnalysis() {
     const { topPixelsCount, bottomPixelsCount } = await utils.fullAnalysis(
       imageSource,
       combinedCanvasInfo,
       canvasRef,
       threshold
     );
+
     dispatch(
       combinedCanvasInfoReducer.setNumColoredOuterPixels(topPixelsCount)
     );
@@ -90,6 +89,20 @@ function AnalysisResults(props) {
                   )}
                   %
                 </h3>
+                <div className="mt-4">
+                  <Button
+                    variant="outline-primary"
+                    onClick={() => {
+                      const now = new Date();
+                      DomHelper.downloadJpegInClient(
+                        imageForDownload,
+                        now.toDateString()
+                      );
+                    }}
+                  >
+                    Download original
+                  </Button>{" "}
+                </div>
               </div>
             </div>
 

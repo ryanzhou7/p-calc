@@ -53,13 +53,113 @@ async function getDetectedPixels(
   return detectedPixels;
 }
 
-async function logMedianCanvasInfo(canvasData, dimensions) {
+async function greyWorldTheoryWhiteBalance(canvasData, dimensions) {
   const { width, height } = dimensions;
+
+  let totalR = 0;
+  let totalG = 0;
+  let totalB = 0;
+
+  let count = 0;
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height / 2; y++) {
+      const rgb = canvasData.rgbPixel({ x, y });
+      totalR += rgb.r;
+      totalG += rgb.g;
+      totalB += rgb.b;
+      count++;
+    }
+  }
+
+  const averageR = totalR / count;
+  const averageB = totalB / count;
+  const averageG = totalG / count;
+  const rCoeff = averageR / averageG;
+  const bCoeff = averageB / averageG;
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height / 2; y++) {
+      const rgb = canvasData.rgbPixel({ x, y });
+      const r = parseInt(rgb.r * rCoeff);
+      const g = rgb.g;
+      const b = parseInt(rgb.b * bCoeff);
+      canvasData.recolor({ x, y }, { r, g, b });
+    }
+  }
+}
+
+async function medianWhiteBalance(canvasData, dimensions) {
+  const { width, height } = dimensions;
+
+  const freq = new Map();
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height / 2; y++) {
+      const rgb = canvasData.rgbPixel({ x, y });
+      const key = "" + rgb.r + "," + rgb.g + "," + rgb.b;
+      const value = freq.has(key) ? freq.get(key) : 0;
+      freq.set(key, value + 1);
+    }
+  }
+
+  let highestFreq = 0;
+  let highestFreqKey = 0;
+  freq.forEach((value, key, map) => {
+    if (value >= highestFreq) {
+      highestFreqKey = key;
+    }
+  });
+
+  const [rS, gS, bS] = highestFreqKey.split(",");
+  const rMed = parseInt(rS);
+  const gMed = parseInt(gS);
+  const bMed = parseInt(bS);
+
+  const rCoeff = rMed / gMed;
+  const bCoeff = bMed / gMed;
 
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height / 2; y++) {
-      const seedRgb = canvasData.rgbPixel({ x, y });
-      const seedLab = colorSpace.rgb.lab([seedRgb.r, seedRgb.g, seedRgb.b]);
+      const rgb = canvasData.rgbPixel({ x, y });
+      const r = parseInt(rgb.r * rCoeff);
+      const g = rgb.g;
+      const b = parseInt(rgb.b * bCoeff);
+      canvasData.recolor({ x, y }, { r, g, b });
+    }
+  }
+}
+
+async function retinexWhiteBalance(canvasData, dimensions) {
+  const { width, height } = dimensions;
+
+  let maxR = 0;
+  let maxG = 0;
+  let maxB = 0;
+
+  let count = 0;
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height / 2; y++) {
+      // Only count pixels within the circle
+      const distance = Math.sqrt(Math.pow(x - 200, 2) + Math.pow(y - 200, 2));
+
+      if (distance < 188) {
+        const rgb = canvasData.rgbPixel({ x, y });
+        maxR = Math.max(rgb.r, maxR);
+        maxG = Math.max(rgb.g, maxG);
+        maxB = Math.max(rgb.b, maxB);
+        count++;
+      }
+    }
+  }
+
+  const rCoeff = maxG / maxR;
+  const bCoeff = maxG / maxB;
+
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height / 2; y++) {
+      const rgb = canvasData.rgbPixel({ x, y });
+      const r = parseInt(rgb.r * rCoeff);
+      const g = rgb.g;
+      const b = parseInt(rgb.b * bCoeff);
+      canvasData.recolor({ x, y }, { r, g, b });
     }
   }
 }
@@ -177,4 +277,11 @@ function containsXYKeyIn(getKey, map) {
 function getIndex(x, y, width) {
   return (x + y * width) * 4;
 }
-export { getDetectedPixels, updateImageData, isEdge };
+export {
+  getDetectedPixels,
+  updateImageData,
+  isEdge,
+  greyWorldTheoryWhiteBalance,
+  retinexWhiteBalance,
+  medianWhiteBalance,
+};
