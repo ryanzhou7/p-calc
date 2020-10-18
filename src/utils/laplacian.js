@@ -1,11 +1,3 @@
-// Increase to relax restrictions
-const SEED_THRESHOLD_ADJUST = 70;
-const IS_SIMILAR_PIXEL_THRESHOLD = 100;
-
-/*
- * Laplacian
- */
-
 async function getLaplacianArray(
   canvasData,
   { detectionWidth, detectionHeight }

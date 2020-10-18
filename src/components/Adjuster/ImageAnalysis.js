@@ -1,16 +1,8 @@
 import Coordinate from "../../models/coordinate";
-import CanvasDataHelper from "../../models/canvasData";
-import * as math from "mathjs";
 
 const colorSpace = require("color-space");
 const DeltaE = require("delta-e");
 
-/**
- * Offsets access each value in a canvasContext.getImageData()
- */
-const R_OFFSET = 0;
-const G_OFFSET = 1;
-const B_OFFSET = 2;
 const red = { r: 255, g: 0, b: 0 };
 const green = { r: 0, g: 255, b: 0 };
 const blue = { r: 0, g: 0, b: 255 };
@@ -51,80 +43,6 @@ async function getDetectedPixels(
   }
 
   return detectedPixels;
-}
-
-async function greyWorldTheoryWhiteBalance(canvasData, dimensions) {
-  const { width, height } = dimensions;
-
-  let totalR = 0;
-  let totalG = 0;
-  let totalB = 0;
-
-  let count = 0;
-  for (let x = 0; x < width; x++) {
-    for (let y = 0; y < height / 2; y++) {
-      const rgb = canvasData.rgbPixel({ x, y });
-      totalR += rgb.r;
-      totalG += rgb.g;
-      totalB += rgb.b;
-      count++;
-    }
-  }
-
-  const averageR = totalR / count;
-  const averageB = totalB / count;
-  const averageG = totalG / count;
-  const rCoeff = averageR / averageG;
-  const bCoeff = averageB / averageG;
-  for (let x = 0; x < width; x++) {
-    for (let y = 0; y < height / 2; y++) {
-      const rgb = canvasData.rgbPixel({ x, y });
-      const r = parseInt(rgb.r * rCoeff);
-      const g = rgb.g;
-      const b = parseInt(rgb.b * bCoeff);
-      canvasData.recolor({ x, y }, { r, g, b });
-    }
-  }
-}
-
-async function medianWhiteBalance(canvasData, dimensions) {
-  const { width, height } = dimensions;
-
-  const freq = new Map();
-  for (let x = 0; x < width; x++) {
-    for (let y = 0; y < height / 2; y++) {
-      const rgb = canvasData.rgbPixel({ x, y });
-      const key = "" + rgb.r + "," + rgb.g + "," + rgb.b;
-      const value = freq.has(key) ? freq.get(key) : 0;
-      freq.set(key, value + 1);
-    }
-  }
-
-  let highestFreq = 0;
-  let highestFreqKey = 0;
-  freq.forEach((value, key, map) => {
-    if (value >= highestFreq) {
-      highestFreqKey = key;
-    }
-  });
-
-  const [rS, gS, bS] = highestFreqKey.split(",");
-  const rMed = parseInt(rS);
-  const gMed = parseInt(gS);
-  const bMed = parseInt(bS);
-
-  const rCoeff = rMed / gMed;
-  const bCoeff = bMed / gMed;
-
-  for (let x = 0; x < width; x++) {
-    for (let y = 0; y < height / 2; y++) {
-      const rgb = canvasData.rgbPixel({ x, y });
-      const r = parseInt(rgb.r * rCoeff);
-      const g = rgb.g;
-      const b = parseInt(rgb.b * bCoeff);
-      canvasData.recolor({ x, y }, { r, g, b });
-    }
-  }
 }
 
 async function retinexWhiteBalance(canvasData, dimensions) {
@@ -255,33 +173,4 @@ function getXYKey(x, y) {
   return String(x) + String(y);
 }
 
-/**
- * Given x,y is the generated key in this map?
- * @param {*} x
- * @param {*} y
- * @param {*} map
- */
-function containsXYKeyIn(getKey, map) {
-  return (x, y) => {
-    const key = getKey(x, y);
-    return map.has(key);
-  };
-}
-
-/**
- * Get the index in a canvasContext.getImageData() array given the x, y, and width
- * @param {*} x
- * @param {*} y
- * @param {*} width
- */
-function getIndex(x, y, width) {
-  return (x + y * width) * 4;
-}
-export {
-  getDetectedPixels,
-  updateImageData,
-  isEdge,
-  greyWorldTheoryWhiteBalance,
-  retinexWhiteBalance,
-  medianWhiteBalance,
-};
+export { getDetectedPixels, updateImageData, isEdge, retinexWhiteBalance };
