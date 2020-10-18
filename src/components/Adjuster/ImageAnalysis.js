@@ -9,22 +9,18 @@ const blue = { r: 0, g: 0, b: 255 };
 async function getDetectedPixels(
   canvasData,
   seedCoordinate,
-  edgeCanvas,
   dimensions,
   threshold
 ) {
-  const { x, y } = seedCoordinate;
   const detectedPixels = [];
   detectedPixels.push(seedCoordinate);
 
   let queue = [];
-  queue.push(seedCoordinate);
+  queue.push(seedCoordinate, seedCoordinate);
   const visited = new Set();
   visited.add(seedCoordinate);
   while (queue.length > 0) {
     const currentCoor = queue.pop();
-
-    const key = getXYKey(currentCoor.x, currentCoor.y);
     const neighbors = getNeighbors(currentCoor);
 
     for (let neighborCoor of neighbors) {
@@ -34,6 +30,7 @@ async function getDetectedPixels(
         isWithinBoundary(neighborCoor, dimensions) &&
         !visited.has(key) &&
         isSimiliar(neighborCoor, canvasData, seedCoordinate, threshold)
+        //!isEdge(neighborCoor, canvasData)
       ) {
         queue.push(neighborCoor);
         detectedPixels.push(neighborCoor);
@@ -83,24 +80,24 @@ async function retinexWhiteBalance(canvasData, dimensions) {
 }
 
 function isSimiliar(suspect, canvasData, seedCoordinate, threshold) {
-  const seedRgb = canvasData.rgbPixel(seedCoordinate);
-  const seedLab = colorSpace.rgb.lab([seedRgb.r, seedRgb.g, seedRgb.b]);
-  const seedLabObj = { L: seedLab[0], A: seedLab[1], B: seedLab[2] };
-  const suspectRgb = canvasData.rgbPixel(suspect);
+  return getDeltaBetween(canvasData, suspect, seedCoordinate) < threshold;
+}
 
-  const suspectLab = colorSpace.rgb.lab([
-    suspectRgb.r,
-    suspectRgb.g,
-    suspectRgb.b,
-  ]);
+function getDeltaBetween(canvasData, coor1, coor2) {
+  const coor1Rgb = canvasData.rgbPixel(coor1);
+  const coor1Lab = colorSpace.rgb.lab([coor1Rgb.r, coor1Rgb.g, coor1Rgb.b]);
+  const coor1LabObj = { L: coor1Lab[0], A: coor1Lab[1], B: coor1Lab[2] };
+  const coor2Rgb = canvasData.rgbPixel(coor2);
 
-  const suspectLabObj = {
-    L: suspectLab[0],
-    A: suspectLab[1],
-    B: suspectLab[2],
+  const coor2Lab = colorSpace.rgb.lab([coor2Rgb.r, coor2Rgb.g, coor2Rgb.b]);
+
+  const coor2LabObj = {
+    L: coor2Lab[0],
+    A: coor2Lab[1],
+    B: coor2Lab[2],
   };
 
-  return DeltaE.getDeltaE00(seedLabObj, suspectLabObj) < threshold;
+  return DeltaE.getDeltaE00(coor1LabObj, coor2LabObj);
 }
 
 function isWithinBoundary(coor, dimensions) {
@@ -109,9 +106,38 @@ function isWithinBoundary(coor, dimensions) {
 }
 
 function isEdge(coor, canvasData) {
-  const rgbPixel = canvasData.rgbPixel(coor);
-  // if all black then it is a edge pixel
-  return rgbPixel.r === 255 && rgbPixel.g === 255 && rgbPixel.b === 255;
+  const x = coor.x;
+  const y = coor.y;
+  let topLeft = getDeltaBetween(canvasData, coor, { x: x - 1, y: y - 1 });
+  let top = getDeltaBetween(canvasData, coor, { x: x, y: y - 1 });
+  let topRight = getDeltaBetween(canvasData, coor, { x: x + 1, y: y + 1 });
+  let right = getDeltaBetween(canvasData, coor, { x: x + 1, y });
+  let bottomRight = getDeltaBetween(canvasData, coor, { x: x + 1, y: y + 1 });
+  let bottom = getDeltaBetween(canvasData, coor, { x, y: y + 1 });
+  let bottomLeft = getDeltaBetween(canvasData, coor, { x: x - 1, y: y + 1 });
+  let left = getDeltaBetween(canvasData, coor, { x: x - 1, y: y + 1 });
+
+  const max = Math.max(
+    topLeft,
+    top,
+    topRight,
+    right,
+    bottomRight,
+    bottom,
+    bottomLeft,
+    left
+  );
+
+  return (
+    isDifferentAboveThreshold(topLeft, bottomRight, max) ||
+    isDifferentAboveThreshold(top, bottom, max) ||
+    isDifferentAboveThreshold(left, right, max) ||
+    isDifferentAboveThreshold(topRight, bottomLeft, max)
+  );
+}
+
+function isDifferentAboveThreshold(value1, value2, max) {
+  return Math.abs(value1 - value2) > 9;
 }
 
 const neighborsDelta = [
@@ -173,4 +199,4 @@ function getXYKey(x, y) {
   return String(x) + String(y);
 }
 
-export { getDetectedPixels, updateImageData, isEdge, retinexWhiteBalance };
+export { getDetectedPixels, updateImageData, retinexWhiteBalance };

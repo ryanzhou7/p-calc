@@ -6,12 +6,12 @@ import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
 import Adjuster from "../Adjuster/Adjuster";
 import target from "../../assets/target/circle.png";
+import sample from "../../assets/sample/63.jpg";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // For the analysis
 const START_THRESHOLD = 20;
-let imageForDownload = null;
 
 function Auto(props) {
   // Setup
@@ -39,7 +39,7 @@ function Auto(props) {
 
   // Set a default image for debuggin bad images
   useEffect(() => {
-    //dispatch(imageReducer.setImageOnload(sampleChart));
+    //dispatch(imageReducer.setImageOnload(sample));
   }, []);
 
   const capture = () => {
@@ -57,10 +57,6 @@ function Auto(props) {
     window.scrollTo(0, autoAnalyzeContainerRef.current.offsetTop);
 
     setIsCameraOn(false);
-
-    imageForDownload = screenshot;
-    // Download image
-    //DomHelper.downloadJpegInClient(screenshot, "fail");
   };
 
   // Children props setup
