@@ -37,9 +37,9 @@ function Auto(props) {
   const webcamRef = useRef(null);
   const autoAnalyzeContainerRef = useRef(null);
 
-  // Set a default image for debuggin bad images
+  // Set a default image for debugging bad images
   useEffect(() => {
-    //dispatch(imageReducer.setImageOnload(sample));
+    // dispatch(imageReducer.setImageOnload(sample));
   }, []);
 
   const capture = () => {
@@ -47,9 +47,6 @@ function Auto(props) {
       setIsCameraOn(true);
       return;
     }
-
-    // reset threshold
-    setThreshold(START_THRESHOLD);
 
     const screenshot = webcamRef.current.getScreenshot();
     dispatch(imageReducer.setImageOnload(screenshot));

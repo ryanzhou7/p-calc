@@ -40,16 +40,27 @@ function AnalysisResults(props) {
 
   useEffect(() => {
     if (imageSource) {
-      fullAnalysis();
+      enumerateAnalysis();
     }
-  }, [imageSource, threshold]);
+  }, [imageSource]);
 
-  async function fullAnalysis() {
+  useEffect(() => {
+    if (imageSource) {
+      fullAnalysis(threshold);
+    }
+  }, [threshold]);
+
+  async function enumerateAnalysis() {
+    const maxThreshold = await utils.getCorrectThreshold(fullAnalysis);
+    setThreshold(maxThreshold);
+  }
+
+  async function fullAnalysis(currThreshold) {
     const { topPixelsCount, bottomPixelsCount } = await utils.fullAnalysis(
       imageSource,
       combinedCanvasInfo,
       canvasRef,
-      threshold
+      currThreshold
     );
 
     dispatch(
@@ -58,6 +69,8 @@ function AnalysisResults(props) {
     dispatch(
       combinedCanvasInfoReducer.setNumColoredInnerPixels(bottomPixelsCount)
     );
+
+    return (100 * (topPixelsCount - bottomPixelsCount)) / topPixelsCount;
   }
 
   return (

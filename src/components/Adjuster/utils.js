@@ -171,6 +171,25 @@ async function findMax(canvasData, { detectionWidth, detectionHeight }) {
   return coor;
 }
 
+async function getCorrectThreshold(getLoss) {
+  const freqMap = new Map();
+  let maxFreq = 0;
+  let maxThreshold = 20;
+  for (let x = 25; x >= 5; x--) {
+    const lossTruncatedKey = parseInt(await getLoss(x));
+    let freq = freqMap.has(lossTruncatedKey)
+      ? freqMap.get(lossTruncatedKey)
+      : 0;
+    freq++;
+    freqMap.set(lossTruncatedKey, freq);
+    if (freq >= maxFreq) {
+      maxFreq = freq;
+      maxThreshold = x;
+    }
+  }
+  return maxThreshold;
+}
+
 function calculatedLossPercent(outerPixels, innerPixels) {
   let percentage = (100 * (outerPixels - innerPixels)) / outerPixels;
   return percentage.toFixed(2);
@@ -334,4 +353,4 @@ async function getEdgeCanvasHelper(image, context) {
   // return edgeCanvas;
 }
 
-export { calculatedLossPercent, fullAnalysis };
+export { calculatedLossPercent, fullAnalysis, getCorrectThreshold };
