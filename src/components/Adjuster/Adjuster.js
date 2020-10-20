@@ -54,8 +54,8 @@ function AnalysisResults(props) {
     }
   }, [threshold]);
 
-  async function fullAnalysis(currThreshold) {
-    const { topPixelsCount, bottomPixelsCount } = await utils.fullAnalysis(
+  function fullAnalysis(currThreshold) {
+    const { topPixelsCount, bottomPixelsCount } = utils.fullAnalysis(
       imageSource,
       combinedCanvasInfo,
       canvasRef,

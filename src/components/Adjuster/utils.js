@@ -8,7 +8,7 @@ const START_HEIGHT = 12;
 // If the y coor is greater than this is number it is lower, thus within, the 5% rule
 const WITHIN_HEIGHT = 182;
 
-async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
+function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
   const { width, height } = image;
   const dimensions = {
     detectionWidth: width,
@@ -44,8 +44,8 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
    */
 
   // Global extrema we look for the most "X" of a pixel, for ex. red
-  const maxCoor = await findMax(canvasData, dimensions);
-  const maxDetectedPixels = await ImageAnalysis.getDetectedPixels(
+  const maxCoor = findMax(canvasData, dimensions);
+  const maxDetectedPixels = ImageAnalysis.getDetectedPixels(
     canvasData,
     maxCoor,
     { width, height },
@@ -53,9 +53,9 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
   );
 
   // Now we look for the next "X" of a pixel that is some distance away from the one before
-  const nextMaxCoor = await findNextMax(maxCoor, canvasData, width, height);
+  const nextMaxCoor = findNextMax(maxCoor, canvasData, width, height);
 
-  const nextMaxdetectedPixels = await ImageAnalysis.getDetectedPixels(
+  const nextMaxdetectedPixels = ImageAnalysis.getDetectedPixels(
     canvasData,
     nextMaxCoor,
     { width, height },
@@ -84,18 +84,18 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
    */
 
   //  Cutoff finding
-  const cuttOff = await findCutOff(topDetectedPixels, bottomDetectedPixels);
+  const cuttOff = findCutOff(topDetectedPixels, bottomDetectedPixels);
 
   // Recoloring
   const recolor = { r: 0, g: 255, b: 0 };
-  const topPixelsCount = await ImageAnalysis.updateImageData(
+  const topPixelsCount = ImageAnalysis.updateImageData(
     canvasData,
     { leftX: cuttOff.top.left.x, rightX: cuttOff.top.right.x, height },
     recolor,
     topDetectedPixels
   );
 
-  const bottomPixelsCount = await ImageAnalysis.updateImageData(
+  const bottomPixelsCount = ImageAnalysis.updateImageData(
     canvasData,
     { leftX: cuttOff.bottom.left.x, rightX: cuttOff.bottom.right.x, height },
     { r: 0, g: 0, b: 255 },
@@ -112,10 +112,10 @@ async function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
     dimensions.detectionHeight
   );
 
-  return Promise.resolve({ topPixelsCount, bottomPixelsCount });
+  return { topPixelsCount, bottomPixelsCount };
 }
 
-async function findNextMax(maxCoor, canvasData, width, height) {
+function findNextMax(maxCoor, canvasData, width, height) {
   // Setup
   const photoOriginY = height / 2;
   const middleX = width / 2;
@@ -151,7 +151,7 @@ async function findNextMax(maxCoor, canvasData, width, height) {
   return coor;
 }
 
-async function findMax(canvasData, { detectionWidth, detectionHeight }) {
+function findMax(canvasData, { detectionWidth, detectionHeight }) {
   const middleX = detectionWidth / 2;
   let coor = { x: middleX };
   let intensity = 0;
@@ -171,13 +171,13 @@ async function findMax(canvasData, { detectionWidth, detectionHeight }) {
   return coor;
 }
 
-async function getCorrectThreshold(getLoss) {
-  return new Promise(async (resolve) => {
+function getCorrectThreshold(getLoss) {
+  return new Promise((resolve) => {
     const freqMap = new Map();
     let maxFreq = 0;
     let maxThreshold = 20;
     for (let x = 25; x >= 5; x--) {
-      const loss = await getLoss(x);
+      const loss = getLoss(x);
       const lossTruncatedKey = parseInt(loss);
       let freq = freqMap.has(lossTruncatedKey)
         ? freqMap.get(lossTruncatedKey)
@@ -219,7 +219,7 @@ function calculatedLossPercent(outerPixels, innerPixels) {
  * @param {*} topPixels
  * @param {*} bottomPixels
  */
-async function findCutOff(topPixels, bottomPixels) {
+function findCutOff(topPixels, bottomPixels) {
   const bounds = findBounds(topPixels, bottomPixels);
 
   /*

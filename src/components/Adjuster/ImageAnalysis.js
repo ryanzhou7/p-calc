@@ -3,12 +3,7 @@ import Coordinate from "../../models/coordinate";
 const colorSpace = require("color-space");
 const DeltaE = require("delta-e");
 
-async function getDetectedPixels(
-  canvasData,
-  seedCoordinate,
-  dimensions,
-  threshold
-) {
+function getDetectedPixels(canvasData, seedCoordinate, dimensions, threshold) {
   const detectedPixels = [];
   detectedPixels.push(seedCoordinate);
 
@@ -27,7 +22,6 @@ async function getDetectedPixels(
         isWithinBoundary(neighborCoor, dimensions) &&
         !visited.has(key) &&
         isSimiliar(neighborCoor, canvasData, seedCoordinate, threshold)
-        //!isEdge(neighborCoor, canvasData)
       ) {
         queue.push(neighborCoor);
         detectedPixels.push(neighborCoor);
@@ -38,8 +32,7 @@ async function getDetectedPixels(
 
   return detectedPixels;
 }
-
-async function retinexWhiteBalance(canvasData, dimensions) {
+function retinexWhiteBalance(canvasData, dimensions) {
   const { width, height } = dimensions;
 
   let maxR = 0;
@@ -159,7 +152,7 @@ function getNeighbors(coordinate) {
   return neighbors;
 }
 
-async function updateImageData(
+function updateImageData(
   canvasData,
   { leftX, rightX, height },
   recolor,
