@@ -172,22 +172,25 @@ async function findMax(canvasData, { detectionWidth, detectionHeight }) {
 }
 
 async function getCorrectThreshold(getLoss) {
-  const freqMap = new Map();
-  let maxFreq = 0;
-  let maxThreshold = 20;
-  for (let x = 25; x >= 5; x--) {
-    const lossTruncatedKey = parseInt(await getLoss(x));
-    let freq = freqMap.has(lossTruncatedKey)
-      ? freqMap.get(lossTruncatedKey)
-      : 0;
-    freq++;
-    freqMap.set(lossTruncatedKey, freq);
-    if (freq >= maxFreq) {
-      maxFreq = freq;
-      maxThreshold = x;
+  return new Promise(async (resolve) => {
+    const freqMap = new Map();
+    let maxFreq = 0;
+    let maxThreshold = 20;
+    for (let x = 25; x >= 5; x--) {
+      const loss = await getLoss(x);
+      const lossTruncatedKey = parseInt(loss);
+      let freq = freqMap.has(lossTruncatedKey)
+        ? freqMap.get(lossTruncatedKey)
+        : 0;
+      freq++;
+      freqMap.set(lossTruncatedKey, freq);
+      if (freq >= maxFreq) {
+        maxFreq = freq;
+        maxThreshold = x;
+      }
     }
-  }
-  return maxThreshold;
+    resolve(maxThreshold);
+  });
 }
 
 function calculatedLossPercent(outerPixels, innerPixels) {

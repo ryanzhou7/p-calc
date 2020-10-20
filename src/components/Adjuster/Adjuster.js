@@ -39,9 +39,13 @@ function AnalysisResults(props) {
   }
 
   useEffect(() => {
-    if (imageSource) {
-      enumerateAnalysis();
+    async function f() {
+      if (imageSource) {
+        const threshold = await utils.getCorrectThreshold(fullAnalysis);
+        setThreshold(threshold);
+      }
     }
+    f();
   }, [imageSource]);
 
   useEffect(() => {
@@ -49,11 +53,6 @@ function AnalysisResults(props) {
       fullAnalysis(threshold);
     }
   }, [threshold]);
-
-  async function enumerateAnalysis() {
-    const maxThreshold = await utils.getCorrectThreshold(fullAnalysis);
-    setThreshold(maxThreshold);
-  }
 
   async function fullAnalysis(currThreshold) {
     const { topPixelsCount, bottomPixelsCount } = await utils.fullAnalysis(
@@ -74,102 +73,104 @@ function AnalysisResults(props) {
   }
 
   return (
-    <Card>
-      {imageSource && <h2 className="card-title">Results</h2>}
-      <div>
-        <Canvas {...canvasProps} />
-        {imageSource && (
-          <div
-            className={`d-flex justify-content-around align-items-center mb-4`}
-          >
-            <div>
-              <Button
-                variant="outline-primary"
-                onClick={() => {
-                  setIsCameraOn(true);
-                  window.scrollTo(0, webcamContainerRef.current.offsetTop);
-                }}
-              >
-                Retake picture
-              </Button>
-
+    <>
+      <Card>
+        {imageSource && <h2 className="card-title">Results</h2>}
+        <div>
+          <Canvas {...canvasProps} />
+          {imageSource && (
+            <div
+              className={`d-flex justify-content-around align-items-center mb-4`}
+            >
               <div>
-                <h3 className="mt-4">
-                  Loss:{" "}
-                  {utils.calculatedLossPercent(
-                    outerNumColoredPixels,
-                    innerNumColoredPixels
-                  )}
-                  %
-                </h3>
-                <div className="mt-4">
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => {
-                      const now = new Date();
-                      DomHelper.downloadJpegInClient(
-                        imageForDownload,
-                        now.toDateString()
-                      );
-                    }}
-                  >
-                    Download original
-                  </Button>{" "}
+                <Button
+                  variant="outline-primary"
+                  onClick={() => {
+                    setIsCameraOn(true);
+                    window.scrollTo(0, webcamContainerRef.current.offsetTop);
+                  }}
+                >
+                  Retake picture
+                </Button>
+
+                <div>
+                  <h3 className="mt-4">
+                    Loss:{" "}
+                    {utils.calculatedLossPercent(
+                      outerNumColoredPixels,
+                      innerNumColoredPixels
+                    )}
+                    %
+                  </h3>
+                  <div className="mt-4">
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => {
+                        const now = new Date();
+                        DomHelper.downloadJpegInClient(
+                          imageForDownload,
+                          now.toDateString()
+                        );
+                      }}
+                    >
+                      Download original
+                    </Button>{" "}
+                  </div>
                 </div>
               </div>
+
+              <Card>
+                <Card.Body>
+                  <Card.Title>Sensitivity: {threshold}</Card.Title>
+                  <div className="container">
+                    <div className="row justify-content-around mb-3">
+                      <Button
+                        onClick={(e) => {
+                          changeThresholdBy(-1);
+                        }}
+                      >
+                        <FontAwesomeIcon icon="minus" size="1x" />
+                      </Button>
+                      <Button
+                        onClick={(e) => {
+                          changeThresholdBy(1);
+                        }}
+                      >
+                        <FontAwesomeIcon icon="plus" size="1x" />
+                      </Button>
+                    </div>
+                    <div className="row justify-content-between">
+                      <Button
+                        className="mr-1"
+                        onClick={(e) => {
+                          changeThresholdBy(-3);
+                        }}
+                      >
+                        <FontAwesomeIcon icon="minus" size="1x" />
+                        {"  "}
+                        <FontAwesomeIcon icon="minus" size="1x" />
+                      </Button>
+                      <Button
+                        onClick={(e) => {
+                          changeThresholdBy(3);
+                        }}
+                      >
+                        <FontAwesomeIcon icon="plus" size="1x" />
+                        {"  "}
+                        <FontAwesomeIcon icon="plus" size="1x" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
             </div>
+          )}
+        </div>
 
-            <Card>
-              <Card.Body>
-                <Card.Title>Sensitivity: {threshold}</Card.Title>
-                <div className="container">
-                  <div className="row justify-content-around mb-3">
-                    <Button
-                      onClick={(e) => {
-                        changeThresholdBy(-1);
-                      }}
-                    >
-                      <FontAwesomeIcon icon="minus" size="1x" />
-                    </Button>
-                    <Button
-                      onClick={(e) => {
-                        changeThresholdBy(1);
-                      }}
-                    >
-                      <FontAwesomeIcon icon="plus" size="1x" />
-                    </Button>
-                  </div>
-                  <div className="row justify-content-between">
-                    <Button
-                      className="mr-1"
-                      onClick={(e) => {
-                        changeThresholdBy(-3);
-                      }}
-                    >
-                      <FontAwesomeIcon icon="minus" size="1x" />
-                      {"  "}
-                      <FontAwesomeIcon icon="minus" size="1x" />
-                    </Button>
-                    <Button
-                      onClick={(e) => {
-                        changeThresholdBy(3);
-                      }}
-                    >
-                      <FontAwesomeIcon icon="plus" size="1x" />
-                      {"  "}
-                      <FontAwesomeIcon icon="plus" size="1x" />
-                    </Button>
-                  </div>
-                </div>
-              </Card.Body>
-            </Card>
-          </div>
-        )}
-      </div>
-
-      {/* Used for edge canvas */}
-      <canvas style={{ display: "none" }} ref={canvasRef} />
-    </Card>
+        {/* Used for edge canvas */}
+        {/* <canvas style={{ display: "none" }} ref={canvasRef} /> */}
+      </Card>
+    </>
   );
 }
 

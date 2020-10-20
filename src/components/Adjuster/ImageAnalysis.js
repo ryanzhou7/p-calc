@@ -3,9 +3,6 @@ import Coordinate from "../../models/coordinate";
 const colorSpace = require("color-space");
 const DeltaE = require("delta-e");
 
-const red = { r: 255, g: 0, b: 0 };
-const green = { r: 0, g: 255, b: 0 };
-const blue = { r: 0, g: 0, b: 255 };
 async function getDetectedPixels(
   canvasData,
   seedCoordinate,

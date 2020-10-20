@@ -1,6 +1,5 @@
 const initialState = {
   videoConstraints: {
-
     // These numbers should match those in the canvas settings
     width: 400,
     height: 400,
