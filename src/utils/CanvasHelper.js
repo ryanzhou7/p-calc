@@ -56,7 +56,7 @@ async function download(originalImage, analyzedCanvas, drawingCanvasRef, info) {
   const data = drawCanvas.toDataURL("image/jpg");
   const a = document.createElement("a");
   a.href = data;
-  a.download = getDownloadName(info) + ".jpeg";
+  a.download = getDownloadName(info);
   a.click();
 }
 
@@ -66,8 +66,8 @@ function getOptionalText(text) {
 
 function getDownloadName(info) {
   let name = info.date;
-  name += info.sex ? "Sex " + info.sex : "";
-  name += info.age ? "Age " + info.age : "";
+  name += info.sex ? "- Sex " + info.sex : "";
+  name += info.age ? "- Age " + info.age : "";
   return name;
 }
 

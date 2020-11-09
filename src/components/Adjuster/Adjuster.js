@@ -194,10 +194,12 @@ function Adjuster(props) {
         </div>
       </Card>
 
-      <div className="mt-4">
-        <canvas style={{ display: "none" }} ref={canvasRef} />
-        <Scribe />
-      </div>
+      {imageSource && (
+        <div className="mt-4">
+          <canvas style={{ display: "none" }} ref={canvasRef} />
+          <Scribe />
+        </div>
+      )}
     </>
   );
 }
