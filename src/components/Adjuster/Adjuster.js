@@ -125,23 +125,6 @@ function Adjuster(props) {
                       Download original
                     </Button>{" "}
                   </div> */}
-
-                  <div className="mt-4">
-                    <Button
-                      variant="primary"
-                      onClick={() =>
-                        CanvasHelper.download(
-                          imageSource,
-                          combinedCanvas,
-                          canvasRef,
-                          { loss, threshold, sex, age, note }
-                        )
-                      }
-                      size="lg"
-                    >
-                      Download
-                    </Button>{" "}
-                  </div>
                 </div>
               </div>
 
