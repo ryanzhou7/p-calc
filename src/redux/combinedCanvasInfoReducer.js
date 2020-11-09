@@ -1,3 +1,7 @@
+export function setCanvas(canvas) {
+  return { type: "SET_COMBINE_CANVAS", payload: canvas };
+}
+
 export function setContext(context) {
   return { type: "SET_COMBINE_CONTEXT", payload: context };
 }
@@ -8,6 +12,7 @@ export function setNumColoredOuterPixels(numOuterPixels) {
   return { type: "SET_NUM_COLORED_OUTER_PIXELS", payload: numOuterPixels };
 }
 const initialState = {
+  canvas: null,
   context: null,
   numColoredOuterPixels: 0,
   numColoredInnerPixels: 0,
@@ -30,6 +35,12 @@ export default function reducer(state = initialState, action) {
         ...state,
         numColoredOuterPixels: action.payload,
       };
+    case "SET_COMBINE_CANVAS":
+      return {
+        ...state,
+        canvas: action.payload,
+      };
+
     default:
       return state;
   }

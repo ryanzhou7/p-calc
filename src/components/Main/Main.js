@@ -11,12 +11,10 @@ import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // For the analysis
-const START_THRESHOLD = 20;
 
 function Auto(props) {
   // Setup
   const dispatch = useDispatch();
-  const [threshold, setThreshold] = useState(START_THRESHOLD);
   const [isCameraOn, setIsCameraOn] = useState(true);
 
   // Redux
@@ -27,7 +25,6 @@ function Auto(props) {
   const canvasDimensions = useSelector(
     (state) => state.canvasSettings.canvasDimensions
   );
-  const combinedCanvasInfo = useSelector((state) => state.combinedCanvasInfo);
 
   // Props
   const { isPortrait } = props;
@@ -39,7 +36,7 @@ function Auto(props) {
 
   // Set a default image for debugging bad images
   useEffect(() => {
-    //dispatch(imageReducer.setImageOnload(sample));
+    dispatch(imageReducer.setImageOnload(sample));
   }, []);
 
   const capture = () => {
@@ -57,7 +54,7 @@ function Auto(props) {
   };
 
   // Children props setup
-  const autoReanalyzeProps = {
+  const adjusterProps = {
     webcamRef,
     webcamContainerRef,
     image: image,
@@ -70,7 +67,6 @@ function Auto(props) {
       drawHeight: canvasDimensions.height,
     },
     isPortrait,
-    thresholdState: [threshold, setThreshold],
     cameraState: [isCameraOn, setIsCameraOn],
   };
 
@@ -126,7 +122,7 @@ function Auto(props) {
       </Card>
 
       <div className="mt-4" ref={autoAnalyzeContainerRef}>
-        <Adjuster {...autoReanalyzeProps} />
+        <Adjuster {...adjusterProps} />
       </div>
       <br />
       <br />

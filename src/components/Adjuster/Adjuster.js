@@ -1,20 +1,32 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import * as combinedCanvasInfoReducer from "../../redux/combinedCanvasInfoReducer";
+import * as downloadReducer from "../../redux/downloadReducer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Canvas from "../Canvas/Canvas";
 import * as utils from "./utils";
+import * as CanvasHelper from "../../utils/CanvasHelper";
+import Scribe from "../Scribe/Scribe";
 import * as DomHelper from "../../utils/DomHelper";
 
-function AnalysisResults(props) {
+function Adjuster(props) {
   const dispatch = useDispatch();
 
   // State
+  const combinedCanvas = useSelector(
+    (state) => state.combinedCanvasInfo.canvas
+  );
   const combinedCanvasInfo = useSelector((state) => state.combinedCanvasInfo);
   const imageSource = useSelector((state) => state.image.source);
-  const imageForDownload = useSelector((state) => state.image.image);
-  const [threshold, setThreshold] = props.thresholdState;
+  const threshold = useSelector((state) => state.downloadReducer.threshold);
+  const setThreshold = (t) => {
+    dispatch(downloadReducer.setThreshold(t));
+  };
+
+  const sex = useSelector((state) => state.downloadReducer.sex);
+  const age = useSelector((state) => state.downloadReducer.age);
+  const note = useSelector((state) => state.downloadReducer.note);
 
   const outerNumColoredPixels = combinedCanvasInfo.numColoredOuterPixels;
   const innerNumColoredPixels = combinedCanvasInfo.numColoredInnerPixels;
@@ -23,6 +35,11 @@ function AnalysisResults(props) {
   const { webcamContainerRef } = props;
   const [, setIsCameraOn] = props.cameraState;
 
+  let loss = utils.calculatedLossPercent(
+    outerNumColoredPixels,
+    innerNumColoredPixels
+  );
+
   // Child props
   const canvasProps = {
     ...props,
@@ -30,12 +47,12 @@ function AnalysisResults(props) {
       combinedCanvasInfo.context,
       combinedCanvasInfoReducer.setContext,
     ],
+    setCanvas: combinedCanvasInfoReducer.setCanvas,
   };
 
   const canvasRef = useRef(null);
-
   function changeThresholdBy(value) {
-    setThreshold((previous) => Math.max(0, previous + value));
+    setThreshold(Math.max(0, threshold + value));
   }
 
   useEffect(() => {
@@ -58,7 +75,6 @@ function AnalysisResults(props) {
     const { topPixelsCount, bottomPixelsCount } = utils.fullAnalysis(
       imageSource,
       combinedCanvasInfo,
-      canvasRef,
       currThreshold
     );
 
@@ -94,15 +110,8 @@ function AnalysisResults(props) {
                 </Button>
 
                 <div>
-                  <h3 className="mt-4">
-                    Loss:{" "}
-                    {utils.calculatedLossPercent(
-                      outerNumColoredPixels,
-                      innerNumColoredPixels
-                    )}
-                    %
-                  </h3>
-                  <div className="mt-4">
+                  <h3 className="mt-4">Loss: {loss}%</h3>
+                  {/* <div className="mt-4">
                     <Button
                       variant="outline-primary"
                       onClick={() => {
@@ -114,6 +123,23 @@ function AnalysisResults(props) {
                       }}
                     >
                       Download original
+                    </Button>{" "}
+                  </div> */}
+
+                  <div className="mt-4">
+                    <Button
+                      variant="primary"
+                      onClick={() =>
+                        CanvasHelper.download(
+                          imageSource,
+                          combinedCanvas,
+                          canvasRef,
+                          { loss, threshold, sex, age, note }
+                        )
+                      }
+                      size="lg"
+                    >
+                      Download
                     </Button>{" "}
                   </div>
                 </div>
@@ -166,12 +192,14 @@ function AnalysisResults(props) {
             </div>
           )}
         </div>
-
-        {/* Used for edge canvas */}
-        {/* <canvas style={{ display: "none" }} ref={canvasRef} /> */}
       </Card>
+
+      <div className="mt-4">
+        <canvas style={{ display: "none" }} ref={canvasRef} />
+        <Scribe />
+      </div>
     </>
   );
 }
 
-export default AnalysisResults;
+export default Adjuster;

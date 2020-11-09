@@ -8,7 +8,7 @@ const START_HEIGHT = 12;
 // If the y coor is greater than this is number it is lower, thus within, the 5% rule
 const WITHIN_HEIGHT = 182;
 
-function fullAnalysis(image, combinedCanvasInfo, canvasRef, threshold) {
+function fullAnalysis(image, combinedCanvasInfo, threshold) {
   const { width, height } = image;
   const dimensions = {
     detectionWidth: width,

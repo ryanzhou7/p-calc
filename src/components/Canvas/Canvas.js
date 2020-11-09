@@ -8,12 +8,14 @@ function Canvas(props) {
   const { canvasWidth, canvasHeight } = props.canvasDimensions;
   const { drawWidth, drawHeight } = props.drawDimensions;
   const [canvasContext, setCanvasContext] = props.canvasContext;
+  const { setCanvas } = props;
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const { current: canvas } = canvasRef;
     const context = canvas.getContext("2d");
     dispatch(setCanvasContext(context));
+    dispatch(setCanvas(canvas));
   }, []);
 
   useEffect(() => {
