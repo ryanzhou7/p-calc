@@ -117,37 +117,32 @@ function fullAnalysis(image, combinedCanvasInfo, threshold) {
 
 function findNextMax(maxCoor, canvasData, width, height) {
   // Setup
-  const photoOriginY = height / 2;
   const middleX = width / 2;
-
-  const distanceFromOrigin = Math.abs(maxCoor.y - photoOriginY);
-  const distanceFromTop = maxCoor.y;
-
-  // If the already found coor's distance from the bottom (origin) is less than the tops then
-  // it's closer to the bottom and we are searching from top to bottom
-  const isTopToBottomSearch = distanceFromOrigin < distanceFromTop;
-  let boundary = distanceFromTop;
-
-  // Ensure that boundary is least some distance between the top and bottom so it won't be mistaken
-  boundary += isTopToBottomSearch ? -5 : 5;
 
   let coor = { x: middleX };
   let intensity = Number.MIN_SAFE_INTEGER;
 
-  let y = isTopToBottomSearch ? START_HEIGHT : photoOriginY;
-
-  while (y !== boundary) {
+  for (let y = START_HEIGHT; y < height / 2; y++) {
     const coordinate = { x: middleX, y };
-    const rgbPixel = canvasData.rgbPixel(coordinate);
 
-    const value = rgbPixel.r * 2 - rgbPixel.b - rgbPixel.g;
-
-    if (value > intensity) {
-      coor = { y: y, x: middleX };
-      intensity = value;
+    // 0
+    // 1
+    // 2 ---- boundary
+    // 3 max found here
+    // 4 ---- boundary
+    // 5
+    // If the current y is NOT within the boundary so < the bottom and > the top, then consider it
+    // We do this so the next red most pixel won't be the from the same drawn line
+    if (!(y < maxCoor.y + 7 && y > maxCoor.y - 7)) {
+      const rgbPixel = canvasData.rgbPixel(coordinate);
+      const value = rgbPixel.r * 2 - rgbPixel.b - rgbPixel.g;
+      if (value > intensity) {
+        coor.y = y;
+        intensity = value;
+      }
     }
-    isTopToBottomSearch ? y++ : y--;
   }
+
   return coor;
 }
 

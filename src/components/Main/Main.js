@@ -6,7 +6,7 @@ import * as imageReducer from "../../redux/imageReducer";
 import { useSelector, useDispatch } from "react-redux";
 import Adjuster from "../Adjuster/Adjuster";
 import target from "../../assets/target/circle.png";
-import sample from "../../assets/sample/63.jpg";
+import sample from "../../assets/sample/fail-fix.jpg";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -36,7 +36,7 @@ function Auto(props) {
 
   // Set a default image for debugging bad images
   useEffect(() => {
-    dispatch(imageReducer.setImageOnload(sample));
+    //dispatch(imageReducer.setImageOnload(sample));
   }, []);
 
   const capture = () => {
