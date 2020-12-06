@@ -111,20 +111,27 @@ function Adjuster(props) {
 
                 <div>
                   <h3 className="mt-4">Loss: {loss}%</h3>
-                  {/* <div className="mt-4">
+
+                  <div className="mt-4">
                     <Button
-                      variant="outline-primary"
-                      onClick={() => {
-                        const now = new Date();
-                        DomHelper.downloadJpegInClient(
-                          imageForDownload,
-                          now.toDateString()
-                        );
-                      }}
+                      variant="primary"
+                      onClick={() =>
+                        CanvasHelper.download(
+                          imageSource,
+                          combinedCanvasInfo.canvas,
+                          canvasRef,
+                          {
+                            note,
+                            loss,
+                            threshold,
+                          }
+                        )
+                      }
+                      size="lg"
                     >
-                      Download original
-                    </Button>{" "}
-                  </div> */}
+                      Download
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -177,12 +184,13 @@ function Adjuster(props) {
         </div>
       </Card>
 
-      {imageSource && (
+      <canvas style={{ display: "none" }} ref={canvasRef} />
+      {/* {imageSource && (
         <div className="mt-4">
           <canvas style={{ display: "none" }} ref={canvasRef} />
           <Scribe />
         </div>
-      )}
+      )} */}
     </>
   );
 }
